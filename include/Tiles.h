@@ -29,6 +29,8 @@ public:
 
     void insertBox(unsigned x_s, unsigned y_s, unsigned x_e, unsigned y_e, std::optional<color> _color = std::nullopt);
 
+    void insertText(unsigned x, unsigned y, std::wstring text, std::optional<color> _color = std::nullopt);
+
     void clear();
 
     friend class Renderer;

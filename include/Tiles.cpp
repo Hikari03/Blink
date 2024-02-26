@@ -171,3 +171,27 @@ void Tiles::insertBox(unsigned int x_s, unsigned int y_s, unsigned int x_e, unsi
         }
     }
 }
+
+void Tiles::insertText(unsigned int x, unsigned int y, std::wstring text, std::optional<short> _color) {
+
+        if(x + text.length() > width || y > height)
+            throw std::out_of_range("insertText: Text coordinates out of range");
+
+        if(!_color.has_value()) {
+            for(unsigned int i = 0; i < text.length(); i++) {
+                tiles[y][x + i] = std::make_shared<Tile>();
+                tiles[y][x + i]->setChar(text[i]);
+            }
+        }
+        else {
+            for(unsigned int i = 0; i < text.length(); i++) {
+                std::shared_ptr<ColorTile> tile = std::make_shared<ColorTile>();
+                tile->setChar(text[i]);
+                tile->setColor(_color.value());
+                tiles[y][x + i] = tile;
+            }
+        }
+
+}
+
+

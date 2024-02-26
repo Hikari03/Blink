@@ -3,21 +3,6 @@
 Renderer::Renderer(Tiles & tiles_) : tiles(tiles_.tiles), width(tiles_.width), height(tiles_.height) {
     setlocale(LC_CTYPE,"");
 
-/*    prevTiles.resize(height);
-    for(unsigned int i = 0; i < height; i++) {
-        prevTiles[i].resize(width);
-    }
-
-    for(unsigned int i = 0; i < height; i++) {
-        for(unsigned int j = 0; j < width; j++) {
-            std::shared_ptr<Tile> tile = std::make_shared<Tile>();
-            tile->setChar(L' ');
-            prevTiles[i][j] = tile;
-        }
-    }*/
-
-    //copyTiles();
-
     initscr();
     curs_set(0);
     noecho();
@@ -53,30 +38,8 @@ void Renderer::print() {
 
     if(changed) {
         refresh();
-        //copyTiles();
     }
 }
-
-/*void Renderer::copyTiles() {
-
-    prevTiles.resize(height);
-    for(unsigned i = 0; i < height; i++) {
-        prevTiles[i].resize(width);
-    }
-
-    for(unsigned int i = 0; i < height; i++) {
-        for(unsigned int j = 0; j < width; j++) {
-            auto prevTile = prevTiles[i][j]->getChar();
-            auto tile = tiles[i][j]->getChar();
-            if(prevTile != tile) {
-                std::shared_ptr<Tile> newTile = std::make_shared<Tile>();
-                newTile->setChar(tile);
-                prevTiles[i][j] = newTile;
-            }
-        }
-    }
-
-}*/
 
 Renderer::~Renderer() {
     endwin();

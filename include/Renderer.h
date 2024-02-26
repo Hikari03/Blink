@@ -23,10 +23,7 @@ public:
 
 private:
 
-    //void copyTiles();
-
     std::vector<std::vector<std::shared_ptr<Tile>>> & tiles;
-    //std::vector<std::vector<std::shared_ptr<Tile>>> prevTiles;
 
             //index         foreground, background
     std::map<short, std::pair<short, short>> colorPairs;

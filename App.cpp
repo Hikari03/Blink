@@ -4,13 +4,59 @@ App::App() : _tiles({100,25}), _renderer(_tiles), _lightblue(_renderer.initColor
 
 void App::run() {
     _init();
+
     _renderer.print();
     getch();
 }
 
 /**
- * @brief Initializes the UI
+ * @brief Gets the name of the user and greets them
  */
 void App::_init() {
     _tiles.insertBox(0, 0, 99, 24, _lightblue);
+    _tiles.insertText(43, 5, L"Insert Name:", _lightblue);
+    _renderer.print();
+    move(6, 43);
+    std::string name = getString(MAGENTA);
+    _tiles.insertText(43, 8, L"Hello, " + std::wstring(name.begin(), name.end()) + L"!", _lightblue);
+    // get user to insert ip address of server
+    _tiles.insertText(43, 10, L"Insert IP Address:", _lightblue);
+    _renderer.print();
+    move(11, 43);
+    std::string ip = getString(RED);
+    _tiles.insertText(43, 13, L"Connecting to " + std::wstring(ip.begin(), ip.end()) + L"...", _lightblue);
+    _renderer.print();
+    _connectToServer(ip, 6999);
+}
+
+/**
+ * @brief Connects to the server
+ */
+void App::_connectToServer(std::string ip, int port) {
+    _connection.connect(ip, port);
+}
+
+std::string App::getString(const std::string & cursorColor) {
+    std::string input;
+    std::cout << cursorColor << std::flush;
+    // let the terminal do the line editing
+    nocbreak();
+    echo();
+
+    // this reads from buffer after <ENTER>, not "raw"
+    // so any backspacing etc. has already been taken care of
+    int ch = getch();
+
+    while ( ch != '\n' )
+    {
+        input.push_back( ch );
+        ch = getch();
+    }
+
+    // restore your cbreak / echo settings here
+
+    std::cout << WHITE << std::flush;
+
+    return input;
+
 }
