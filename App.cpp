@@ -27,7 +27,7 @@ void App::_init() {
     std::string ip = getString(RED);
     _tiles.insertText(43, 13, L"Connecting to " + std::wstring(ip.begin(), ip.end()) + L" ...", _lightblue);
     _renderer.print();
-    _connectToServer(ip, 6999);
+    _connectToServer(ip, 16999);
 }
 
 /**

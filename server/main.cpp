@@ -8,7 +8,7 @@ int main() {
 
     sockaddr_in serverAddress;
     serverAddress.sin_family = AF_INET;
-    serverAddress.sin_port = htons(6999);
+    serverAddress.sin_port = htons(16999);
     serverAddress.sin_addr.s_addr = INADDR_ANY;
 
     bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
