@@ -4,7 +4,8 @@ App::App() : _tiles({100,25}), _renderer(_tiles), _lightblue(_renderer.initColor
 
 void App::run() {
     _init();
-
+    _renderer.print();
+    _tiles.insertText(1,1, strToWStr(_connection.receive()));
     _renderer.print();
     getch();
 }
@@ -24,7 +25,7 @@ void App::_init() {
     _renderer.print();
     move(11, 43);
     std::string ip = getString(RED);
-    _tiles.insertText(43, 13, L"Connecting to " + std::wstring(ip.begin(), ip.end()) + L"...", _lightblue);
+    _tiles.insertText(43, 13, L"Connecting to " + std::wstring(ip.begin(), ip.end()) + L" ...", _lightblue);
     _renderer.print();
     _connectToServer(ip, 6999);
 }
@@ -33,7 +34,7 @@ void App::_init() {
  * @brief Connects to the server
  */
 void App::_connectToServer(std::string ip, int port) {
-    _connection.connect(ip, port);
+    _connection.connectToServer(ip, port);
 }
 
 std::string App::getString(const std::string & cursorColor) {
@@ -59,4 +60,10 @@ std::string App::getString(const std::string & cursorColor) {
 
     return input;
 
+}
+
+std::wstring App::strToWStr(const std::string & text) {
+
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    return converter.from_bytes(text);
 }

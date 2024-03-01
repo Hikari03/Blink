@@ -16,7 +16,7 @@ public:
     Connection();
     ~Connection();
 
-    void connect(std::string ip, int port);
+    void connectToServer(std::string ip, int port);
 
     void send(std::string message);
 
@@ -26,6 +26,6 @@ public:
 
 private:
     int _socket;
-    struct sockaddr_in _server;
+    sockaddr_in _server;
 
 };

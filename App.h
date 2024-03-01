@@ -1,5 +1,8 @@
 #pragma once
 
+#include <locale>
+#include <codecvt>
+
 #include "include/Tiles.h"
 #include "include/Renderer.h"
 #include "Connection.h"
@@ -30,4 +33,6 @@ private:
     void _connectToServer(std::string ip, int port);
 
     std::string getString(const std::string & cursorColor = "");
+
+    std::wstring strToWStr(const std::string & text);
 };

@@ -5,15 +5,19 @@ Connection::Connection() {
     if(_socket == -1) {
         throw std::runtime_error("Could not create socket");
     }
+
 }
 
-void Connection::connect(std::string ip, int port) {
+void Connection::connectToServer(std::string ip, int port) {
     _server.sin_family = AF_INET;
     _server.sin_port = htons(port);
 
     if(inet_pton(AF_INET, ip.c_str(), &_server.sin_addr) <= 0) {
         throw std::runtime_error("Invalid address/ Address not supported");
     }
+    //bind(_socket, (struct sockaddr*)&_server, sizeof(_server));
+
+    connect(_socket, (struct sockaddr*)&_server, sizeof(_server));
 
 }
 
