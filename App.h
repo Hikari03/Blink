@@ -2,6 +2,7 @@
 
 #include <locale>
 #include <codecvt>
+#include <string>
 
 #include "include/Tiles.h"
 #include "include/Renderer.h"
@@ -16,6 +17,8 @@
 #define MAGENTA "\033[35m"
 #define WHITE "\033[37m"
 
+#define DEBUG 1
+
 class App {
 public:
     App();
@@ -26,13 +29,20 @@ private:
     Tiles _tiles;
     Renderer _renderer;
     color _lightblue;
+    color _red;
+
+    std::string _userName;
+    std::string _ip;
 
     Connection _connection = Connection();
 
     void _init();
+    void _prepareUI();
     void _connectToServer(std::string ip, int port);
 
-    std::string getString(const std::string & cursorColor = "");
+    std::string _getString(const std::string &cursorColor = "") const;
 
-    std::wstring strToWStr(const std::string & text);
+    std::wstring _strToWStr(const std::string & text) const;
+
+    void _debug(const std::string & text);
 };

@@ -12,6 +12,9 @@ void Connection::connectToServer(std::string ip, int port) {
     _server.sin_family = AF_INET;
     _server.sin_port = htons(port);
 
+    if(ip == "localhost")
+        ip = "127.0.0.1";
+
     if(inet_pton(AF_INET, ip.c_str(), &_server.sin_addr) <= 0) {
         throw std::runtime_error("Invalid address/ Address not supported");
     }
@@ -36,6 +39,7 @@ std::string Connection::receive() {
 }
 
 void Connection::close() {
+    send("exit");
     ::close(_socket);
 }
 

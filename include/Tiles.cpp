@@ -174,7 +174,7 @@ void Tiles::insertBox(unsigned int x_s, unsigned int y_s, unsigned int x_e, unsi
 
 void Tiles::insertText(unsigned int x, unsigned int y, std::wstring text, std::optional<short> _color) {
 
-        if(x + text.length() > width || y > height)
+        if(x + text.length() > width-1 || y > height-1)
             throw std::out_of_range("insertText: Text coordinates out of range");
 
         if(!_color.has_value()) {
