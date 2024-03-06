@@ -4,8 +4,8 @@
 #include <codecvt>
 #include <string>
 
-#include "include/Tiles.h"
-#include "include/Renderer.h"
+#include "Tiles.h"
+#include "Renderer.h"
 #include "Connection.h"
 
 //foreground colors
@@ -36,11 +36,21 @@ private:
 
     Connection _connection = Connection();
 
+    enum class CursorColor {
+        Green,
+        Red,
+        Blue,
+        Yellow,
+        Cyan,
+        Magenta,
+        White
+    };
+
     void _init();
     void _prepareUI();
     void _connectToServer(std::string ip, int port);
 
-    std::string _getString(const std::string &cursorColor = "") const;
+    std::string _getUserInput(int x, int y, App::CursorColor = CursorColor::White) const;
 
     std::wstring _strToWStr(const std::string & text) const;
 

@@ -9,7 +9,16 @@ void App::run() {
     _init();
     _debug("initialized app");
 
-    _connectToServer(_ip, 6999);
+    try {
+        _connectToServer(_ip, 6999);
+    }
+    catch(std::exception & e) {
+        _tiles.insertText(43, 15, L"Connection failed!", _lightblue);
+        _debug(e.what());
+        _renderer.print();
+        getch();
+        return;
+    }
     _debug("connected to server");
 
     _prepareUI();
@@ -27,15 +36,13 @@ void App::_init() {
     _tiles.insertBox(0, 0, 99, 24, _lightblue);
     _tiles.insertText(43, 5, L"Insert Name:", _lightblue);
     _renderer.print();
-    move(6, 43);
-    _userName = _getString(MAGENTA);
+    _userName = _getUserInput(43,6, App::CursorColor::Magenta);
     _tiles.insertText(43, 8, L"Hello, " + std::wstring(_userName.begin(), _userName.end()) + L"!", _lightblue);
     // get user to insert ip address of server
     _tiles.insertText(43, 10, L"Insert IP Address:", _lightblue);
     _renderer.print();
     _debug("getting ip");
-    move(11, 43);
-    _ip = _getString(RED);
+    _ip = _getUserInput(43, 11, App::CursorColor::Red);
     _debug("got ip");
     _tiles.insertText(43, 13, L"Connecting to " + std::wstring(_ip.begin(), _ip.end()) + L" ...", _lightblue);
     _renderer.print();
@@ -73,9 +80,29 @@ void App::_connectToServer(std::string ip, int port) {
     _renderer.print();
 }
 
-std::string App::_getString(const std::string & cursorColor) const {
+std::string App::_getUserInput(int x, int y, App::CursorColor cursorColor) const {
     std::string input;
-    std::cout << cursorColor << std::flush;
+
+    move(y, x);
+
+    std::string s_cursorColor;
+
+    if(cursorColor == App::CursorColor::Green)
+        s_cursorColor = GREEN;
+    else if(cursorColor == App::CursorColor::Red)
+        s_cursorColor = RED;
+    else if(cursorColor == App::CursorColor::Blue)
+        s_cursorColor = BLUE;
+    else if(cursorColor == App::CursorColor::Yellow)
+        s_cursorColor = YELLOW;
+    else if(cursorColor == App::CursorColor::Cyan)
+        s_cursorColor = CYAN;
+    else if(cursorColor == App::CursorColor::Magenta)
+        s_cursorColor = MAGENTA;
+    else if(cursorColor == App::CursorColor::White)
+        s_cursorColor = WHITE;
+
+    std::cout << s_cursorColor << std::flush;
     // let the terminal do the line editing
     nocbreak();
     echo();
