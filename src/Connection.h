@@ -18,11 +18,11 @@ public:
 
     void connectToServer(std::string ip, int port);
 
-    void send(std::string message);
+    void send(const std::string & message) const;
 
     std::string receive();
 
-    void close();
+    void close() const;
 
 private:
     int _socket;
