@@ -133,7 +133,8 @@ std::wstring App::_strToWStr(const std::string & text) const {
 
 void App::_debug(const std::string & text) {
     if constexpr(DEBUG) {
-        _tiles.insertText(1, 24, _strToWStr(text) + L"||", _red);
+        _tiles.insertBox(0, 0, 99, 24, _lightblue);
+        _tiles.insertText(1, 24, _strToWStr(text), _red);
         _renderer.print();
     }
 

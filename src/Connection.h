@@ -1,10 +1,15 @@
 #pragma once
 
+#include <cstring>
 #include <string>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <netdb.h>
 #include <unistd.h>
 #include <stdexcept>
+#include <resolv.h>
+#include <vector>
+#include <iostream>
 
 
 /**
@@ -27,5 +32,7 @@ public:
 private:
     int _socket;
     sockaddr_in _server;
+
+    [[nodiscard]] static std::vector<std::string> dnsLookup(const std::string & domain, int ipv = 4) ;
 
 };

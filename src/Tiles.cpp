@@ -152,21 +152,26 @@ void Tiles::insertBox(unsigned int x_s, unsigned int y_s, unsigned int x_e, unsi
         for (unsigned int i = y_s; i <= y_e; i++) {
             for (unsigned int j = x_s; j <= x_e; j++) {
                 std::shared_ptr<ColorTile> tile = std::make_shared<ColorTile>();
+                tile->setColor(_color.value());
                 if (i == y_s && j == x_s) {
                     tile->setChar(L'┏');
+                    tiles[i][j] = tile;
                 } else if (i == y_s && j == x_e) {
                     tile->setChar(L'┓');
+                    tiles[i][j] = tile;
                 } else if (i == y_e && j == x_s) {
                     tile->setChar(L'┗');
+                    tiles[i][j] = tile;
                 } else if (i == y_e && j == x_e) {
                     tile->setChar(L'┛');
+                    tiles[i][j] = tile;
                 } else if (i == y_s || i == y_e) {
                     tile->setChar(L'━');
+                    tiles[i][j] = tile;
                 } else if (j == x_s || j == x_e) {
                     tile->setChar(L'┃');
+                    tiles[i][j] = tile;
                 }
-                tile->setColor(_color.value());
-                tiles[i][j] = tile;
             }
         }
     }
