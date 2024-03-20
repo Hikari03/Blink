@@ -1,4 +1,5 @@
-#include <iostream>
+
+#include "terminal.h"
 
 void terminal(bool & turnOff){
     while(true) {

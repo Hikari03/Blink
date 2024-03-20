@@ -2,9 +2,9 @@
 #include <netinet/in.h>
 
 #include "Client.h"
-#include "accepter.cpp"
-#include "cleaner.cpp"
-#include "terminal.cpp"
+#include "accepter.h"
+#include "cleaner.h"
+#include "terminal.h"
 #include "Message.h"
 
 std::mutex clientsMutex;
@@ -57,7 +57,7 @@ int main() {
             clients.emplace_back(acceptedSocket, messages, messagesMutex);
 
             // run client (its functor)
-            clientRunners.emplace_back(clients.back(), std::ref(messagesMutex));
+            clientRunners.emplace_back(clients.back());
 
             newClientAccepted = false;
         }
