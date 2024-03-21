@@ -6,6 +6,8 @@ void cleaner(std::list<Client> & clients, std::vector<std::thread> & clientRunne
 
         std::this_thread::sleep_for(std::chrono::seconds(30));
 
+        printf("cleaner: cleaning clients\n");
+
 
         // critical section - clients
         {

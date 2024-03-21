@@ -24,7 +24,7 @@ int main() {
 
     std::vector<std::thread> clientRunners;
     // holds chat
-    std::vector<Message> messages;
+    std::set<Message> messages;
     std::list<Client> clients;
 
     bool turnOff = false;
@@ -61,6 +61,7 @@ int main() {
 
             newClientAccepted = false;
         }
+
 
 
         if(turnOff) {

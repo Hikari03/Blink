@@ -8,8 +8,13 @@
 #include <unistd.h>
 #include <stdexcept>
 #include <resolv.h>
+#include <cerrno>
 #include <vector>
 #include <iostream>
+
+#define _end "::--///-$$$"
+#define _internal "INTERNAL::"
+#define _text "MESSAGE::"
 
 
 /**
@@ -30,8 +35,12 @@ public:
     void close() const;
 
 private:
+    char _buffer[4096] = {0};
     int _socket;
+    ssize_t _sizeOfPreviousMessage = 0;
     sockaddr_in _server;
+
+    void clearBuffer();
 
     [[nodiscard]] static std::vector<std::string> dnsLookup(const std::string & domain, int ipv = 4) ;
 

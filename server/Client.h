@@ -1,18 +1,25 @@
 #pragma once
 
+#include <cstring>
 #include <string>
 #include <sys/socket.h>
 #include <stdexcept>
 #include <iostream>
-#include <vector>
+#include <set>
 #include <mutex>
+#include <thread>
 #include "Message.h"
+
+
+#define _end "::--///-$$$"
+#define _internal "INTERNAL::"
+#define _text "MESSAGE::"
 
 
 class Client {
 
 public:
-    Client(int socket, std::vector<Message> & messages, std::mutex & messagesMutex);
+    Client(int socket, std::set<Message> & messages, std::mutex & messagesMutex);
 
     ~Client();
 
@@ -37,10 +44,10 @@ private:
     int _socket;
     int _sizeOfPreviousMessage = 0;
     std::string _message;
-    bool _active = false;
+    bool _active = true;
 
     //outside references
-    std::vector<Message> & _messages;
+    std::set<Message> & _messages;
     std::mutex & _messagesMutex;
 
     //contd
@@ -60,6 +67,8 @@ private:
     void sendMessage(const std::string & message) const;
     void receiveMessage();
 
-    void submitReceivedMessage();
+    void submitMessage(const std::string & message);
+
+    void processMessage();
 
 };

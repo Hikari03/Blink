@@ -21,7 +21,7 @@ void accepter(const int & serverSocket, int & acceptedSocket, bool & newClientAc
 
     bool blockSuccess = SetSocketBlockingEnabled(serverSocket, false);
 
-    std::cout << "main: serverSocket is: " << (blockSuccess ? "non-blocking" : "blocking") << std::endl;
+    std::cout << "accepter: serverSocket is: " << (blockSuccess ? "non-blocking" : "blocking") << std::endl;
 
     while(true) {
         if(turnOff)

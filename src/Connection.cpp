@@ -33,32 +33,57 @@ void Connection::connectToServer(std::string ip, int port) {
 }
 
 void Connection::send(const std::string & message) const {
-    if(::send(_socket, message.c_str(), message.length(), 0) < 0) {
+
+    auto messageToSend = message + _end;
+
+    if(::send(_socket, messageToSend.c_str(), messageToSend.length(), 0) < 0) {
         throw std::runtime_error("Could not send message");
     }
 }
 
 std::string Connection::receive() {
-    char buffer[4096] = {0};
-    if(recv(_socket, buffer, 4096, 0) < 0) {
-        throw std::runtime_error("Could not receive message");
+    std::string message;
+
+
+    while (!message.contains(_end)) {
+
+        clearBuffer();
+
+        _sizeOfPreviousMessage = recv(_socket, _buffer, 4096, MSG_DONTWAIT);
+
+        if(_sizeOfPreviousMessage < 0 && errno != EAGAIN && errno != EWOULDBLOCK) {
+            throw std::runtime_error("Could not receive message");
+        }
+
+        message += _buffer;
     }
 
+    // remove the _end string
+    message = message.substr(0, message.find(_end));
+
     // if we receive "exit" we need to exit app
-    if(std::string(buffer) == "exit") {
+    if(message == _internal"exit") {
         throw std::runtime_error("Server closed connection");
     }
 
-    return {buffer};
+    return message;
 }
 
 void Connection::close() const {
-    send("exit");
+    send(_internal"exit");
     shutdown(_socket, 0);
 }
 
 Connection::~Connection() {
     close();
+}
+
+void Connection::clearBuffer() {
+
+    for(int i = 0; i < _sizeOfPreviousMessage; i++) {
+        _buffer[i] = '\0';
+    }
+
 }
 
 std::vector<std::string> Connection::dnsLookup(const std::string & domain, int ipv) {

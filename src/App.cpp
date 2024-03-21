@@ -13,7 +13,7 @@ void App::run() {
         _connectToServer(_ip, 6999);
     }
     catch(std::exception & e) {
-        _tiles.insertText(43, 15, L"Connection failed!", _lightblue);
+        _tiles.insertText(43, 15, L"Connection failed from exception!", _lightblue);
         _debug(e.what());
         _renderer.print();
         getch();
@@ -61,17 +61,20 @@ void App::_prepareUI() {
  * @brief Connects to the server
  */
 void App::_connectToServer(std::string ip, int port) {
+    _debug("connecting to server");
     _connection.connectToServer(std::move(ip), port);
     std::string message = _connection.receive();
     _debug("server message: " + message);
-    if(message == "::name")
+    if(message == _internal"name")
         _connection.send(_userName);
+    else
+        throw std::runtime_error("Server did not ask for name");
 
     _debug("sent name to server");
 
     message = _connection.receive();
     _debug("server message: " + message);
-    if(message == "::nameAck")
+    if(message == _internal"nameAck")
         _tiles.insertText(43, 15, L"Connected!", _lightblue);
     else
         _tiles.insertText(43, 15, L"Connection failed!", _lightblue);
@@ -107,7 +110,7 @@ std::string App::_getUserInput(int x, int y, App::CursorColor cursorColor) const
     nocbreak();
     echo();
 
-    // this reads from buffer after <ENTER>, not "raw"
+    // this reads from _buffer after <ENTER>, not "raw"
     // so any backspacing etc. has already been taken care of
     int ch = getch();
 
