@@ -1,13 +1,12 @@
 
 #include "cleaner.h"
 
-void cleaner(std::list<Client> & clients, std::vector<std::thread> & clientRunners, const bool & turnOff, std::mutex & clientsMutex) {
+void cleaner(std::list<Client> & clients, const bool & turnOff, std::mutex & clientsMutex) {
     while(!turnOff) {
 
         std::this_thread::sleep_for(std::chrono::seconds(30));
 
         printf("cleaner: cleaning clients\n");
-
 
         // critical section - clients
         {
@@ -16,13 +15,10 @@ void cleaner(std::list<Client> & clients, std::vector<std::thread> & clientRunne
             auto it = clients.begin();
 
             for (long unsigned int i = 0; i < clients.size(); i++, it++) {
+                printf("cleaner: checking client number %d, that is %s\n", (*it).getSocket(), ((*it).isActive() ? "active" : "inactive"));
 
                 if (!(*it).isActive()) {
-                    clientRunners[i].join();
-                    clientRunners.erase(clientRunners.begin() + i);
-
                     std::cout << "cleaner: client number " << (*it).getSocket() << " removed" << std::endl;
-
                     clients.erase(it);
                 }
             }

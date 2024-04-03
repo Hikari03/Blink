@@ -1,5 +1,6 @@
 #pragma once
 
 #include <iostream>
+#include <condition_variable>
 
-void terminal(bool & turnOff);
+void terminal(std::condition_variable & callBack, bool & turnOff);

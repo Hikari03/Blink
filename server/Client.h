@@ -28,7 +28,7 @@ public:
     /**
      * @brief runs the client
      */
-    void operator()();
+    void run();
 
     [[nodiscard]] bool isActive() const;
 

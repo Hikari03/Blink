@@ -28,7 +28,7 @@ void Client::initConnection() {
 }
 
 
-void Client::operator()() {
+void Client::run() {
     try {
         initConnection();
 
@@ -43,6 +43,9 @@ void Client::operator()() {
         std::cout << _socket << "/" + _name << " EXCEPTION |  " << e.what() << std::endl;
         _active = false;
     }
+
+    printf("client %d/%s closed and active=%d\n", _socket, _name.c_str(), isActive());
+    _active = false;
 }
 
 
@@ -77,6 +80,8 @@ void Client::receiveMessage() {
 
         _sizeOfPreviousMessage = recv(_socket, _buffer, 4096, MSG_DONTWAIT);
 
+        std::cout << "RECEIVE |  " << _socket << (_name.empty() ? "" : "/" + _name ) << ": " << _message << std::endl;
+
         if(_sizeOfPreviousMessage < 0 && errno != EAGAIN && errno != EWOULDBLOCK) {
             throw std::runtime_error("client disconnected or could not receive message");
         }
@@ -84,7 +89,7 @@ void Client::receiveMessage() {
         _message += _buffer;
     }
 
-    std::cout << "RECEIVE |  " << _socket << (_name.empty() ? "" : "/" + _name ) << ": " << _message << std::endl;
+
 
     // cut off the _end
 

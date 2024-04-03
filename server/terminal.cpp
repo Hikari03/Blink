@@ -1,7 +1,7 @@
 
 #include "terminal.h"
 
-void terminal(bool & turnOff){
+void terminal(std::condition_variable & callBack, bool & turnOff){
     while(true) {
         std::string input;
         std::cout << "Type 'q' to turn off server" << std::endl;
@@ -9,6 +9,7 @@ void terminal(bool & turnOff){
         if(input == "q") {
             turnOff = true;
             std::cout << "turning off server, please wait up to 1 minute" << std::endl;
+            callBack.notify_one();
             return;
         }
     }

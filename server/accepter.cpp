@@ -15,7 +15,7 @@ bool SetSocketBlockingEnabled(int fd, bool blocking)
 #endif
 }
 
-void accepter(const int & serverSocket, int & acceptedSocket, bool & newClientAccepted, const bool & turnOff) {
+void accepter(std::condition_variable & callBack, const int & serverSocket, int & acceptedSocket, bool & newClientAccepted, const bool & turnOff) {
 
     //set to non-blocking
 
@@ -38,6 +38,7 @@ void accepter(const int & serverSocket, int & acceptedSocket, bool & newClientAc
             }
 
             newClientAccepted = true;
+            callBack.notify_one();
             std::cout << "main: accepted client number " << acceptedSocket << std::endl;
         }
     }
