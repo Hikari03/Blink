@@ -22,22 +22,24 @@ int main() {
 
     bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
 
-    std::vector<std::thread> clientRunners;
+    std::vector<std::jthread> clientRunners;
     // holds chat
     std::set<Message> messages;
     std::list<Client> clients;
+    std::condition_variable callBack;
 
     bool turnOff = false;
 
-    std::thread terminalThread(terminal, std::ref(turnOff));
-    std::thread cleanerThread(cleaner, std::ref(clients), std::ref(clientRunners), std::ref(turnOff), std::ref(clientsMutex));
+    std::thread terminalThread(terminal, std::ref(callBack), std::ref(turnOff));
+    std::thread cleanerThread(cleaner, std::ref(clients), std::ref(turnOff), std::ref(clientsMutex));
 
     listen(serverSocket, 10);
 
     bool newClientAccepted = false;
     int acceptedSocket = 0;
 
-    std::thread accepterThread(accepter, std::ref(serverSocket), std::ref(acceptedSocket), std::ref(newClientAccepted), std::ref(turnOff));
+
+    std::thread accepterThread(accepter, std::ref(callBack), std::ref(serverSocket), std::ref(acceptedSocket), std::ref(newClientAccepted), std::ref(turnOff));
 
     std::cout << "main: entering main loop" << std::endl;
 
@@ -50,14 +52,17 @@ int main() {
     while(true) {
 
         // critical section - clients
+
+        std::unique_lock<std::mutex> lock(clientsMutex);
+        callBack.wait(lock);
+
         if(newClientAccepted) {
-            std::lock_guard<std::mutex> lock(clientsMutex);
 
             // create client
             clients.emplace_back(acceptedSocket, messages, messagesMutex);
 
             // run client (its functor)
-            clientRunners.emplace_back(clients.back());
+            clientRunners.emplace_back(&Client::run, &clients.back());
 
             newClientAccepted = false;
         }
@@ -66,6 +71,7 @@ int main() {
 
         if(turnOff) {
             // cleanup
+            lock.unlock();
             std::cout << "main: cleaning up threads" << std::endl;
             terminalThread.join();
             std::cout << "main: terminal closed" << std::endl;
@@ -73,10 +79,6 @@ int main() {
             std::cout << "main: accepter closed" << std::endl;
             cleanerThread.join();
             std::cout << "main: cleaner closed" << std::endl;
-            for(auto & client : clientRunners) {
-                client.join();
-                std::cout << "main: client closed" << std::endl;
-            }
             break;
         }
 
