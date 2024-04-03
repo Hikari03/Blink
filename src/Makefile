@@ -25,7 +25,7 @@ CC := gcc
 CXX := g++
 
 all: $(OBJECTS)
-	$(CXX) $(CXXFLAGS) $(INCLUDE) $(OBJECTS) -o $(TARGET) $(LIBPATH) $(LIBS)
+	$(CXX) $(CXXFLAGS) $(INCLUDE) $(OBJECTS) -o $(TARGET) $(LIBPATH) $(LIBS) -lncurses
 
 %.o: %.c
 	$(CXX) $(CXXFLAGS) $(INCLUDE) -c $< -o $@
