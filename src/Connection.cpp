@@ -41,6 +41,10 @@ void Connection::send(const std::string & message) const {
     }
 }
 
+void Connection::sendMessage(const std::string & message) const {
+    send(_text + message);
+}
+
 std::string Connection::receive() {
     std::string message;
 
@@ -51,8 +55,8 @@ std::string Connection::receive() {
 
         _sizeOfPreviousMessage = recv(_socket, _buffer, 4096, MSG_DONTWAIT);
 
-        if(_sizeOfPreviousMessage < 0 && errno != EAGAIN && errno != EWOULDBLOCK) {
-            throw std::runtime_error("Could not receive message");
+        if(_sizeOfPreviousMessage < 0 && errno != EAGAIN && errno != EWOULDBLOCK && errno != MSG_WAITALL) {
+            throw std::runtime_error("Could not receive message from server: " + std::string(strerror(errno)));
         }
 
         message += _buffer;
@@ -65,17 +69,21 @@ std::string Connection::receive() {
     if(message == _internal"exit") {
         throw std::runtime_error("Server closed connection");
     }
+    if(message.contains(_text))
+        message = message.substr(sizeof(_text)-1, message.length());
 
     return message;
 }
 
-void Connection::close() const {
+void Connection::_close() {
     send(_internal"exit");
     shutdown(_socket, 0);
+    _active = false;
 }
 
 Connection::~Connection() {
-    close();
+    if(_active)
+        _close();
 }
 
 void Connection::clearBuffer() {

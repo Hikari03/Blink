@@ -3,6 +3,9 @@
 #include <locale>
 #include <codecvt>
 #include <string>
+#include <thread>
+#include <utility>
+#include <sstream>
 
 #include "Tiles.h"
 #include "Renderer.h"
@@ -28,6 +31,7 @@ public:
 private:
     Tiles _tiles;
     Renderer _renderer;
+    std::mutex _ioMtx;
     color _lightblue;
     color _red;
 
@@ -35,6 +39,8 @@ private:
     std::string _ip;
 
     Connection _connection = Connection();
+
+    bool _running = true;
 
     enum class CursorColor {
         Green,
@@ -49,8 +55,16 @@ private:
     void _init();
     void _prepareUI();
     void _connectToServer(std::string ip, int port);
+    void _chat();
+    void _sendThread();
+    void _receiveThread();
+    void _returnCursor();
+    std::string _currentCursorColor = WHITE;
+    std::pair<int, int> _cursorPos = {0, 0};
 
-    std::string _getUserInput(int x, int y, App::CursorColor = CursorColor::White) const;
+    std::vector<std::string> _split(const std::string & text, char delimiter) const;
+
+    std::string _getUserInput(int x, int y, App::CursorColor = CursorColor::White);
 
     std::wstring _strToWStr(const std::string & text) const;
 

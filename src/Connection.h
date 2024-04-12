@@ -29,18 +29,21 @@ public:
     void connectToServer(std::string ip, int port);
 
     void send(const std::string & message) const;
+    void sendMessage(const std::string & message) const;
 
     std::string receive();
 
-    void close() const;
+
 
 private:
     char _buffer[4096] = {0};
     int _socket;
     ssize_t _sizeOfPreviousMessage = 0;
     sockaddr_in _server;
+    bool _active = true;
 
     void clearBuffer();
+    void _close();
 
     [[nodiscard]] static std::vector<std::string> dnsLookup(const std::string & domain, int ipv = 4) ;
 
