@@ -2,5 +2,5 @@ cmake-build-debug
 CMakeLists.txt
 .idea
 *.o
-server
+server/server
 messenger
