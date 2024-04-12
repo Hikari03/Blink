@@ -8,6 +8,8 @@ class Message {
 public:
     Message(std::string username, std::string message, const std::chrono::time_point<std::chrono::system_clock> & time);
 
+    [[nodiscard]] std::string serialize() const;
+
     bool operator < (const Message & other) const;
 
 private:

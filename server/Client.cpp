@@ -1,8 +1,8 @@
 
 #include "Client.h"
 
-Client::Client(int socket, std::set<Message> & messages, std::mutex & messagesMutex) :
-        _socket(socket), _messages(messages), _messagesMutex(messagesMutex){}
+Client::Client(int socket, MessageHolder & messages) :
+        _socket(socket), _messages(messages), _messagesMutex(_messages.getMessagesMutex()), _callBackOnMessagesChange(_messages.getCallback()) {}
 
 
 int Client::getSocket() const {
@@ -32,11 +32,15 @@ void Client::run() {
     try {
         initConnection();
 
+        _messages.addMessage({_name, "joined the chat", std::chrono::system_clock::now()});
+
         std::thread sendThread(&Client::sendThread, this);
         std::thread receiveThread(&Client::receiveThread, this);
 
         sendThread.join();
         receiveThread.join();
+
+        _messages.addMessage({_name, "left the chat", std::chrono::system_clock::now()});
 
     }
     catch (std::runtime_error & e) {
@@ -80,7 +84,6 @@ void Client::receiveMessage() {
 
         _sizeOfPreviousMessage = recv(_socket, _buffer, 4096, MSG_DONTWAIT);
 
-        std::cout << "RECEIVE |  " << _socket << (_name.empty() ? "" : "/" + _name ) << ": " << _message << std::endl;
 
         if(_sizeOfPreviousMessage < 0 && errno != EAGAIN && errno != EWOULDBLOCK) {
             throw std::runtime_error("client disconnected or could not receive message");
@@ -89,10 +92,9 @@ void Client::receiveMessage() {
         _message += _buffer;
     }
 
-
+    std::cout << "RECEIVE |  " << _socket << (_name.empty() ? "" : "/" + _name ) << ": " << _message << std::endl;
 
     // cut off the _end
-
     _message = _message.substr(0, _message.find(_end));
 
 }
@@ -100,6 +102,7 @@ void Client::receiveMessage() {
 
 void Client::sendMessage(const std::string & message) const {
     auto messageToSend = message + _end;
+    std::cout << "SEND |  " << _socket << (_name.empty() ? "" : "/" + _name ) << ": " << messageToSend << std::endl;
     if(::send(_socket, messageToSend.c_str(), messageToSend.length(), 0) < 0) {
         throw std::runtime_error("Could not send message to client");
     }
@@ -107,8 +110,8 @@ void Client::sendMessage(const std::string & message) const {
 
 
 void Client::submitMessage(const std::string & message) {
-    std::lock_guard<std::mutex> lock(_messagesMutex);
-    _messages.emplace(_name, _message, std::chrono::system_clock::now());
+    std::cout << "submitting message: " << message << std::endl;
+    _messages.addMessage({_name, message, std::chrono::system_clock::now()});
 }
 
 
@@ -116,6 +119,7 @@ void Client::processMessage() {
 
     if(_message == _internal"exit") {
         std::cout << "user " << _name << " with socket " << _socket << " disconnected" << std::endl;
+        sendMessage(_internal"exitAck");
         _active = false;
         return;
     }
@@ -126,19 +130,19 @@ void Client::processMessage() {
     }
 
     if(_message.contains(_text)){
-        std::cout << "user " << _name << " with socket " << _socket << " sent message: " << _message << std::endl;
-        submitMessage(_message.substr(_message.find(_text), _message.length() - strlen(_text)));
+        //std::cout << "submitting message: " << _message.substr(sizeof(_text)-1, _message.length()) << std::endl;
+        submitMessage(_message.substr(sizeof(_text)-1, _message.length()));
         return;
     }
-
 }
 
 void Client::sendThread() {
 
-    /*while(_active) {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        sendMessage(_internal"ping");
-    }*/
+    std::unique_lock<std::mutex> lock(_messagesMutex);
+    while(_active) {
+        _callBackOnMessagesChange.wait(lock);
+        sendMessage(_text + _messages.serializeMessages());
+    }
 
 
 }

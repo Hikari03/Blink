@@ -6,11 +6,13 @@
 #include "cleaner.h"
 #include "terminal.h"
 #include "Message.h"
+#include "MessageHolder.h"
 
-std::mutex clientsMutex;
-std::mutex messagesMutex;
 
 int main() {
+
+    std::mutex clientsMutex;
+    std::mutex messagesMutex;
 
     std::cout << "main: starting server" << std::endl;
 
@@ -24,7 +26,7 @@ int main() {
 
     std::vector<std::jthread> clientRunners;
     // holds chat
-    std::set<Message> messages;
+    MessageHolder messages(messagesMutex);
     std::list<Client> clients;
     std::condition_variable callBack;
 
@@ -59,7 +61,7 @@ int main() {
         if(newClientAccepted) {
 
             // create client
-            clients.emplace_back(acceptedSocket, messages, messagesMutex);
+            clients.emplace_back(acceptedSocket, messages);
 
             // run client (its functor)
             clientRunners.emplace_back(&Client::run, &clients.back());
@@ -83,6 +85,8 @@ int main() {
         }
 
     }
+
+    std::cout << "main: closing server" << std::endl;
 
     shutdown(serverSocket, 0);
 }

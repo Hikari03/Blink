@@ -9,6 +9,7 @@
 #include <mutex>
 #include <thread>
 #include "Message.h"
+#include "MessageHolder.h"
 
 
 #define _end "::--///-$$$"
@@ -19,7 +20,7 @@
 class Client {
 
 public:
-    Client(int socket, std::set<Message> & messages, std::mutex & messagesMutex);
+    Client(int socket, MessageHolder & messages);
 
     ~Client();
 
@@ -47,8 +48,9 @@ private:
     bool _active = true;
 
     //outside references
-    std::set<Message> & _messages;
+    MessageHolder & _messages;
     std::mutex & _messagesMutex;
+    std::condition_variable & _callBackOnMessagesChange;
 
     //contd
     char _buffer[4096] = {0};

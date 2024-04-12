@@ -1,6 +1,5 @@
 #include "App.h"
 
-#include <utility>
 
 App::App() : _tiles({100,25}), _renderer(_tiles), _lightblue(_renderer.initColor(69, 0)),
                 _red(_renderer.initColor(198, 0)) {}
@@ -23,6 +22,7 @@ void App::run() {
 
     _prepareUI();
 
+    _chat();
 
     _debug("exited connection");
 
@@ -63,6 +63,7 @@ void App::_prepareUI() {
 void App::_connectToServer(std::string ip, int port) {
     _debug("connecting to server");
     _connection.connectToServer(std::move(ip), port);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     std::string message = _connection.receive();
     _debug("server message: " + message);
     if(message == _internal"name")
@@ -83,10 +84,12 @@ void App::_connectToServer(std::string ip, int port) {
     _renderer.print();
 }
 
-std::string App::_getUserInput(int x, int y, App::CursorColor cursorColor) const {
+std::string App::_getUserInput(int x, int y, App::CursorColor cursorColor) {
+
     std::string input;
 
     move(y, x);
+    _cursorPos = {y, x};
 
     std::string s_cursorColor;
 
@@ -106,23 +109,28 @@ std::string App::_getUserInput(int x, int y, App::CursorColor cursorColor) const
         s_cursorColor = WHITE;
 
     std::cout << s_cursorColor << std::flush;
+    _currentCursorColor = s_cursorColor;
     // let the terminal do the line editing
     nocbreak();
     echo();
 
     // this reads from _buffer after <ENTER>, not "raw"
     // so any backspacing etc. has already been taken care of
+    _returnCursor();
     int ch = getch();
 
     while ( ch != '\n' )
     {
         input.push_back( ch );
+        _returnCursor();
         ch = getch();
     }
 
     // restore your cbreak / echo settings here
 
     std::cout << WHITE << std::flush;
+    _tiles.insertText(x, y, _strToWStr(std::string(48, ' ')), _red);
+    move(0, 0);
 
     return input;
 
@@ -142,3 +150,83 @@ void App::_debug(const std::string & text) {
     }
 
 }
+
+void App::_chat() {
+
+    // initialize send and receive threads
+    std::thread sendThread(&App::_sendThread, this);
+    std::thread receiveThread(&App::_receiveThread, this);
+
+    sendThread.join();
+    receiveThread.join();
+
+    _tiles.insertText(43, 15, L"Chat ended!", _lightblue);
+}
+
+void App::_sendThread() {
+    std::string message;
+    while(_running) {
+        message = _getUserInput(2, 22, App::CursorColor::Green);
+        if(message == "/exit") {
+            _connection.send(_internal"exit");
+            _running = false;
+            break;
+        }
+        _connection.sendMessage(message);
+    }
+}
+
+void App::_receiveThread() {
+    std::string message;
+    std::vector<std::string> messages;
+    while(_running) {
+        message = _connection.receive();
+        if(message == _internal"exit") {
+            _tiles.insertText(2, 3, L"Server closed connection", _red);
+            _renderer.print();
+            return;
+        }
+        if(message == _internal"ping") {
+            _connection.send(_internal"pong");
+            continue;
+        }
+
+        if(message == _internal"pong") {
+            continue;
+        }
+
+        if(message == _internal"exitAck") {
+            break;
+        }
+
+        messages = _split(message, '\n');
+
+        for(unsigned i = 0; i < messages.size(); i++) {
+            _tiles.insertText(3, 3 + i, _strToWStr(messages[i]), _red);
+            _debug(messages[i]);
+        }
+
+        {
+            std::lock_guard<std::mutex> lock(_ioMtx);
+            _renderer.print();
+            _returnCursor();
+        }
+    }
+}
+
+std::vector<std::string> App::_split(const string &text, char delimiter) const {
+    std::vector<std::string> tokens;
+    std::string token;
+    std::istringstream tokenStream(text);
+    while (std::getline(tokenStream, token, delimiter)) {
+        tokens.push_back(token);
+    }
+    return tokens;
+}
+
+void App::_returnCursor() {
+    move(_cursorPos.first, _cursorPos.second);
+    std::cout << _currentCursorColor << std::flush;
+}
+
+
