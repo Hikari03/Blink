@@ -1,0 +1,9 @@
+services:
+  messenger-server:
+    image: hikari03/messenger:stable
+    container_name: messenger-server
+    ports:
+      - "6999:6999"
+    tty: true
+    stdin_open: true
+    restart: always
