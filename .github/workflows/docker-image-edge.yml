@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag hikari/messenger:edge
+        run: docker build . --file Dockerfile --tag hikari03/messenger:edge
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -22,5 +22,5 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Push the Docker image
-        run: docker push hikari/messenger:edge
+        run: docker push hikari03/messenger:edge
 
