@@ -1,6 +1,6 @@
 # Blink
 - Chat application for terminal, written purely in C++.
-- As of right now, sending and receiving messages works but only so much and then server crashed. Easy to fix tho.
+- As of right now, sending and receiving messages works but only so much and then server crashes. Easy to fix tho.
 
 ## Client
 - installation:
