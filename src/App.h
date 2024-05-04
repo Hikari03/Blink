@@ -62,7 +62,7 @@ private:
     std::string _currentCursorColor = WHITE;
     std::pair<int, int> _cursorPos = {0, 0};
 
-    std::vector<std::string> _split(const std::string & text, char delimiter) const;
+    [[nodiscard]] std::vector<std::string> _split(const std::string & text, char delimiter) const;
 
     std::string _getUserInput(int x, int y, App::CursorColor = CursorColor::White);
 
