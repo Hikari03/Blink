@@ -5,7 +5,7 @@
 ## Client
 - installation:
 ```
-git@github.com:Hikari03/Blink.git \
+git clone git@github.com:Hikari03/Blink.git \
 cd Blink/src \
 make -j$(nproc)
 ```
