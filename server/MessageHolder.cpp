@@ -24,17 +24,30 @@ void MessageHolder::removeMessage(const Message & message) {
     return _messages;
 }
 
-std::string MessageHolder::serializeMessages() {
+std::string MessageHolder::serializeMessages(unsigned long maxMessages) {
     if(!_changeSinceLastSerialization) {
         return _serializedMessagesCache;
     }
-    std::string serializedMessages;
-    for(const auto & message : _messages) {
-        serializedMessages += message.serialize() + "\n";
-    }
-    _serializedMessagesCache = serializedMessages;
-    _changeSinceLastSerialization = false;
-    return serializedMessages;
+
+	if(_messages.size() < maxMessages)
+		maxMessages = _messages.size();
+
+	{
+		//std::lock_guard<std::mutex> lock(messagesMutex);
+		std::string serializedMessages;
+		auto messPtr = _messages.end();
+		for(unsigned long i = 0; i < maxMessages; i++) {
+			messPtr--;
+		}
+
+		for(auto it = messPtr; it != _messages.end(); it++) {
+			serializedMessages += it->serialize() + "\n";
+		}
+
+		_serializedMessagesCache = serializedMessages;
+		_changeSinceLastSerialization = false;
+		return serializedMessages;
+	}
 }
 
 void MessageHolder::clearMessages() {

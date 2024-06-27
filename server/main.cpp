@@ -32,7 +32,7 @@ int main() {
 
     bool turnOff = false;
 
-    std::thread terminalThread(terminal, std::ref(callBack), std::ref(turnOff));
+    std::thread terminalThread(terminal, std::ref(callBack), std::ref(clients), std::ref(turnOff));
     std::thread cleanerThread(cleaner, std::ref(clients), std::ref(turnOff), std::ref(clientsMutex));
 
     listen(serverSocket, 10);
@@ -88,5 +88,5 @@ int main() {
 
     std::cout << "main: closing server" << std::endl;
 
-    shutdown(serverSocket, 0);
+    shutdown(serverSocket, SHUT_RDWR);
 }

@@ -99,6 +99,7 @@ void Tiles::insertRect(unsigned int x_s, unsigned int y_s, unsigned int x_e, uns
         }
     }
 }
+
 /**
  * @brief prints a box on the screen
  * @details ┏━┓\n
@@ -110,7 +111,7 @@ void Tiles::insertRect(unsigned int x_s, unsigned int y_s, unsigned int x_e, uns
  * @param y_e
  * @param _color
  */
-void Tiles::insertBox(unsigned int x_s, unsigned int y_s, unsigned int x_e, unsigned int y_e, std::optional<short> _color) {
+void Tiles::insertBox(unsigned int x_s, unsigned int y_s, unsigned int x_e, unsigned int y_e, bool clear, std::optional<short> _color) {
 
     if(x_s > x_e || y_s > y_e)
         throw std::invalid_argument("insertBox: Invalid box coordinates");
@@ -145,6 +146,10 @@ void Tiles::insertBox(unsigned int x_s, unsigned int y_s, unsigned int x_e, unsi
                     tiles[i][j] = std::make_shared<Tile>();
                     tiles[i][j]->setChar(L'┃');
                 }
+				else if(clear) {
+					tiles[i][j] = std::make_shared<Tile>();
+					tiles[i][j]->setChar(L' ');
+				}
             }
         }
     }
@@ -172,6 +177,10 @@ void Tiles::insertBox(unsigned int x_s, unsigned int y_s, unsigned int x_e, unsi
                     tile->setChar(L'┃');
                     tiles[i][j] = tile;
                 }
+				else if(clear) {
+					tile->setChar(L' ');
+					tiles[i][j] = tile;
+				}
             }
         }
     }

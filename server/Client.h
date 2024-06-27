@@ -26,6 +26,8 @@ public:
 
     [[nodiscard]] int getSocket() const;
 
+	[[nodiscard]] std::string getName() const;
+
     /**
      * @brief runs the client
      */
