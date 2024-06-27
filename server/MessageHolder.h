@@ -15,7 +15,7 @@ public:
 
     [[nodiscard]] std::set<Message> getMessages() const;
 
-    std::string serializeMessages();
+    std::string serializeMessages(unsigned long maxMessages);
 
     void clearMessages();
 

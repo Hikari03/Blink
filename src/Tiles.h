@@ -27,7 +27,7 @@ public:
 
     void insertRect(unsigned x_s, unsigned y_s, unsigned x_e, unsigned y_e, wchar_t c = L' ', std::optional<color> _color = std::nullopt);
 
-    void insertBox(unsigned x_s, unsigned y_s, unsigned x_e, unsigned y_e, std::optional<color> _color = std::nullopt);
+    void insertBox(unsigned x_s, unsigned y_s, unsigned x_e, unsigned y_e, bool clear = false, std::optional<color> _color = std::nullopt);
 
     void insertText(unsigned x, unsigned y, std::wstring text, std::optional<color> _color = std::nullopt);
 

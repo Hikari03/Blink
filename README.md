@@ -36,11 +36,15 @@ make -j$(nproc)
 
 
 ### Controls
-- so far only `q` is implemented (quit server)
+- `help` help
+- `q` quit server
+- `list` list all connected clients
+- `kick <name>` kick out client with name
 
 # TODO
 
 - [ ] better server terminal
-- [ ] sending only last *n* messages so everything is stable
+- [ ] fix kicking out users
+- [x] sending only last *n* messages so everything is stable
 - [ ] ability to see online users
 - [ ] better syncing of chat when someone connects or leaves 

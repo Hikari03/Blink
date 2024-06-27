@@ -33,7 +33,7 @@ void App::run() {
  * @brief Gets the name of the user and greets them
  */
 void App::_init() {
-    _tiles.insertBox(0, 0, 99, 24, _lightblue);
+    _tiles.insertBox(0, 0, 99, 24, false,_lightblue);
     _tiles.insertText(43, 5, L"Insert Name:", _lightblue);
     _renderer.print();
     _userName = _getUserInput(43,6, App::CursorColor::Magenta);
@@ -50,9 +50,9 @@ void App::_init() {
 
 void App::_prepareUI() {
     _tiles.clear();
-    _tiles.insertBox(0, 0, 99, 24, _lightblue);
-    _tiles.insertBox(1, 2, 50, 20, _lightblue);
-    _tiles.insertBox(1, 21, 50, 23, _lightblue);
+    _tiles.insertBox(0, 0, 99, 24, false,_lightblue);
+    _tiles.insertBox(1, 2, 50, 20, false, _lightblue);
+    _tiles.insertBox(1, 21, 50, 23, false, _lightblue);
     _tiles.insertText(1,1, L"Connected as: " + _strToWStr(_userName), _red);
     _renderer.print();
 }
@@ -119,8 +119,7 @@ std::string App::_getUserInput(int x, int y, App::CursorColor cursorColor) {
     _returnCursor();
     int ch = getch();
 
-    while ( ch != '\n' )
-    {
+    while ( ch != '\n' && input.size() < 40 ) {
         input.push_back( ch );
         _returnCursor();
         ch = getch();
@@ -129,7 +128,6 @@ std::string App::_getUserInput(int x, int y, App::CursorColor cursorColor) {
     // restore your cbreak / echo settings here
 
     std::cout << WHITE << std::flush;
-    _tiles.insertText(x, y, _strToWStr(std::string(48, ' ')), _red);
     move(0, 0);
 
     return input;
@@ -144,7 +142,7 @@ std::wstring App::_strToWStr(const std::string & text) const {
 
 void App::_debug(const std::string & text) {
     if constexpr(DEBUG) {
-        _tiles.insertBox(0, 0, 99, 24, _lightblue);
+        _tiles.insertBox(0, 0, 99, 24, false, _lightblue);
         _tiles.insertText(1, 24, _strToWStr(text), _red);
         _renderer.print();
     }
@@ -167,6 +165,10 @@ void App::_sendThread() {
     std::string message;
     while(_running) {
         message = _getUserInput(2, 22, App::CursorColor::Green);
+		// clear the chat box
+		_tiles.insertBox(1, 21, 50, 23, true, _lightblue);
+		if (message.empty())
+			continue;
         if(message == "/exit") {
             _connection.send(_internal"exit");
             _running = false;
@@ -183,6 +185,7 @@ void App::_receiveThread() {
         message = _connection.receive();
         if(message == _internal"exit") {
             _tiles.insertText(2, 3, L"Server closed connection", _red);
+			_debug("Server closed connection");
             _renderer.print();
             return;
         }
@@ -198,6 +201,8 @@ void App::_receiveThread() {
         if(message == _internal"exitAck") {
             break;
         }
+
+		_tiles.insertBox(1, 2, 50, 20, true, _lightblue);
 
         messages = _split(message, '\n');
 

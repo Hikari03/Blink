@@ -141,7 +141,7 @@ void Client::sendThread() {
     std::unique_lock<std::mutex> lock(_messagesMutex);
     while(_active) {
         _callBackOnMessagesChange.wait(lock);
-        sendMessage(_text + _messages.serializeMessages());
+        sendMessage(_text + _messages.serializeMessages(17));
     }
 
 
@@ -162,4 +162,8 @@ void Client::receiveThread() {
         }
     }
 
+}
+
+std::string Client::getName() const {
+	return _name;
 }
