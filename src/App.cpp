@@ -5,7 +5,16 @@ App::App() : _tiles({100,25}), _renderer(_tiles), _lightblue(_renderer.initColor
                 _red(_renderer.initColor(198, 0)) {}
 
 void App::run() {
-    _init();
+    try {
+		_init();
+	}
+	catch (std::exception & e) {
+		_tiles.insertText(43, 8, _strToWStr(e.what()), _red);
+		_renderer.print();
+		getch();
+		return;
+	}
+
     _debug("initialized app");
 
     try {
@@ -37,6 +46,10 @@ void App::_init() {
     _tiles.insertText(43, 5, L"Insert Name:", _lightblue);
     _renderer.print();
     _userName = _getUserInput(43,6, App::CursorColor::Magenta);
+
+	if(_userName.empty() || _userName.contains(" ")) {
+		throw std::runtime_error("Invalid name!");
+	}
     _tiles.insertText(43, 8, L"Hello, " + std::wstring(_userName.begin(), _userName.end()) + L"!", _lightblue);
     // get user to insert ip address of server
     _tiles.insertText(43, 10, L"Insert IP Address:", _lightblue);
@@ -172,9 +185,12 @@ void App::_sendThread() {
         if(message == "/exit") {
             _connection.send(_internal"exit");
             _running = false;
-            break;
+			return;
         }
-        _connection.sendMessage(message);
+
+		// we may have been kicked
+		if(_running)
+        	_connection.sendMessage(message);
     }
 }
 
@@ -184,7 +200,8 @@ void App::_receiveThread() {
     while(_running) {
         message = _connection.receive();
         if(message == _internal"exit") {
-            _tiles.insertText(2, 3, L"Server closed connection", _red);
+			_running = false;
+            _tiles.insertText(43, 15, L"Server closed connection", _red);
 			_debug("Server closed connection");
             _renderer.print();
             return;

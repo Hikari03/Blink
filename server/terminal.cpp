@@ -1,11 +1,17 @@
 
 #include "terminal.h"
 
+#define _terminal "terminal: "
+
+void printT(const std::string& message){
+	std::cout << _terminal << message << std::endl;
+}
+
 void printHelp(){
-	std::cout << "q - quit server" << std::endl;
-	std::cout << "'help' to list all commands" << std::endl;
-	std::cout << "'list' to list all users" << std::endl;
-	std::cout << "'kick <name>' to kick a user" << std::endl;
+	printT("'q' - quit server");
+	printT("'help' - list all commands");
+	printT("'list' to list all users");
+	printT("'kick <name>' to kick a user");
 }
 
 void terminal(std::condition_variable & callBack, std::list<Client> & clients, bool & turnOff){
@@ -15,7 +21,7 @@ void terminal(std::condition_variable & callBack, std::list<Client> & clients, b
         std::cin >> input;
         if(input == "q") {
             turnOff = true;
-            std::cout << "turning off server, please wait up to 1 minute" << std::endl;
+            printT("turning off server, please wait up to 1 minute");
             callBack.notify_one();
             return;
         }
@@ -25,11 +31,11 @@ void terminal(std::condition_variable & callBack, std::list<Client> & clients, b
 		}
 
 		if(input == "list") {
-			std::cout << "Users:" << std::endl;
+			printT("Users:");
 			for (auto &client: clients) {
-				std::cout << client.getName() << std::endl;
+				printT(client.getName());
 			}
-			std::cout << "-----------------" << std::endl;
+			printT("-----------------");
 		}
 
 		if(input == "kick") {
@@ -37,11 +43,18 @@ void terminal(std::condition_variable & callBack, std::list<Client> & clients, b
 
 			std::cin >> name;
 
+			bool found = false;
+
 			for (auto &client: clients) {
 				if (client.getName() == name) {
 					client.exit();
+					found = true;
 					break;
 				}
+			}
+
+			if(!found) {
+				printT("User not found");
 			}
 		}
     }
