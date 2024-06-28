@@ -141,7 +141,8 @@ void Client::sendThread() {
     std::unique_lock<std::mutex> lock(_messagesMutex);
     while(_active) {
         _callBackOnMessagesChange.wait(lock);
-        sendMessage(_text + _messages.serializeMessages(17));
+		if(_active) // if we have already kicked client, we cant send or else segfault (edge case)
+        	sendMessage(_text + _messages.serializeMessages(17));
     }
 
 

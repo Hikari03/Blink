@@ -65,10 +65,7 @@ std::string Connection::receive() {
     // remove the _end string
     message = message.substr(0, message.find(_end));
 
-    // if we receive "exit" we need to exit app
-    if(message == _internal"exit") {
-        throw std::runtime_error("Server closed connection");
-    }
+	//TODO handle this in App.cpp
     if(message.contains(_text))
         message = message.substr(sizeof(_text)-1, message.length());
 

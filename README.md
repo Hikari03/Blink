@@ -1,12 +1,11 @@
 # Blink
 - Chat application for terminal, written purely in C++.
-- As of right now, sending and receiving messages works but only so much and then server crashes. Easy to fix tho.
 
 ## Client
 - build:
 ```
-git clone git@github.com:Hikari03/Blink.git \
-cd Blink/src \
+git clone https://github.com/Hikari03/Blink.git && \
+cd Blink/src && \
 make -j$(nproc)
 ```
 - usage: in Blink/src
@@ -25,11 +24,11 @@ make -j$(nproc)
 ### From Source
 - build:
 ```
-git clone git@github.com:Hikari03/Blink.git \
-cd Blink/server \
+git clone https://github.com/Hikari03/Blink.git && \
+cd Blink/server && \
 make -j$(nproc)
 ```
-- usage: in Blink/src
+- usage: in Blink/server
 ```
 ./server
 ```
@@ -43,8 +42,14 @@ make -j$(nproc)
 
 # TODO
 
+- [ ] better resource management 
+  - as of now, it hogs 1 core of CPU for client and in servers case its 1 core per client connected. 
+  this is because receiving threads are non-blocking, thus busy waiting - horrible
+
 - [ ] better server terminal
-- [ ] fix kicking out users
+- [x] fix kicking out users
 - [x] sending only last *n* messages so everything is stable
 - [ ] ability to see online users
-- [ ] better syncing of chat when someone connects or leaves 
+- [ ] better syncing of chat when someone connects or leaves
+  - this is when new user connects and doesn't see the chat history
+    or when someone leaves and the chat history is not updated
