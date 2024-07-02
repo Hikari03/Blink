@@ -9,7 +9,7 @@
 #     - *.o
 # - main
 
-TARGET := server
+TARGET := blink-server
 SOURCES := $(wildcard *.c *.cpp)
 OBJECTS := $(patsubst src%,obj%, $(patsubst %.c,%.o, $(patsubst %.cpp,%.o,$(SOURCES))))
 
@@ -33,7 +33,7 @@ all: $(OBJECTS)
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDE) -c $< -o $@
 
-.PHONY: clean help
+.PHONY: clean_e clean_o
 
 clean_o:
 	rm -rf *.o

@@ -9,11 +9,11 @@
 #     - *.o
 # - main
 
-TARGET := messenger
+TARGET := blink
 SOURCES := $(wildcard *.c *.cpp)
 OBJECTS := $(patsubst src%,obj%, $(patsubst %.c,%.o, $(patsubst %.cpp,%.o,$(SOURCES))))
 
-INCLUDE := -I. -lncurses
+INCLUDE := -I. -I/usr/include/ncursesw
 LIBPATH :=
 LIBS :=
 
@@ -25,7 +25,7 @@ CC := gcc
 CXX := g++
 
 all: $(OBJECTS)
-	$(CXX) $(CXXFLAGS) $(INCLUDE) $(OBJECTS) -o $(TARGET) $(LIBPATH) $(LIBS) -lncurses
+	$(CXX) $(CXXFLAGS) $(INCLUDE) $(OBJECTS) -o $(TARGET) $(LIBPATH) $(LIBS) -lncursesw
 
 %.o: %.c
 	$(CXX) $(CXXFLAGS) $(INCLUDE) -c $< -o $@
@@ -33,7 +33,7 @@ all: $(OBJECTS)
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDE) -c $< -o $@
 
-.PHONY: clean help
+.PHONY: clean_o clean_e
 
 clean_o:
 	rm -rf *.o
