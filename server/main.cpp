@@ -24,7 +24,7 @@ int main() {
 
     bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
 
-    std::vector<std::jthread> clientRunners;
+    std::vector<std::thread> clientRunners;
     // holds chat
     MessageHolder messages(messagesMutex);
     std::list<Client> clients;
@@ -63,7 +63,7 @@ int main() {
             // create client
             clients.emplace_back(acceptedSocket, messages);
 
-            // run client (its functor)
+            // run client
             clientRunners.emplace_back(&Client::run, &clients.back());
 
             newClientAccepted = false;
@@ -72,21 +72,32 @@ int main() {
 
 
         if(turnOff) {
-            // cleanup
-            lock.unlock();
-            std::cout << "main: cleaning up threads" << std::endl;
-            terminalThread.join();
-            std::cout << "main: terminal closed" << std::endl;
-            accepterThread.join();
-            std::cout << "main: accepter closed" << std::endl;
-            cleanerThread.join();
-            std::cout << "main: cleaner closed" << std::endl;
+			// cleanup
+			lock.unlock();
+			std::cout << "main: cleaning up threads" << std::endl;
+			terminalThread.join();
+			std::cout << "main: terminal closed" << std::endl;
+			shutdown(serverSocket, SHUT_RDWR);
+			accepterThread.join();
+			std::cout << "main: accepter closed" << std::endl;
+			std::cout << "main: waiting for clients to close" << std::endl;
+			for (auto &client: clients) {
+				client.exit();
+			}
+			for (auto &clientRunner: clientRunners) {
+				clientRunner.join();
+			}
+			try {
+			cleanerThread.join();
+			} catch (std::exception & e) {
+				std::cout << "main: cleaner exception | " << e.what() << std::endl;
+			}
+			std::cout << "main: cleaner closed" << std::endl;
             break;
         }
 
     }
 
     std::cout << "main: closing server" << std::endl;
-
-    shutdown(serverSocket, SHUT_RDWR);
+	return 0;
 }

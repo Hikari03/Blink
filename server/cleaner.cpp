@@ -14,11 +14,11 @@ void cleaner(std::list<Client> & clients, const bool & turnOff, std::mutex & cli
 
             auto it = clients.begin();
 
-            for (long unsigned int i = 0; i < clients.size() || it != clients.end(); i++) {
+            while (it != clients.end()) {
                 printf("cleaner: checking client number %d, that is %s\n", (*it).getSocket(), ((*it).isActive() ? "active" : "inactive"));
 
                 if (!(*it).isActive()) {
-                    std::cout << "cleaner: client number " << (*it).getSocket() << " removed" << std::endl;
+					std::cout << "cleaner: client number " << (*it).getSocket() << " removed" << std::endl;
                     it = clients.erase(it);
                 } else ++it;
             }

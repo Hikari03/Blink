@@ -32,8 +32,8 @@ void Connection::connectToServer(std::string ip, int port) {
 
 }
 
-void Connection::send(const std::string & message) const {
-
+void Connection::send(const std::string & message){
+	std::lock_guard<std::mutex> lock(_sendMutex);
     auto messageToSend = message + _end;
 
     if(::send(_socket, messageToSend.c_str(), messageToSend.length(), 0) < 0) {
@@ -41,8 +41,12 @@ void Connection::send(const std::string & message) const {
     }
 }
 
-void Connection::sendMessage(const std::string & message) const {
+void Connection::sendMessage(const std::string & message) {
     send(_text + message);
+}
+
+void Connection::sendInternal(const std::string &message) {
+	send(_internal + message);
 }
 
 std::string Connection::receive() {
@@ -53,7 +57,7 @@ std::string Connection::receive() {
 
         clearBuffer();
 
-        _sizeOfPreviousMessage = recv(_socket, _buffer, 4096, MSG_DONTWAIT);
+        _sizeOfPreviousMessage = recv(_socket, _buffer, 4096, 0);
 
         if(_sizeOfPreviousMessage < 0 && errno != EAGAIN && errno != EWOULDBLOCK && errno != MSG_WAITALL) {
             throw std::runtime_error("Could not receive message from server: " + std::string(strerror(errno)));
@@ -72,7 +76,7 @@ std::string Connection::receive() {
     return message;
 }
 
-void Connection::_close() {
+void Connection::close() {
     send(_internal"exit");
     shutdown(_socket, 0);
     _active = false;
@@ -80,7 +84,7 @@ void Connection::_close() {
 
 Connection::~Connection() {
     if(_active)
-        _close();
+        close();
 }
 
 void Connection::clearBuffer() {

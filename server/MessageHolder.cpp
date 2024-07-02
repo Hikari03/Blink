@@ -2,6 +2,10 @@
 
 MessageHolder::MessageHolder(std::mutex &messagesMutex)  : messagesMutex(messagesMutex) {}
 
+MessageHolder::~MessageHolder() {
+	callBackOnMessagesChange.notify_all();
+}
+
 void MessageHolder::addMessage(const Message & message) {
     {
         std::lock_guard<std::mutex> lock(messagesMutex);

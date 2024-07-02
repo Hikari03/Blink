@@ -19,7 +19,7 @@ LIBS :=
 
 FLAGS := -Wall
 CCFLAGS := $(FLAGS) -std=c99
-CXXFLAGS := $(FLAGS) -std=c++23
+CXXFLAGS := $(FLAGS) -std=c++23 -g
 
 CC := gcc
 CXX := g++

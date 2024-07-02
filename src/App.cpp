@@ -176,6 +176,7 @@ void App::_chat() {
 
 void App::_sendThread() {
     std::string message;
+	_connection.sendInternal("getMessages");
     while(_running) {
         message = _getUserInput(2, 22, App::CursorColor::Green);
 		// clear the chat box
@@ -183,7 +184,7 @@ void App::_sendThread() {
 		if (message.empty())
 			continue;
         if(message == "/exit") {
-            _connection.send(_internal"exit");
+            _connection.sendInternal("exit");
             _running = false;
 			return;
         }
@@ -203,6 +204,7 @@ void App::_receiveThread() {
 			_running = false;
             _tiles.insertText(43, 15, L"Server closed connection", _red);
 			_debug("Server closed connection");
+			_connection.close();
             _renderer.print();
             return;
         }
