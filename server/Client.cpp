@@ -12,7 +12,6 @@ int Client::getSocket() const {
 
 Client::~Client() {
     exit();
-    shutdown(_socket, 0);
 }
 
 
@@ -60,6 +59,7 @@ void Client::exit() {
     std::cout << _socket << "/" + _name << ": sent exit" << std::endl;
     sendMessage(_internal"exit");
     _active = false;
+	shutdown(_socket, SHUT_RDWR);
 }
 
 
@@ -82,7 +82,7 @@ void Client::receiveMessage() {
 
         clearBuffer();
 
-        _sizeOfPreviousMessage = recv(_socket, _buffer, 4096, MSG_DONTWAIT);
+        _sizeOfPreviousMessage = recv(_socket, _buffer, 4096, 0);
 
 
         if(_sizeOfPreviousMessage < 0 && errno != EAGAIN && errno != EWOULDBLOCK) {

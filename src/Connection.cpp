@@ -53,7 +53,7 @@ std::string Connection::receive() {
 
         clearBuffer();
 
-        _sizeOfPreviousMessage = recv(_socket, _buffer, 4096, MSG_DONTWAIT);
+        _sizeOfPreviousMessage = recv(_socket, _buffer, 4096, 0);
 
         if(_sizeOfPreviousMessage < 0 && errno != EAGAIN && errno != EWOULDBLOCK && errno != MSG_WAITALL) {
             throw std::runtime_error("Could not receive message from server: " + std::string(strerror(errno)));

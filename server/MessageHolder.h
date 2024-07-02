@@ -9,6 +9,8 @@ public:
 
     explicit MessageHolder(std::mutex & messagesMutex);
 
+	~MessageHolder();
+
     void addMessage(const Message & message);
 
     void removeMessage(const Message & message);

@@ -42,10 +42,7 @@ make -j$(nproc)
 
 # TODO
 
-- [ ] better resource management 
-  - as of now, it hogs 1 core of CPU for client and in servers case its 1 core per client connected. 
-  this is because receiving threads are non-blocking, thus busy waiting - horrible
-
+- [x] better resource management
 - [ ] better server terminal
 - [x] fix kicking out users
 - [x] sending only last *n* messages so everything is stable
