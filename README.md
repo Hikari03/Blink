@@ -10,10 +10,12 @@ git clone https://github.com/Hikari03/Blink.git && \
 cd Blink/src && \
 make -j$(nproc)
 ```
+or use `build.sh`
+
 ### Usage
 in Blink/src
 ```
-./messenger
+./blink
 ```
 - then follow instructions
 - to exit in connected chat, type `/exit` and then enter
@@ -40,10 +42,11 @@ git clone https://github.com/Hikari03/Blink.git && \
 cd Blink/server && \
 make -j$(nproc)
 ```
+or use `build.sh`
 #### Usage: 
 in Blink/server
 ```
-./server
+./blink-server
 ```
 
 
