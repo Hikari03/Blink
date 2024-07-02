@@ -45,6 +45,10 @@ void Connection::sendMessage(const std::string & message) {
     send(_text + message);
 }
 
+void Connection::sendInternal(const std::string &message) {
+	send(_internal + message);
+}
+
 std::string Connection::receive() {
     std::string message;
 

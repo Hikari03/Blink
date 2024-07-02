@@ -31,6 +31,7 @@ public:
 
     void send(const std::string & message);
     void sendMessage(const std::string & message);
+	void sendInternal(const std::string & message);
 
     std::string receive();
 	void close();
