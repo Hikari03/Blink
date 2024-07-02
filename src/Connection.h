@@ -32,8 +32,7 @@ public:
     void sendMessage(const std::string & message) const;
 
     std::string receive();
-
-
+	void close();
 
 private:
     char _buffer[4096] = {0};
@@ -43,7 +42,6 @@ private:
     bool _active = true;
 
     void clearBuffer();
-    void _close();
 
     [[nodiscard]] static std::vector<std::string> dnsLookup(const std::string & domain, int ipv = 4) ;
 

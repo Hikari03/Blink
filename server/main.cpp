@@ -72,23 +72,27 @@ int main() {
 
 
         if(turnOff) {
-            // cleanup
-            lock.unlock();
-            std::cout << "main: cleaning up threads" << std::endl;
-            terminalThread.join();
-            std::cout << "main: terminal closed" << std::endl;
+			// cleanup
+			lock.unlock();
+			std::cout << "main: cleaning up threads" << std::endl;
+			terminalThread.join();
+			std::cout << "main: terminal closed" << std::endl;
 			shutdown(serverSocket, SHUT_RDWR);
-            accepterThread.join();
-            std::cout << "main: accepter closed" << std::endl;
+			accepterThread.join();
+			std::cout << "main: accepter closed" << std::endl;
 			std::cout << "main: waiting for clients to close" << std::endl;
-			for(auto & client : clients) {
+			for (auto &client: clients) {
 				client.exit();
 			}
-			for(auto & clientRunner : clientRunners) {
+			for (auto &clientRunner: clientRunners) {
 				clientRunner.join();
 			}
-            cleanerThread.join();
-            std::cout << "main: cleaner closed" << std::endl;
+			try {
+			cleanerThread.join();
+			} catch (std::exception & e) {
+				std::cout << "main: cleaner exception | " << e.what() << std::endl;
+			}
+			std::cout << "main: cleaner closed" << std::endl;
             break;
         }
 

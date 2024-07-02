@@ -50,3 +50,4 @@ make -j$(nproc)
 - [ ] better syncing of chat when someone connects or leaves
   - this is when new user connects and doesn't see the chat history
     or when someone leaves and the chat history is not updated
+- [x] fix server having unexpected behavior when closing server with clients connected

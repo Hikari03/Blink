@@ -203,6 +203,7 @@ void App::_receiveThread() {
 			_running = false;
             _tiles.insertText(43, 15, L"Server closed connection", _red);
 			_debug("Server closed connection");
+			_connection.close();
             _renderer.print();
             return;
         }

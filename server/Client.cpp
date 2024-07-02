@@ -162,6 +162,7 @@ void Client::receiveThread() {
             _active = false;
         }
     }
+	_callBackOnMessagesChange.notify_all();
 
 }
 

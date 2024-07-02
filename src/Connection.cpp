@@ -72,7 +72,7 @@ std::string Connection::receive() {
     return message;
 }
 
-void Connection::_close() {
+void Connection::close() {
     send(_internal"exit");
     shutdown(_socket, 0);
     _active = false;
@@ -80,7 +80,7 @@ void Connection::_close() {
 
 Connection::~Connection() {
     if(_active)
-        _close();
+        close();
 }
 
 void Connection::clearBuffer() {
