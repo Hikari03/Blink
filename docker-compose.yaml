@@ -1,5 +1,5 @@
 services:
-  messenger-server:
+  blink-server:
     image: hikari03/messenger:stable
     container_name: blink-server
     ports:

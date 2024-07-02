@@ -1,1 +1,2 @@
-sudo docker attach messenger-server
+#!/bin/sh
+sudo docker attach blink-server
