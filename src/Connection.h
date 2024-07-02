@@ -11,6 +11,7 @@
 #include <cerrno>
 #include <vector>
 #include <iostream>
+#include <mutex>
 
 #define _end "::--///-$$$"
 #define _internal "INTERNAL::"
@@ -28,14 +29,15 @@ public:
 
     void connectToServer(std::string ip, int port);
 
-    void send(const std::string & message) const;
-    void sendMessage(const std::string & message) const;
+    void send(const std::string & message);
+    void sendMessage(const std::string & message);
 
     std::string receive();
 	void close();
 
 private:
     char _buffer[4096] = {0};
+	std::mutex _sendMutex;
     int _socket;
     ssize_t _sizeOfPreviousMessage = 0;
     sockaddr_in _server;

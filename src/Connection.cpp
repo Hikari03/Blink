@@ -32,8 +32,8 @@ void Connection::connectToServer(std::string ip, int port) {
 
 }
 
-void Connection::send(const std::string & message) const {
-
+void Connection::send(const std::string & message){
+	std::lock_guard<std::mutex> lock(_sendMutex);
     auto messageToSend = message + _end;
 
     if(::send(_socket, messageToSend.c_str(), messageToSend.length(), 0) < 0) {
@@ -41,7 +41,7 @@ void Connection::send(const std::string & message) const {
     }
 }
 
-void Connection::sendMessage(const std::string & message) const {
+void Connection::sendMessage(const std::string & message) {
     send(_text + message);
 }
 

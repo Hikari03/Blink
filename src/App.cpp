@@ -176,6 +176,7 @@ void App::_chat() {
 
 void App::_sendThread() {
     std::string message;
+	_connection.send(_internal"getMessages");
     while(_running) {
         message = _getUserInput(2, 22, App::CursorColor::Green);
 		// clear the chat box

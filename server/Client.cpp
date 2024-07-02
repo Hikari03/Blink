@@ -31,10 +31,9 @@ void Client::run() {
     try {
         initConnection();
 
-        _messages.addMessage({_name, "joined the chat", std::chrono::system_clock::now()});
-
         std::thread sendThread(&Client::sendThread, this);
         std::thread receiveThread(&Client::receiveThread, this);
+		_messages.addMessage({_name, "joined the chat", std::chrono::system_clock::now()});
 
         sendThread.join();
         receiveThread.join();
@@ -129,6 +128,15 @@ void Client::processMessage() {
         return;
     }
 
+	if(_message == _internal"pong") {
+		return;
+	}
+
+	if(_message == _internal"getMessages") {
+		sendMessage(_text + _messages.serializeMessages(17));
+		return;
+	}
+
     if(_message.contains(_text)){
         //std::cout << "submitting message: " << _message.substr(sizeof(_text)-1, _message.length()) << std::endl;
         submitMessage(_message.substr(sizeof(_text)-1, _message.length()));
@@ -137,7 +145,6 @@ void Client::processMessage() {
 }
 
 void Client::sendThread() {
-
     std::unique_lock<std::mutex> lock(_messagesMutex);
     while(_active) {
         _callBackOnMessagesChange.wait(lock);
