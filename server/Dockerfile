@@ -10,4 +10,4 @@ RUN apk add --no-cache g++ make git && \
 
 EXPOSE 6999
 
-ENTRYPOINT ["/messenger/server/server"]
+ENTRYPOINT ["/messenger/server/blink-server"]
