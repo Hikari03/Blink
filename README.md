@@ -1,11 +1,17 @@
 # Blink
 - Chat application for terminal, written purely in C++.
 
-
+## Dependencies
+### Shared
+- `make`, `g++` with c++23 support
+### Client
+- `ncursesw` for terminal UI
+### Server
+- `docker` and `docker-compose` optionally for server
 
 ## Client
 ### Build
-```
+``` bash
 git clone https://github.com/Hikari03/Blink.git && \
 cd Blink/src && \
 make -j$(nproc)
@@ -14,7 +20,7 @@ or use `build.sh`
 
 ### Usage
 in Blink/src
-```
+``` bash
 ./blink
 ```
 - then follow instructions
@@ -32,12 +38,12 @@ With them, you can control the server with ease.
 #### Manually
 - download the docker-compose.yml
 - `docker compose up -d` or `docker-compose up -d`
-- to control the server use `docker attach messenger-server`
+- to control the server use `docker attach blink-server`
 - `docker compose down` or `docker-compose down`
 
 ### From Source
 #### Build
-```
+``` bash
 git clone https://github.com/Hikari03/Blink.git && \
 cd Blink/server && \
 make -j$(nproc)
@@ -45,7 +51,7 @@ make -j$(nproc)
 or use `build.sh`
 #### Usage: 
 in Blink/server
-```
+``` bash
 ./blink-server
 ```
 
