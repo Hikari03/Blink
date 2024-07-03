@@ -29,21 +29,22 @@ int main() {
     MessageHolder messages(messagesMutex);
     std::list<Client> clients;
     std::condition_variable callBack;
+	std::map<std::string,std::string> bannedIps;
 
     bool turnOff = false;
 
-    std::thread terminalThread(terminal, std::ref(callBack), std::ref(clients), std::ref(turnOff));
+    std::thread terminalThread(terminal, std::ref(callBack), std::ref(clients), std::ref(bannedIps), std::ref(turnOff));
     std::thread cleanerThread(cleaner, std::ref(clients), std::ref(turnOff), std::ref(clientsMutex));
 
     listen(serverSocket, 10);
 
     bool newClientAccepted = false;
-    int acceptedSocket = 0;
+    ClientInfo acceptedClient;
 
 
-    std::thread accepterThread(accepter, std::ref(callBack), std::ref(serverSocket), std::ref(acceptedSocket), std::ref(newClientAccepted), std::ref(turnOff));
+    std::thread accepterThread(accepter, std::ref(callBack), std::ref(serverSocket), std::ref(acceptedClient), std::ref(newClientAccepted), std::ref(turnOff));
 
-    std::cout << "main: entering main loop" << std::endl;
+    std::cout << "main: entering main loop, server started" << std::endl;
 
     /*
      * ########################################################################################
@@ -60,8 +61,23 @@ int main() {
 
         if(newClientAccepted) {
 
+			// check if they aren't ip banned
+			for(const auto & it : bannedIps) {
+				if(it.second == acceptedClient.ip) {
+					std::cout << "main: client number " << acceptedClient.socket_ << " with ip " << acceptedClient.ip << " is banned" << std::endl;
+					std::string message = _internal"ban";
+					message += _end;
+					send(acceptedClient.socket_, message.c_str(), message.length(), 0);
+					close(acceptedClient.socket_);
+					newClientAccepted = false;
+					continue;
+				}
+			}
+			if(!newClientAccepted)
+				continue;
+
             // create client
-            clients.emplace_back(acceptedSocket, messages);
+            clients.emplace_back(std::move(acceptedClient), messages);
 
             // run client
             clientRunners.emplace_back(&Client::run, &clients.back());

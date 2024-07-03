@@ -12,9 +12,12 @@ void printHelp(){
 	printT("'help' - list all commands");
 	printT("'list' to list all users");
 	printT("'kick <name>' to kick a user");
+	printT("'ipban <name>' to ban a user by ip");
+	printT("'ipunban <name>' to unban a user by ip");
+	printT("'listipban' to list all banned ips");
 }
 
-void terminal(std::condition_variable & callBack, std::list<Client> & clients, bool & turnOff){
+void terminal(std::condition_variable & callBack, std::list<Client> & clients, std::map<std::string,std::string> & bannedIps, bool & turnOff){
 	printHelp();
     while(true) {
         std::string input;
@@ -33,7 +36,7 @@ void terminal(std::condition_variable & callBack, std::list<Client> & clients, b
 		if(input == "list") {
 			printT("Users:");
 			for (auto &client: clients) {
-				printT(client.getName());
+				printT(client.info().name);
 			}
 			printT("-----------------");
 		}
@@ -46,7 +49,7 @@ void terminal(std::condition_variable & callBack, std::list<Client> & clients, b
 			bool found = false;
 
 			for (auto &client: clients) {
-				if (client.getName() == name) {
+				if (client.info().name == name) {
 					client.exit();
 					found = true;
 					break;
@@ -56,6 +59,47 @@ void terminal(std::condition_variable & callBack, std::list<Client> & clients, b
 			if(!found) {
 				printT("User not found");
 			}
+		}
+
+		if(input == "ipban") {
+			std::string name;
+			std::cin >> name;
+
+			bool found = false;
+
+			for (auto &client: clients) {
+				if (client.info().name == name) {
+					bannedIps[name] = client.info().ip;
+					client.exit();
+					found = true;
+					break;
+				}
+			}
+
+			if(!found) {
+				printT("User not found");
+			}
+		}
+
+		if(input == "ipunban") {
+			std::string name;
+			std::cin >> name;
+
+			auto it = bannedIps.find(name);
+
+			if(it != bannedIps.end()) {
+				bannedIps.erase(it);
+			} else {
+				printT("User not found");
+			}
+		}
+
+		if(input == "listipban") {
+			printT("Banned IPs:");
+			for (auto &ip: bannedIps) {
+				printT(ip.first + " - " + ip.second);
+			}
+			printT("-----------------");
 		}
     }
 }

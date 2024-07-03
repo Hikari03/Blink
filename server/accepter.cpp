@@ -1,8 +1,8 @@
+
 #include "accepter.h"
 
 
-
-void accepter(std::condition_variable & callBack, const int & serverSocket, int & acceptedSocket, bool & newClientAccepted, const bool & turnOff) {
+void accepter(std::condition_variable & callBack, const int & serverSocket, ClientInfo & acceptedClient, bool & newClientAccepted, const bool & turnOff) {
 
 	while(true) {
         if(turnOff)
@@ -10,17 +10,24 @@ void accepter(std::condition_variable & callBack, const int & serverSocket, int 
 
         if(!newClientAccepted) {
 
-            acceptedSocket = accept(serverSocket, nullptr, nullptr);
+			sockaddr_in clientAddress{};
+			socklen_t clientAddressSize = sizeof(clientAddress);
+
+            acceptedClient.socket_ = accept(serverSocket, (struct sockaddr*)&clientAddress, &clientAddressSize);
 			if(turnOff)
 				return;
 
-            if(acceptedSocket < 0) {
+            if(acceptedClient.socket_ < 0) {
                 continue;
             }
 
+			acceptedClient.ip = ClientInfo::convertAddrToString(clientAddress);
+
+			std::cout << "main: accepted client number " << acceptedClient.socket_ << " with addr " << acceptedClient.ip << std::endl;
+
             newClientAccepted = true;
             callBack.notify_one();
-            std::cout << "main: accepted client number " << acceptedSocket << std::endl;
+            //std::cout << "main: accepted client number " << acceptedSocket << std::endl;
         }
     }
 }

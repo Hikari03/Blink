@@ -20,7 +20,7 @@
 #define MAGENTA "\033[35m"
 #define WHITE "\033[37m"
 
-#define DEBUG 1
+#define DEBUG 0
 
 class App {
 public:

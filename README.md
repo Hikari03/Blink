@@ -1,11 +1,17 @@
 # Blink
 - Chat application for terminal, written purely in C++.
 
-
+## Dependencies
+### Shared
+- `make`, `g++` with c++23 support
+### Client
+- `ncursesw` for terminal UI
+### Server
+- `docker` and `docker-compose` optionally for server
 
 ## Client
 ### Build
-```
+``` bash
 git clone https://github.com/Hikari03/Blink.git && \
 cd Blink/src && \
 make -j$(nproc)
@@ -14,7 +20,7 @@ or use `build.sh`
 
 ### Usage
 in Blink/src
-```
+``` bash
 ./blink
 ```
 - then follow instructions
@@ -32,12 +38,12 @@ With them, you can control the server with ease.
 #### Manually
 - download the docker-compose.yml
 - `docker compose up -d` or `docker-compose up -d`
-- to control the server use `docker attach messenger-server`
+- to control the server use `docker attach blink-server`
 - `docker compose down` or `docker-compose down`
 
 ### From Source
 #### Build
-```
+``` bash
 git clone https://github.com/Hikari03/Blink.git && \
 cd Blink/server && \
 make -j$(nproc)
@@ -45,7 +51,7 @@ make -j$(nproc)
 or use `build.sh`
 #### Usage: 
 in Blink/server
-```
+``` bash
 ./blink-server
 ```
 
@@ -55,11 +61,14 @@ in Blink/server
 - `q` quit server
 - `list` list all connected clients
 - `kick <name>` kick out client with name
+- `ipban <name>` ban client with name
+- `ipunban <name>` unban client with name
+- `ipbans` list all banned clients
 
 # TODO
 
 - [x] better resource management
-- [ ] better server terminal
+- [x] better server terminal
 - [x] fix kicking out users
 - [x] sending only last *n* messages so everything is stable
 - [ ] ability to see online users

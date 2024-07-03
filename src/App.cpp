@@ -22,7 +22,7 @@ void App::run() {
     }
     catch(std::exception & e) {
         _tiles.insertText(43, 15, L"Connection failed from exception!", _lightblue);
-        _debug(e.what());
+		_tiles.insertText(43, 16, _strToWStr(e.what()), _red);
         _renderer.print();
         getch();
         return;
@@ -79,6 +79,9 @@ void App::_connectToServer(std::string ip, int port) {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     std::string message = _connection.receive();
     _debug("server message: " + message);
+	if(message == _internal"ban") {
+		throw std::runtime_error("Server banned you!");
+	}
     if(message == _internal"name")
         _connection.send(_userName);
     else

@@ -6,7 +6,7 @@ void cleaner(std::list<Client> & clients, const bool & turnOff, std::mutex & cli
 
         std::this_thread::sleep_for(std::chrono::seconds(30));
 
-        printf("cleaner: cleaning clients\n");
+        //printf("cleaner: cleaning clients\n");
 
         // critical section - clients
         {
@@ -15,10 +15,10 @@ void cleaner(std::list<Client> & clients, const bool & turnOff, std::mutex & cli
             auto it = clients.begin();
 
             while (it != clients.end()) {
-                printf("cleaner: checking client number %d, that is %s\n", (*it).getSocket(), ((*it).isActive() ? "active" : "inactive"));
+                //printf("cleaner: checking client number %d, that is %s\n", (*it).getSocket(), ((*it).isActive() ? "active" : "inactive"));
 
                 if (!(*it).isActive()) {
-					std::cout << "cleaner: client number " << (*it).getSocket() << " removed" << std::endl;
+					std::cout << "cleaner: client number " << (*it).info().socket_ << " removed" << std::endl;
                     it = clients.erase(it);
                 } else ++it;
             }
