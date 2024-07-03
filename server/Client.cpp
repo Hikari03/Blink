@@ -17,12 +17,13 @@ Client::~Client() {
 
 void Client::initConnection() {
     sendMessage(_internal"name");
-    std::cout << _socket << ": sent name request" << std::endl;
+    //std::cout << _socket << ": sent name request" << std::endl;
     receiveMessage();
     _name = _message;
-    std::cout << _socket << ": name: " << _name << std::endl;
+    ///std::cout << _socket << ": name: " << _name << std::endl;
     sendMessage(_internal"nameAck");
-    std::cout << _socket << "/" + _name << ": sent nameAck" << std::endl;
+    //std::cout << _socket << "/" + _name << ": sent nameAck" << std::endl;
+	printf("client %d/%s connected\n", _socket, _name.c_str());
     _active = true;
 }
 
@@ -46,7 +47,7 @@ void Client::run() {
         _active = false;
     }
 
-    printf("client %d/%s closed and active=%d\n", _socket, _name.c_str(), isActive());
+    printf("client %d/%s closed\n", _socket, _name.c_str());
     _active = false;
 }
 
@@ -91,7 +92,7 @@ void Client::receiveMessage() {
         _message += _buffer;
     }
 
-    std::cout << "RECEIVE |  " << _socket << (_name.empty() ? "" : "/" + _name ) << ": " << _message << std::endl;
+    //std::cout << "RECEIVE |  " << _socket << (_name.empty() ? "" : "/" + _name ) << ": " << _message << std::endl;
 
     // cut off the _end
     _message = _message.substr(0, _message.find(_end));
@@ -101,7 +102,7 @@ void Client::receiveMessage() {
 
 void Client::sendMessage(const std::string & message) const {
     auto messageToSend = message + _end;
-    std::cout << "SEND |  " << _socket << (_name.empty() ? "" : "/" + _name ) << ": " << messageToSend << std::endl;
+    //std::cout << "SEND |  " << _socket << (_name.empty() ? "" : "/" + _name ) << ": " << messageToSend << std::endl;
     if(::send(_socket, messageToSend.c_str(), messageToSend.length(), 0) < 0) {
         throw std::runtime_error("Could not send message to client");
     }
@@ -109,7 +110,7 @@ void Client::sendMessage(const std::string & message) const {
 
 
 void Client::submitMessage(const std::string & message) {
-    std::cout << "submitting message: " << message << std::endl;
+	printf("client %d/%s: %s\n", _socket, _name.c_str(), message.c_str());
     _messages.addMessage({_name, message, std::chrono::system_clock::now()});
 }
 

@@ -43,7 +43,7 @@ int main() {
 
     std::thread accepterThread(accepter, std::ref(callBack), std::ref(serverSocket), std::ref(acceptedSocket), std::ref(newClientAccepted), std::ref(turnOff));
 
-    std::cout << "main: entering main loop" << std::endl;
+    std::cout << "main: entering main loop, server started" << std::endl;
 
     /*
      * ########################################################################################

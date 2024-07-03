@@ -9,7 +9,7 @@ void accepter(std::condition_variable & callBack, const int & serverSocket, int 
             return;
 
         if(!newClientAccepted) {
-
+			
             acceptedSocket = accept(serverSocket, nullptr, nullptr);
 			if(turnOff)
 				return;
@@ -20,7 +20,7 @@ void accepter(std::condition_variable & callBack, const int & serverSocket, int 
 
             newClientAccepted = true;
             callBack.notify_one();
-            std::cout << "main: accepted client number " << acceptedSocket << std::endl;
+            //std::cout << "main: accepted client number " << acceptedSocket << std::endl;
         }
     }
 }
