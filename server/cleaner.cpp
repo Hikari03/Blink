@@ -18,7 +18,7 @@ void cleaner(std::list<Client> & clients, const bool & turnOff, std::mutex & cli
                 //printf("cleaner: checking client number %d, that is %s\n", (*it).getSocket(), ((*it).isActive() ? "active" : "inactive"));
 
                 if (!(*it).isActive()) {
-					std::cout << "cleaner: client number " << (*it).getSocket() << " removed" << std::endl;
+					std::cout << "cleaner: client number " << (*it).info().socket_ << " removed" << std::endl;
                     it = clients.erase(it);
                 } else ++it;
             }

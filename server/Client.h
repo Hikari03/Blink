@@ -10,6 +10,7 @@
 #include <thread>
 #include "Message.h"
 #include "MessageHolder.h"
+#include "ClientInfo.h"
 
 
 #define _end "::--///-$$$"
@@ -20,13 +21,11 @@
 class Client {
 
 public:
-    Client(int socket, MessageHolder & messages);
+    Client(const ClientInfo clientInfo, MessageHolder & messages);
 
     ~Client();
 
-    [[nodiscard]] int getSocket() const;
-
-	[[nodiscard]] std::string getName() const;
+    [[nodiscard]] const ClientInfo & info() const;
 
     /**
      * @brief runs the client
@@ -43,8 +42,7 @@ public:
 
 private:
 
-    std::string _name;
-    int _socket;
+	ClientInfo _clientInfo;
     int _sizeOfPreviousMessage = 0;
     std::string _message;
     bool _active = true;
@@ -58,7 +56,7 @@ private:
     char _buffer[4096] = {0};
 
     /**
-     * @brief gets _name of the client
+     * @brief gets name of the client
      * @todo implement encryption
      */
     void initConnection();

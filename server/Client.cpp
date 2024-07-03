@@ -1,13 +1,9 @@
 
 #include "Client.h"
 
-Client::Client(int socket, MessageHolder & messages) :
-        _socket(socket), _messages(messages), _messagesMutex(_messages.getMessagesMutex()), _callBackOnMessagesChange(_messages.getCallback()) {}
+Client::Client(ClientInfo clientInfo, MessageHolder & messages) :
+        _clientInfo(clientInfo), _messages(messages), _messagesMutex(_messages.getMessagesMutex()), _callBackOnMessagesChange(_messages.getCallback()) {}
 
-
-int Client::getSocket() const {
-    return _socket;
-}
 
 
 Client::~Client() {
@@ -17,13 +13,13 @@ Client::~Client() {
 
 void Client::initConnection() {
     sendMessage(_internal"name");
-    //std::cout << _socket << ": sent name request" << std::endl;
+    //std::cout << socket_ << ": sent name request" << std::endl;
     receiveMessage();
-    _name = _message;
-    ///std::cout << _socket << ": name: " << _name << std::endl;
+    _clientInfo.name = _message;
+    ///std::cout << socket_ << ": name: " << name << std::endl;
     sendMessage(_internal"nameAck");
-    //std::cout << _socket << "/" + _name << ": sent nameAck" << std::endl;
-	printf("client %d/%s connected\n", _socket, _name.c_str());
+    //std::cout << socket_ << "/" + name << ": sent nameAck" << std::endl;
+	printf("client %d/%s connected\n", _clientInfo.socket_, _clientInfo.name.c_str());
     _active = true;
 }
 
@@ -34,20 +30,20 @@ void Client::run() {
 
         std::thread sendThread(&Client::sendThread, this);
         std::thread receiveThread(&Client::receiveThread, this);
-		_messages.addMessage({_name, "joined the chat", std::chrono::system_clock::now()});
+		_messages.addMessage({_clientInfo.name, "joined the chat", std::chrono::system_clock::now()});
 
         sendThread.join();
         receiveThread.join();
 
-        _messages.addMessage({_name, "left the chat", std::chrono::system_clock::now()});
+        _messages.addMessage({_clientInfo.name, "left the chat", std::chrono::system_clock::now()});
 
     }
     catch (std::runtime_error & e) {
-        std::cout << _socket << "/" + _name << " EXCEPTION |  " << e.what() << std::endl;
+        std::cout << _clientInfo.socket_ << "/" + _clientInfo.name << " EXCEPTION |  " << e.what() << std::endl;
         _active = false;
     }
 
-    printf("client %d/%s closed\n", _socket, _name.c_str());
+    printf("client %d/%s closed\n", _clientInfo.socket_, _clientInfo.name.c_str());
     _active = false;
 }
 
@@ -56,10 +52,11 @@ void Client::exit() {
     if(!_active) {
         return;
     }
-    std::cout << _socket << "/" + _name << ": sent exit" << std::endl;
+    std::cout << _clientInfo.socket_ << "/" + _clientInfo.name << ": sent exit" << std::endl;
     sendMessage(_internal"exit");
     _active = false;
-	shutdown(_socket, SHUT_RDWR);
+	shutdown(_clientInfo.socket_, SHUT_RDWR);
+	close(_clientInfo.socket_);
 }
 
 
@@ -82,7 +79,7 @@ void Client::receiveMessage() {
 
         clearBuffer();
 
-        _sizeOfPreviousMessage = recv(_socket, _buffer, 4096, 0);
+        _sizeOfPreviousMessage = recv(_clientInfo.socket_, _buffer, 4096, 0);
 
 
         if(_sizeOfPreviousMessage < 0 && errno != EAGAIN && errno != EWOULDBLOCK) {
@@ -92,7 +89,7 @@ void Client::receiveMessage() {
         _message += _buffer;
     }
 
-    //std::cout << "RECEIVE |  " << _socket << (_name.empty() ? "" : "/" + _name ) << ": " << _message << std::endl;
+    //std::cout << "RECEIVE |  " << socket_ << (name.empty() ? "" : "/" + name ) << ": " << _message << std::endl;
 
     // cut off the _end
     _message = _message.substr(0, _message.find(_end));
@@ -102,23 +99,23 @@ void Client::receiveMessage() {
 
 void Client::sendMessage(const std::string & message) const {
     auto messageToSend = message + _end;
-    //std::cout << "SEND |  " << _socket << (_name.empty() ? "" : "/" + _name ) << ": " << messageToSend << std::endl;
-    if(::send(_socket, messageToSend.c_str(), messageToSend.length(), 0) < 0) {
+    //std::cout << "SEND |  " << socket_ << (name.empty() ? "" : "/" + name ) << ": " << messageToSend << std::endl;
+    if(::send(_clientInfo.socket_, messageToSend.c_str(), messageToSend.length(), 0) < 0) {
         throw std::runtime_error("Could not send message to client");
     }
 }
 
 
 void Client::submitMessage(const std::string & message) {
-	printf("client %d/%s: %s\n", _socket, _name.c_str(), message.c_str());
-    _messages.addMessage({_name, message, std::chrono::system_clock::now()});
+	printf("client %d/%s: %s\n", _clientInfo.socket_, _clientInfo.name.c_str(), message.c_str());
+    _messages.addMessage({_clientInfo.name, message, std::chrono::system_clock::now()});
 }
 
 
 void Client::processMessage() {
 
     if(_message == _internal"exit") {
-        std::cout << "user " << _name << " with socket " << _socket << " disconnected" << std::endl;
+        std::cout << "user " << _clientInfo.name << " with socket " << _clientInfo.socket_ << " disconnected" << std::endl;
         sendMessage(_internal"exitAck");
         _active = false;
         return;
@@ -166,7 +163,7 @@ void Client::receiveThread() {
     }
     catch (std::runtime_error & e) {
         if(_active) {
-            std::cout << _socket << "/" + _name << " EXCEPTION |  " << e.what() << std::endl;
+            std::cout << _clientInfo.socket_ << "/" + _clientInfo.name << " EXCEPTION |  " << e.what() << std::endl;
             _active = false;
         }
     }
@@ -174,6 +171,7 @@ void Client::receiveThread() {
 
 }
 
-std::string Client::getName() const {
-	return _name;
+const ClientInfo &Client::info() const {
+	return _clientInfo;
 }
+

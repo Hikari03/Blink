@@ -61,11 +61,14 @@ in Blink/server
 - `q` quit server
 - `list` list all connected clients
 - `kick <name>` kick out client with name
+- `ipban <name>` ban client with name
+- `ipunban <name>` unban client with name
+- `ipbans` list all banned clients
 
 # TODO
 
 - [x] better resource management
-- [ ] better server terminal
+- [x] better server terminal
 - [x] fix kicking out users
 - [x] sending only last *n* messages so everything is stable
 - [ ] ability to see online users
