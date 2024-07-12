@@ -39,9 +39,8 @@ static:
 	@$(MAKE) clean_o
 	@$(MAKE) clean_e
 	if [ ! -d "ncurses-build" ]; then $(MAKE) custom_ncurses; fi
-	if [ $(ldconfig -p | grep tinfo) ]; then LIBS+=" -ltinfo"; fi
-	@$(MAKE) all -j$(nproc) STATICFLAG="-static -static-libgcc" INCLUDE="-I$(PWD)/ncurses-build" LIBPATH="-L$(PWD)/ncurses-build/lib"
-	@$(MAKE) clean_o
+	if [ $(ldconfig -p | grep tinfo) ]; then LIBS_TMP="-lncursesw -ltinfo"; fi
+	@$(MAKE) all -j$(nproc) STATICFLAG="-static -static-libgcc" INCLUDE="-I$(PWD)/ncurses-build" LIBPATH="-L$(PWD)/ncurses-build/lib" LIBS=$LIBS_TMP
 
 custom_ncurses:
 	if [ -d "ncurses-build" ]; then \
