@@ -17,6 +17,12 @@ INCLUDE := -I.
 LIBPATH :=
 LIBS :=-lncursesw
 
+ifeq ($(shell ldconfig -p | grep tinfo; echo $$? ),0)
+STATICLIBS := -lncursesw -ltinfo
+else
+STATICLIBS := -lncursesw
+endif
+
 STATICFLAG :=
 FLAGS := -Wall -Wextra -Wpedantic -Werror -O2
 CXXFLAGS := $(FLAGS) -std=c++23 $(STATICFLAG)
@@ -38,17 +44,16 @@ static:
 	echo "Building static binary..."
 	@$(MAKE) clean_o
 	@$(MAKE) clean_e
-	if [ ! -d "ncurses-build" ]; then $(MAKE) custom_ncurses; fi
-	if [ $(ldconfig -p | grep tinfo) ]; then LIBS_TMP="-lncursesw -ltinfo"; fi
-	@$(MAKE) all -j$(nproc) STATICFLAG="-static -static-libgcc" INCLUDE="-I$(PWD)/ncurses-build" LIBPATH="-L$(PWD)/ncurses-build/lib" LIBS=$LIBS_TMP
+	@if [ ! -d "ncurses-build" ]; then $(MAKE) custom_ncurses; fi
+	@$(MAKE) all -j$(nproc) STATICFLAG="-static -static-libgcc" INCLUDE="-I$(PWD)/ncurses-build" LIBPATH="-L$(PWD)/ncurses-build/lib" LIBS="$(STATICLIBS)"
 
 custom_ncurses:
-	if [ -d "ncurses-build" ]; then \
+	@if [ -d "ncurses-build" ]; then \
   	echo "ERROR: ncurses-build directory already exists. If you really want to build again, remove it."; \
  	exit 1; \
  	fi
-	mkdir -p ncurses-build
-	cd ncurses && ./configure --prefix=$(PWD)/ncurses-build --enable-widec --with-termlib && make -j$(nproc) && make -j$(nproc) install
+	@mkdir -p ncurses-build
+	@cd ncurses && ./configure --prefix=$(PWD)/ncurses-build --enable-widec --with-termlib && make -j$(nproc) && make -j$(nproc) install
 
 %.o: %.c
 	$(CXX) $(CXXFLAGS) $(INCLUDE) -c $< -o $@
