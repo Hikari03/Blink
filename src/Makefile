@@ -17,10 +17,10 @@ INCLUDE := -I.
 LIBPATH :=
 LIBS :=-lncursesw
 
-ifeq ($(shell ldconfig -p | grep tinfo; echo $$? ),0)
+ifeq ($(shell ldconfig -p | grep tinfo > /dev/null; echo $$? ),0)
 STATICLIBS := -lncursesw -ltinfo
 else
-STATICLIBS := -lncursesw
+STATICLIBS := -lncursesw -ltinfow
 endif
 
 STATICFLAG :=

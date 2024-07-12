@@ -17,6 +17,12 @@ cd Blink/src && \
 make
 ```
 
+#### Static build
+If you want to build static binary, you can do so by running in src directory:
+``` bash
+make static
+```
+
 ### Usage
 in Blink/src
 ``` bash
