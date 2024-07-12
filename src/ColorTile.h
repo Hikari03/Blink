@@ -11,7 +11,7 @@ public:
     ColorTile();
     ColorTile(const ColorTile & other) = default;
 
-    void setColor(int color) override;
+    void setColor(int color_) override;
 
     [[nodiscard]] int getColor() const override;
 

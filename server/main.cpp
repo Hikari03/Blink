@@ -5,7 +5,6 @@
 #include "accepter.h"
 #include "cleaner.h"
 #include "terminal.h"
-#include "Message.h"
 #include "MessageHolder.h"
 
 
@@ -94,6 +93,7 @@ int main() {
 			terminalThread.join();
 			std::cout << "main: terminal closed" << std::endl;
 			shutdown(serverSocket, SHUT_RDWR);
+			close(serverSocket);
 			accepterThread.join();
 			std::cout << "main: accepter closed" << std::endl;
 			std::cout << "main: waiting for clients to close" << std::endl;
