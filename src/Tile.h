@@ -21,7 +21,7 @@ public:
 
     [[nodiscard]] const wchar_t & getChar() const;
 
-    virtual void setColor(int color){std::cout << "setColor called on Tile" << std::endl;};
+    virtual void setColor(int color_){std::cout << "setColor called on Tile. Color:" << color_ << std::endl;};
 
     [[nodiscard]] virtual int getColor() const {return 0;};
 

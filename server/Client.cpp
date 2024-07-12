@@ -1,8 +1,10 @@
 
 #include "Client.h"
 
+#include <utility>
+
 Client::Client(ClientInfo clientInfo, MessageHolder & messages) :
-        _clientInfo(clientInfo), _messages(messages), _messagesMutex(_messages.getMessagesMutex()), _callBackOnMessagesChange(_messages.getCallback()) {}
+        _clientInfo(std::move(clientInfo)), _messages(messages), _messagesMutex(_messages.getMessagesMutex()), _callBackOnMessagesChange(_messages.getCallback()) {}
 
 
 
