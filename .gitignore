@@ -5,4 +5,3 @@ CMakeLists.txt
 blink-server
 blink
 ncurses-build
-src/ncurses
