@@ -1,0 +1,3 @@
+[submodule "src/ncurses"]
+	path = src/ncurses
+	url = git@github.com:mirror/ncurses.git

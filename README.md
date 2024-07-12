@@ -14,9 +14,8 @@
 ``` bash
 git clone https://github.com/Hikari03/Blink.git && \
 cd Blink/src && \
-make -j$(nproc)
+make
 ```
-or use `build.sh`
 
 ### Usage
 in Blink/src
@@ -46,9 +45,8 @@ With them, you can control the server with ease.
 ``` bash
 git clone https://github.com/Hikari03/Blink.git && \
 cd Blink/server && \
-make -j$(nproc)
+make
 ```
-or use `build.sh`
 #### Usage: 
 in Blink/server
 ``` bash

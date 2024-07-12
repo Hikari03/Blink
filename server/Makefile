@@ -24,6 +24,9 @@ CXXFLAGS := $(FLAGS) -std=c++23 -g
 CC := gcc
 CXX := g++
 
+build:
+	@$(MAKE) all -j$(nproc)
+
 all: $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $(INCLUDE) $(OBJECTS) -o $(TARGET) $(LIBPATH) $(LIBS)
 
