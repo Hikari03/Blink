@@ -10,10 +10,10 @@
 # - main
 
 TARGET := blink
-SOURCES := $(wildcard *.c *.cpp)
+SOURCES := $(wildcard *.c *.cpp include/librender/*.cpp include/librender/*..h)
 OBJECTS := $(patsubst src%,obj%, $(patsubst %.c,%.o, $(patsubst %.cpp,%.o,$(SOURCES))))
 
-INCLUDE := -I.
+INCLUDE := -I. -Iinclude
 LIBPATH :=
 LIBS :=-lncursesw
 
@@ -34,7 +34,7 @@ build:
 	@$(MAKE) all -j$(nproc)
 
 build_w_custom_ncurses:
-	@$(MAKE) custom_ncurses
+	@if [ ! -d "ncurses-build" ]; then $(MAKE) custom_ncurses; fi
 	@$(MAKE) all -j$(nproc) INCLUDE="-I$(PWD)/ncurses-build" LIBPATH="-L$(PWD)/ncurses-build/lib"
 
 all: $(OBJECTS)
@@ -52,8 +52,13 @@ custom_ncurses:
   	echo "ERROR: ncurses-build directory already exists. If you really want to build again, remove it."; \
  	exit 1; \
  	fi
+	@git submodule init
+	@git submodule update
 	@mkdir -p ncurses-build
-	@cd ncurses && ./configure --prefix=$(PWD)/ncurses-build --enable-widec --with-termlib && make -j$(nproc) && make -j$(nproc) install
+	@cd include/ncurses && \
+ 		./configure --prefix=$(PWD)/ncurses-build --enable-widec --with-termlib \
+ 		&& make -j$(nproc) \
+ 		&& make -j$(nproc) install
 
 %.o: %.c
 	$(CXX) $(CXXFLAGS) $(INCLUDE) -c $< -o $@
