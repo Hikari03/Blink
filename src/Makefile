@@ -31,6 +31,8 @@ CC := gcc
 CXX := g++
 
 build:
+	@git submodule init
+	@git submodule update src/include/librender
 	@$(MAKE) all -j$(nproc)
 
 build_w_custom_ncurses:
