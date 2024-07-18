@@ -32,7 +32,7 @@ CXXFLAGS := $(FLAGS) -std=c++23 $(STATICFLAG)
 CC := gcc
 CXX := g++
 
-build:
+build: build_librender_dynamic
 	@$(MAKE) all -j$(nproc)
 
 install:
@@ -43,15 +43,15 @@ build_w_custom_ncurses:
 	@if [ ! -d "include/ncurses-build" ]; then $(MAKE) custom_ncurses; fi
 	@$(MAKE) all -j$(nproc) INCLUDE="-I$(PWD)/include/ncurses-build" LIBPATH="-L$(PWD)/include/ncurses-build/lib"
 
-all: $(OBJECTS) build_librender
+all: $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $(INCLUDE) $(addprefix obj/,$(OBJECTS)) -o $(TARGET) $(LIBPATH) $(LIBS)
 
-build_librender:
+build_librender_dynamic:
 	@git submodule init
 	@git submodule update include/librender
 	@$(MAKE) -C include/librender all -j$(nproc)
 
-static: build_librender
+static: # not working
 	echo "Building static binary..."
 	@$(MAKE) clean_o
 	@$(MAKE) clean_e
