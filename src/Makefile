@@ -32,7 +32,7 @@ CXXFLAGS := $(FLAGS) -std=c++23 $(STATICFLAG)
 CC := gcc
 CXX := g++
 
-build: build_librender_dynamic
+build: build_librender_dynamic make_obj
 	@$(MAKE) all -j$(nproc)
 
 install:
@@ -51,7 +51,7 @@ build_librender_dynamic:
 	@git submodule update include/librender
 	@$(MAKE) -C include/librender all -j$(nproc)
 
-static: # not working
+static: make_obj # not working
 	echo "Building static binary..."
 	@$(MAKE) clean_o
 	@$(MAKE) clean_e
