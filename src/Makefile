@@ -13,14 +13,15 @@ TARGET := blink
 SOURCES := $(wildcard *.c *.cpp)
 OBJECTS := $(patsubst src%,obj%, $(patsubst %.c,%.o, $(patsubst %.cpp,%.o,$(SOURCES))))
 
-INCLUDE := -I.
-LIBPATH :=
-LIBS :=-lncursesw
+INCLUDE :=-I. -Iinclude
+LIBPATH :=-Linclude/librender
+LIBS :=-lncursesw -lhikrender
+
 
 ifeq ($(shell ldconfig -p | grep tinfo > /dev/null; echo $$? ),0)
-STATICLIBS := -lncursesw -ltinfo
+STATICLIBS :=-lncursesw -ltinfo
 else
-STATICLIBS := -lncursesw -ltinfow
+STATICLIBS :=-lncursesw -ltinfow
 endif
 
 STATICFLAG :=
@@ -30,44 +31,49 @@ CXXFLAGS := $(FLAGS) -std=c++23 $(STATICFLAG)
 CC := gcc
 CXX := g++
 
-build:
+build: build_librender_dynamic make_obj
 	@$(MAKE) all -j$(nproc)
 
+install_dynamic:
+	cp $(TARGET) ~/.local/bin/
+	$(MAKE) -C include/librender install
+
+install_static:
+	cp $(TARGET) ~/.local/bin/
+
 build_w_custom_ncurses:
-	@$(MAKE) custom_ncurses
-	@$(MAKE) all -j$(nproc) INCLUDE="-I$(PWD)/ncurses-build" LIBPATH="-L$(PWD)/ncurses-build/lib"
+	@if [ ! -d "include/librender/ncurses-build" ]; then $(MAKE) -C include/librender custom_ncurses; fi
+	@$(MAKE) all -j$(nproc) INCLUDE="-I$(PWD)/include/librender/ncurses-build" LIBPATH="-L$(PWD)/include/librender/ncurses-build/lib"
 
 all: $(OBJECTS)
-	$(CXX) $(CXXFLAGS) $(INCLUDE) $(OBJECTS) -o $(TARGET) $(LIBPATH) $(LIBS)
+	$(CXX) $(CXXFLAGS) $(INCLUDE) $(addprefix obj/,$(OBJECTS)) -o $(TARGET) $(LIBPATH) $(LIBS)
 
-static:
+build_librender_dynamic:
+	@git submodule init
+	@git submodule update include/librender
+	@$(MAKE) -C include/librender dynamic -j$(nproc)
+
+static: make_obj # not working
 	echo "Building static binary..."
 	@$(MAKE) clean_o
 	@$(MAKE) clean_e
-	@if [ ! -d "ncurses-build" ]; then $(MAKE) custom_ncurses; fi
-	@$(MAKE) all -j$(nproc) STATICFLAG="-static -static-libgcc" INCLUDE="-I$(PWD)/ncurses-build" LIBPATH="-L$(PWD)/ncurses-build/lib" LIBS="$(STATICLIBS)"
-
-custom_ncurses:
-	@if [ -d "ncurses-build" ]; then \
-  	echo "ERROR: ncurses-build directory already exists. If you really want to build again, remove it."; \
- 	exit 1; \
- 	fi
-	@mkdir -p ncurses-build
-	@cd ncurses && ./configure --prefix=$(PWD)/ncurses-build --enable-widec --with-termlib && make -j$(nproc) && make -j$(nproc) install
-
-%.o: %.c
-	$(CXX) $(CXXFLAGS) $(INCLUDE) -c $< -o $@
+	@$(MAKE) -C include/librender static
+	@$(MAKE) all -j$(nproc) INCLUDE="-static -static-libgcc" LIBPATH="-Linclude/librender -Linclude/librender/ncurses-build/lib" LIBS="-lhikrender $(STATICLIBS)"
 
 %.o: %.cpp
-	$(CXX) $(CXXFLAGS) $(INCLUDE) -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(INCLUDE) -c $< -o obj/$@
 
 .PHONY: clean_o clean_e static all custom_ncurses build clean
 
 clean_o:
-	rm -rf *.o
+	if [ -e obj/*.o ]; then rm obj/*.o; fi
+
 
 clean_e:
 	rm -f $(TARGET)
 
+make_obj:
+	mkdir -p obj
+
 clean: clean_o clean_e
-	rm -rf ncurses-build
+

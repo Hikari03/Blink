@@ -7,8 +7,7 @@
 #include <utility>
 #include <sstream>
 
-#include "Tiles.h"
-#include "Renderer.h"
+#include "include/librender/Renderer.h"
 #include "Connection.h"
 
 //foreground colors
