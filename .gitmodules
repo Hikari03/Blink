@@ -1,6 +1,3 @@
 [submodule "src/include/librender"]
 	path = src/include/librender
 	url = https://github.com/Hikari03/librender.git
-[submodule "src/include/ncurses"]
-	path = src/include/ncurses
-	url = https://github.com/mirror/ncurses.git

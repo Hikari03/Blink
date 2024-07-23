@@ -34,13 +34,16 @@ CXX := g++
 build: build_librender_dynamic make_obj
 	@$(MAKE) all -j$(nproc)
 
-install:
+install_dynamic:
 	cp $(TARGET) ~/.local/bin/
 	$(MAKE) -C include/librender install
 
+install_static:
+	cp $(TARGET) ~/.local/bin/
+
 build_w_custom_ncurses:
-	@if [ ! -d "include/ncurses-build" ]; then $(MAKE) custom_ncurses; fi
-	@$(MAKE) all -j$(nproc) INCLUDE="-I$(PWD)/include/ncurses-build" LIBPATH="-L$(PWD)/include/ncurses-build/lib"
+	@if [ ! -d "include/librender/ncurses-build" ]; then $(MAKE) -C include/librender custom_ncurses; fi
+	@$(MAKE) all -j$(nproc) INCLUDE="-I$(PWD)/include/librender/ncurses-build" LIBPATH="-L$(PWD)/include/librender/ncurses-build/lib"
 
 all: $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $(INCLUDE) $(addprefix obj/,$(OBJECTS)) -o $(TARGET) $(LIBPATH) $(LIBS)
@@ -48,28 +51,14 @@ all: $(OBJECTS)
 build_librender_dynamic:
 	@git submodule init
 	@git submodule update include/librender
-	@$(MAKE) -C include/librender all -j$(nproc)
+	@$(MAKE) -C include/librender dynamic -j$(nproc)
 
 static: make_obj # not working
 	echo "Building static binary..."
 	@$(MAKE) clean_o
 	@$(MAKE) clean_e
-	@if [ ! -d "include/ncurses-build" ]; then $(MAKE) custom_ncurses; fi
-	@$(MAKE) all -j$(nproc) STATICFLAG="-static -static-libgcc" INCLUDE="-I$(PWD)/include/ncurses-build" LIBPATH="-L$(PWD)/include/ncurses-build/lib" LIBS="$(STATICLIBS)"
-
-custom_ncurses:
-	@if [ -d "include/ncurses-build" ]; then \
-  	echo "ERROR: include/ncurses-build directory already exists. If you really want to build again, remove it."; \
- 	exit 1; \
- 	fi
-	@git submodule init
-	@git submodule update
-	@mkdir -p include/ncurses-build
-	@cd include/ncurses && \
- 		./configure --prefix=$(PWD)/include/ncurses-build --enable-widec --with-termlib \
- 		&& make -j$(nproc) \
- 		&& make -j$(nproc) install
-
+	@$(MAKE) -C include/librender static
+	@$(MAKE) all -j$(nproc) INCLUDE="-static -static-libgcc" LIBPATH="-Linclude/librender -Linclude/librender/ncurses-build/lib" LIBS="-lhikrender $(STATICLIBS)"
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDE) -c $< -o obj/$@
@@ -77,7 +66,8 @@ custom_ncurses:
 .PHONY: clean_o clean_e static all custom_ncurses build clean
 
 clean_o:
-	rm obj/*.o
+	if [ -e obj/*.o ]; then rm obj/*.o; fi
+
 
 clean_e:
 	rm -f $(TARGET)
@@ -86,4 +76,4 @@ make_obj:
 	mkdir -p obj
 
 clean: clean_o clean_e
-	rm -rf include/ncurses-build
+
