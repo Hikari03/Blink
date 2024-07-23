@@ -17,7 +17,6 @@ INCLUDE :=-I. -Iinclude
 LIBPATH :=-Linclude/librender
 LIBS :=-lncursesw -lhikrender
 
-THISDIR := $(shell pwd)
 
 ifeq ($(shell ldconfig -p | grep tinfo > /dev/null; echo $$? ),0)
 STATICLIBS :=-lncursesw -ltinfo
