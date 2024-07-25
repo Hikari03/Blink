@@ -17,7 +17,7 @@ INCLUDE := -I.
 LIBPATH :=
 LIBS :=-lsodium
 
-FLAGS := -Wall -Wextra -Wpedantic -Werror -g
+FLAGS := -Wall -Wextra -Wpedantic -Werror -g -fsanitize=address
 CCFLAGS := $(FLAGS) -std=c99
 CXXFLAGS := $(FLAGS) -std=c++23
 

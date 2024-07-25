@@ -41,9 +41,15 @@ public:
 	void close();
 
 private:
+
+	struct KeyPair {
+		unsigned char publicKey[crypto_box_PUBLICKEYBYTES];
+		unsigned char secretKey[crypto_box_SECRETKEYBYTES];
+	};
+
     char _buffer[4096] = {0};
-	unsigned char _symKey[crypto_secretbox_KEYBYTES];
-	unsigned char _nonce[crypto_secretbox_NONCEBYTES];
+	KeyPair _keyPair;
+	unsigned char _remotePublicKey[crypto_box_PUBLICKEYBYTES];
 	std::mutex _sendMutex;
     int _socket;
     ssize_t _sizeOfPreviousMessage = 0;

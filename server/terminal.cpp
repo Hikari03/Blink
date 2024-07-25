@@ -24,7 +24,7 @@ void terminal(std::condition_variable & callBack, std::list<Client> & clients, s
         std::cin >> input;
         if(input == "q") {
             turnOff = true;
-            printT("turning off server, please wait up to 1 minute");
+            printT("turning off server, please wait up to 15 seconds");
             callBack.notify_one();
             return;
         }

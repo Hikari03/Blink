@@ -43,11 +43,17 @@ public:
 
 private:
 
+	struct KeyPair {
+		unsigned char publicKey[crypto_box_PUBLICKEYBYTES];
+		unsigned char secretKey[crypto_box_SECRETKEYBYTES];
+	};
+
 	ClientInfo _clientInfo;
     int _sizeOfPreviousMessage = 0;
     std::string _message;
-	unsigned char _symKey[crypto_secretbox_KEYBYTES];
 	unsigned char _nonce[crypto_secretbox_NONCEBYTES];
+	KeyPair _keyPair;
+	unsigned char _remotePublicKey[crypto_box_PUBLICKEYBYTES];
     bool _active = true;
 	bool _encrypted = false;
 

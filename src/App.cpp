@@ -83,6 +83,7 @@ void App::_connectToServer(std::string ip, int port) {
     _connection.connectToServer(std::move(ip), port);
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	_connection.receive(); // for encryption initialization
+	_debug("connected to server");
     std::string message = _connection.receive();
     _debug("server message: " + message);
 	if(message == _internal"ban") {
@@ -185,6 +186,7 @@ void App::_chat() {
 
 void App::_sendThread() {
     std::string message;
+	_debug("send thread started");
 	_connection.sendInternal("getMessages");
     while(_running) {
         message = _getUserInput(2, 22, App::CursorColor::Green);
@@ -239,7 +241,7 @@ void App::_receiveThread() {
 
 			for (unsigned i = 0; i < messages.size(); i++) {
 				_tiles.insertText(3, 3 + i, _strToWStr(messages[i]), _red);
-				_debug(messages[i]);
+				//_debug(messages[i]);
 			}
 
 			{
