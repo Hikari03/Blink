@@ -3,7 +3,6 @@
 #include <locale>
 #include <codecvt>
 #include <string>
-#include <thread>
 #include <utility>
 #include <sstream>
 
@@ -19,7 +18,7 @@
 #define MAGENTA "\033[35m"
 #define WHITE "\033[37m"
 
-#define DEBUG 0
+#define DEBUG 1
 
 class App {
 public:

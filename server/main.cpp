@@ -19,7 +19,8 @@ int main() {
 
     sockaddr_in serverAddress = {AF_INET,
                                  htons(6999),
-                                 INADDR_ANY};
+                                 INADDR_ANY,
+								 {0}};
 
     bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
 

@@ -15,7 +15,7 @@ OBJECTS := $(patsubst src%,obj%, $(patsubst %.c,%.o, $(patsubst %.cpp,%.o,$(SOUR
 
 INCLUDE :=-I. -Iinclude
 LIBPATH :=-Linclude/librender
-LIBS :=-lncursesw -lhikrender
+LIBS :=-lncursesw -lhikrender -lsodium
 
 
 ifeq ($(shell ldconfig -p | grep tinfo > /dev/null; echo $$? ),0)
@@ -25,7 +25,7 @@ STATICLIBS :=-lncursesw -ltinfow
 endif
 
 STATICFLAG :=
-FLAGS := -Wall -Wextra -Wpedantic -Werror -O2
+FLAGS := -Wall -Wextra -Wpedantic -Werror -g
 CXXFLAGS := $(FLAGS) -std=c++23 $(STATICFLAG)
 
 CC := gcc
@@ -57,6 +57,8 @@ static: make_obj # not working
 	echo "Building static binary..."
 	@$(MAKE) clean_o
 	@$(MAKE) clean_e
+	@git submodule init
+	@git submodule update include/librender
 	@$(MAKE) -C include/librender static
 	@$(MAKE) all -j$(nproc) INCLUDE="-static -static-libgcc" LIBPATH="-Linclude/librender -Linclude/librender/ncurses-build/lib" LIBS="-lhikrender $(STATICLIBS)"
 
@@ -66,8 +68,7 @@ static: make_obj # not working
 .PHONY: clean_o clean_e static all custom_ncurses build clean
 
 clean_o:
-	if [ -e obj/*.o ]; then rm obj/*.o; fi
-
+	if [ -e "obj/*.o" ]; then rm obj/*.o; fi
 
 clean_e:
 	rm -f $(TARGET)
@@ -76,4 +77,4 @@ make_obj:
 	mkdir -p obj
 
 clean: clean_o clean_e
-
+	@$(MAKE) -C include/librender clean

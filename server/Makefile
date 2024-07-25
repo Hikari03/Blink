@@ -15,11 +15,11 @@ OBJECTS := $(patsubst src%,obj%, $(patsubst %.c,%.o, $(patsubst %.cpp,%.o,$(SOUR
 
 INCLUDE := -I.
 LIBPATH :=
-LIBS :=
+LIBS :=-lsodium
 
-FLAGS := -Wall
+FLAGS := -Wall -Wextra -Wpedantic -Werror -g
 CCFLAGS := $(FLAGS) -std=c99
-CXXFLAGS := $(FLAGS) -std=c++23 -g
+CXXFLAGS := $(FLAGS) -std=c++23
 
 CC := gcc
 CXX := g++

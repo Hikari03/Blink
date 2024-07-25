@@ -8,6 +8,7 @@
 #include <set>
 #include <mutex>
 #include <thread>
+#include <sodium.h>
 #include "Message.h"
 #include "MessageHolder.h"
 #include "ClientInfo.h"
@@ -45,7 +46,10 @@ private:
 	ClientInfo _clientInfo;
     int _sizeOfPreviousMessage = 0;
     std::string _message;
+	unsigned char _symKey[crypto_secretbox_KEYBYTES];
+	unsigned char _nonce[crypto_secretbox_NONCEBYTES];
     bool _active = true;
+	bool _encrypted = false;
 
     //outside references
     MessageHolder & _messages;
@@ -66,11 +70,13 @@ private:
     void sendThread();
     void receiveThread();
 
-    void sendMessage(const std::string & message) const;
+    void sendMessage(const std::string & message);
     void receiveMessage();
 
     void submitMessage(const std::string & message);
 
     void processMessage();
 
+	void secretOpen(std::string & message);
+	void secretSeal(std::string & message);
 };

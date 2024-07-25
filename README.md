@@ -81,4 +81,5 @@ in Blink/server
     or when someone leaves and the chat history is not updated
 - [x] fix server having unexpected behavior when closing server with clients connected
 - [ ] implement code for graceful stop in docker 
-- [ ] transfer ncurses static build to librender that will make static library
+- [x] transfer ncurses static build to librender that will make static library
+- [ ] make communication encrypted
