@@ -17,12 +17,7 @@ INCLUDE :=-I. -Iinclude
 LIBPATH :=-Linclude/librender
 LIBS :=-lncursesw -lhikrender -lsodium
 
-
-ifeq ($(shell ldconfig -p | grep tinfo > /dev/null; echo $$? ),0)
-STATICLIBS :=-lncursesw -ltinfo
-else
 STATICLIBS :=-lncursesw -ltinfow
-endif
 
 STATICFLAG :=
 FLAGS := -Wall -Wextra -Wpedantic -Werror -O2
