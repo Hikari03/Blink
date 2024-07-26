@@ -73,7 +73,7 @@ static: make_obj
 	@$(MAKE) clean_e
 	@if [ ! -d "include/libsodium-build" ]; then $(MAKE) build_libsodium; fi
 	@$(MAKE) -C include/librender static
-	@$(MAKE) all -j$(nproc) INCLUDE="-static -static-libgcc" \
+	@$(MAKE) all -j$(nproc) INCLUDE=" -Iinclude/libsodium-build/include -static -static-libgcc" \
  		LIBPATH="-Linclude/librender -Linclude/librender/ncurses-build/lib -Linclude/libsodium-build/lib" \
  		LIBS="-lhikrender -lsodium $(STATICLIBS)"
 
