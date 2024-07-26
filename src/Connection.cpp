@@ -6,7 +6,11 @@ Connection::Connection() {
         throw std::runtime_error("Could not create socket");
     }
 
+	if (sodium_init() < 0) {
+		throw std::runtime_error("Could not initialize sodium");
+	}
 
+	crypto_box_keypair(_keyPair.publicKey, _keyPair.secretKey);
 }
 
 void Connection::connectToServer(std::string ip, int port) {
@@ -30,15 +34,26 @@ void Connection::connectToServer(std::string ip, int port) {
 
     connect(_socket, (struct sockaddr*)&_server, sizeof(_server));
 
+
+
+}
+
+void Connection::_send(const char * message, size_t length) {
+	std::lock_guard<std::mutex> lock(_sendMutex);
+	if(::send(_socket, message, length, 0) < 0) {
+		throw std::runtime_error("Could not send message");
+	}
 }
 
 void Connection::send(const std::string & message){
-	std::lock_guard<std::mutex> lock(_sendMutex);
-    auto messageToSend = message + _end;
+    auto messageToSend = message;
 
-    if(::send(_socket, messageToSend.c_str(), messageToSend.length(), 0) < 0) {
-        throw std::runtime_error("Could not send message");
-    }
+	if(_encrypted)
+		_secretSeal(messageToSend);
+
+	messageToSend += _end;
+
+	_send(messageToSend.c_str(), messageToSend.size());
 }
 
 void Connection::sendMessage(const std::string & message) {
@@ -64,14 +79,33 @@ std::string Connection::receive() {
         }
 
         message += _buffer;
+		//std::cout << "RECEIVE |  " << message << std::endl;
     }
 
-    // remove the _end string
-    message = message.substr(0, message.find(_end));
+	// remove the _end string
+	message = message.substr(0, message.find(_end));
 
-	//TODO handle this in App.cpp
-    if(message.contains(_text))
-        message = message.substr(sizeof(_text)-1, message.length());
+	if(_encrypted)
+		_secretOpen(message);
+
+	if(message.contains(_internal"publicKey:")) {
+		std::string publicKey = message.substr(strlen(_internal"publicKey:"));
+
+		if(sodium_hex2bin(_remotePublicKey, crypto_box_PUBLICKEYBYTES, publicKey.c_str(), publicKey.size(), nullptr, nullptr, nullptr) < 0){
+			throw std::runtime_error("Could not decode public key");
+		}
+
+		auto pk_hex = std::make_unique<char[]>(crypto_box_PUBLICKEYBYTES * 2 + 1);
+
+		sodium_bin2hex(pk_hex.get(), crypto_box_PUBLICKEYBYTES * 2 + 1,
+						  _keyPair.publicKey, crypto_box_PUBLICKEYBYTES);
+
+		//std::cout << "public key: " << pk_base64.get() << std::endl;
+
+		send(_internal"publicKey:" + std::string(pk_hex.get(), crypto_box_PUBLICKEYBYTES * 2));
+
+		_encrypted = true;
+	}
 
     return message;
 }
@@ -89,9 +123,7 @@ Connection::~Connection() {
 
 void Connection::clearBuffer() {
 
-    for(int i = 0; i < _sizeOfPreviousMessage; i++) {
-        _buffer[i] = '\0';
-    }
+	memset(_buffer, '\0', _sizeOfPreviousMessage);
 
 }
 
@@ -135,4 +167,37 @@ std::vector<std::string> Connection::dnsLookup(const std::string & domain, int i
     freeaddrinfo(res); // free the linked list
 
     return output;
+}
+
+void Connection::_secretSeal(std::string & message) {
+
+	auto cypherText = std::make_unique<unsigned char[]>(crypto_box_SEALBYTES + message.size());
+
+	if(crypto_box_seal(cypherText.get(), reinterpret_cast<const unsigned char*>(message.c_str()),
+					   message.size(), _remotePublicKey) < 0)
+		throw std::runtime_error("Could not encrypt message");
+
+	auto messageHex = std::make_unique<unsigned char[]>((crypto_box_SEALBYTES + message.size()) * 2 + 1);
+
+	sodium_bin2hex(reinterpret_cast<char *>(messageHex.get()), (crypto_box_SEALBYTES + message.size()) * 2 + 1,
+				   cypherText.get(), crypto_box_SEALBYTES + message.size());
+
+	message = std::string(reinterpret_cast<char *>(messageHex.get()), (crypto_box_SEALBYTES + message.size()) * 2);
+}
+
+void Connection::_secretOpen(std::string & message) {
+
+	auto cypherText_bin = std::make_unique<unsigned char[]>(message.size()/2);
+
+	if(sodium_hex2bin(cypherText_bin.get(), message.size() / 2,
+					  reinterpret_cast<const char *>(message.c_str()),message.size(),
+					  nullptr, nullptr, nullptr) < 0)
+		throw std::runtime_error("Could not decode message");
+
+	auto decrypted = std::make_unique<unsigned char[]>(message.size()/2 - crypto_box_SEALBYTES);
+
+	if(crypto_box_seal_open(decrypted.get(), cypherText_bin.get(), message.size() / 2, _keyPair.publicKey, _keyPair.secretKey) < 0)
+		throw std::runtime_error("Could not decrypt message");
+
+	message = std::string(reinterpret_cast<char*>(decrypted.get()), message.size()/2 - crypto_box_SEALBYTES);
 }

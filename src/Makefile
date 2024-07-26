@@ -15,7 +15,7 @@ OBJECTS := $(patsubst src%,obj%, $(patsubst %.c,%.o, $(patsubst %.cpp,%.o,$(SOUR
 
 INCLUDE :=-I. -Iinclude
 LIBPATH :=-Linclude/librender
-LIBS :=-lncursesw -lhikrender
+LIBS :=-lncursesw -lhikrender -lsodium
 
 
 ifeq ($(shell ldconfig -p | grep tinfo > /dev/null; echo $$? ),0)
@@ -35,11 +35,11 @@ build: build_librender_dynamic make_obj
 	@$(MAKE) all -j$(nproc)
 
 install_dynamic:
-	cp $(TARGET) ~/.local/bin/
+	cp $(TARGET) /usr/bin/
 	$(MAKE) -C include/librender install
 
 install_static:
-	cp $(TARGET) ~/.local/bin/
+	cp $(TARGET) /usr/bin/
 
 build_w_custom_ncurses:
 	@if [ ! -d "include/librender/ncurses-build" ]; then $(MAKE) -C include/librender custom_ncurses; fi
@@ -53,12 +53,29 @@ build_librender_dynamic:
 	@git submodule update include/librender
 	@$(MAKE) -C include/librender dynamic -j$(nproc)
 
-static: make_obj # not working
+build_libsodium:
+	@if [ -d "include/libsodium-build" ]; then \
+	echo "ERROR: libsodium-build directory already exists. If you really want to build again, remove it."; \
+	exit 1; \
+	fi
+	@git submodule init
+	@git submodule update include/libsodium
+	@mkdir -p include/libsodium-build
+	@cd include/libsodium && \
+		./configure --prefix=$(PWD)/include/libsodium-build --enable-static  && \
+		make -j$(nproc) && \
+		make check && \
+		make install
+
+static: make_obj
 	echo "Building static binary..."
 	@$(MAKE) clean_o
 	@$(MAKE) clean_e
+	@if [ ! -d "include/libsodium-build" ]; then $(MAKE) build_libsodium; fi
 	@$(MAKE) -C include/librender static
-	@$(MAKE) all -j$(nproc) INCLUDE="-static -static-libgcc" LIBPATH="-Linclude/librender -Linclude/librender/ncurses-build/lib" LIBS="-lhikrender $(STATICLIBS)"
+	@$(MAKE) all -j$(nproc) INCLUDE=" -Iinclude/libsodium-build/include -static -static-libgcc" \
+ 		LIBPATH="-Linclude/librender -Linclude/librender/ncurses-build/lib -Linclude/libsodium-build/lib" \
+ 		LIBS="-lhikrender -lsodium $(STATICLIBS)"
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDE) -c $< -o obj/$@
@@ -66,8 +83,7 @@ static: make_obj # not working
 .PHONY: clean_o clean_e static all custom_ncurses build clean
 
 clean_o:
-	if [ -e obj/*.o ]; then rm obj/*.o; fi
-
+	if [ -e "obj/*.o" ]; then rm obj/*.o; fi
 
 clean_e:
 	rm -f $(TARGET)
@@ -76,4 +92,6 @@ make_obj:
 	mkdir -p obj
 
 clean: clean_o clean_e
-
+	@$(MAKE) -C include/librender clean
+	@$(MAKE) -C include/libsodium clean
+	@rm -rf include/libsodium-build

@@ -3,7 +3,6 @@
 #include <locale>
 #include <codecvt>
 #include <string>
-#include <thread>
 #include <utility>
 #include <sstream>
 

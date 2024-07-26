@@ -8,6 +8,7 @@
 #include <set>
 #include <mutex>
 #include <thread>
+#include <sodium.h>
 #include "Message.h"
 #include "MessageHolder.h"
 #include "ClientInfo.h"
@@ -42,10 +43,19 @@ public:
 
 private:
 
+	struct KeyPair {
+		unsigned char publicKey[crypto_box_PUBLICKEYBYTES];
+		unsigned char secretKey[crypto_box_SECRETKEYBYTES];
+	};
+
 	ClientInfo _clientInfo;
     int _sizeOfPreviousMessage = 0;
     std::string _message;
+	unsigned char _nonce[crypto_secretbox_NONCEBYTES];
+	KeyPair _keyPair;
+	unsigned char _remotePublicKey[crypto_box_PUBLICKEYBYTES];
     bool _active = true;
+	bool _encrypted = false;
 
     //outside references
     MessageHolder & _messages;
@@ -66,11 +76,13 @@ private:
     void sendThread();
     void receiveThread();
 
-    void sendMessage(const std::string & message) const;
+    void sendMessage(const std::string & message);
     void receiveMessage();
 
     void submitMessage(const std::string & message);
 
     void processMessage();
 
+	void secretOpen(std::string & message);
+	void secretSeal(std::string & message);
 };

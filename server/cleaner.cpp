@@ -4,7 +4,7 @@
 void cleaner(std::list<Client> & clients, const bool & turnOff, std::mutex & clientsMutex) {
     while(!turnOff) {
 
-        std::this_thread::sleep_for(std::chrono::seconds(30));
+        std::this_thread::sleep_for(std::chrono::seconds(15));
 
         //printf("cleaner: cleaning clients\n");
 

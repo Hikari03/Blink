@@ -12,6 +12,9 @@
 #include <vector>
 #include <iostream>
 #include <mutex>
+#include <memory>
+#include <thread>
+#include <sodium.h>
 
 #define _end "::--///-$$$"
 #define _internal "INTERNAL::"
@@ -33,19 +36,34 @@ public:
     void sendMessage(const std::string & message);
 	void sendInternal(const std::string & message);
 
+
     std::string receive();
 	void close();
 
 private:
+
+	struct KeyPair {
+		unsigned char publicKey[crypto_box_PUBLICKEYBYTES];
+		unsigned char secretKey[crypto_box_SECRETKEYBYTES];
+	};
+
     char _buffer[4096] = {0};
+	KeyPair _keyPair;
+	unsigned char _remotePublicKey[crypto_box_PUBLICKEYBYTES];
 	std::mutex _sendMutex;
     int _socket;
     ssize_t _sizeOfPreviousMessage = 0;
     sockaddr_in _server;
     bool _active = true;
+	bool _encrypted = false;
 
     void clearBuffer();
 
-    [[nodiscard]] static std::vector<std::string> dnsLookup(const std::string & domain, int ipv = 4) ;
+    [[nodiscard]] static std::vector<std::string> dnsLookup(const std::string & domain, int ipv = 4);
+
+	void _send(const char * message, size_t length);
+
+	void _secretOpen(std::string & message);
+	void _secretSeal(std::string & message);
 
 };

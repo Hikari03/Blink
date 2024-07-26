@@ -22,7 +22,12 @@ void App::run() {
     }
     catch(std::exception & e) {
         _tiles.insertText(43, 15, L"Connection failed from exception!", _lightblue);
-		_tiles.insertText(43, 16, _strToWStr(e.what()), _red);
+		if(_strToWStr(e.what()).size() > 50){
+			_tiles.insertText(43, 16, _strToWStr(e.what()).substr(0, 50), _red);
+			_tiles.insertText(43, 17, _strToWStr(e.what()).substr(50, _strToWStr(e.what()).size()), _red);
+		}
+		else
+			_tiles.insertText(43, 16, _strToWStr(e.what()), _red);
         _renderer.print();
         getch();
         return;
@@ -77,6 +82,8 @@ void App::_connectToServer(std::string ip, int port) {
     _debug("connecting to server");
     _connection.connectToServer(std::move(ip), port);
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	_connection.receive(); // for encryption initialization
+	_debug("connected to server");
     std::string message = _connection.receive();
     _debug("server message: " + message);
 	if(message == _internal"ban") {
@@ -179,6 +186,7 @@ void App::_chat() {
 
 void App::_sendThread() {
     std::string message;
+	_debug("send thread started");
 	_connection.sendInternal("getMessages");
     while(_running) {
         message = _getUserInput(2, 22, App::CursorColor::Green);
@@ -212,7 +220,7 @@ void App::_receiveThread() {
             return;
         }
         if(message == _internal"ping") {
-            _connection.send(_internal"pong");
+            _connection.sendInternal("pong");
             continue;
         }
 
@@ -224,20 +232,24 @@ void App::_receiveThread() {
             break;
         }
 
-		_tiles.insertBox(1, 2, 50, 20, true, _lightblue);
+		if(message.contains(_text)) {
+			message = message.substr(sizeof(_text) - 1, message.length());
 
-        messages = _split(message, '\n');
+			_tiles.insertBox(1, 2, 50, 20, true, _lightblue);
 
-        for(unsigned i = 0; i < messages.size(); i++) {
-            _tiles.insertText(3, 3 + i, _strToWStr(messages[i]), _red);
-            _debug(messages[i]);
-        }
+			messages = _split(message, '\n');
 
-        {
-            std::lock_guard<std::mutex> lock(_ioMtx);
-            _renderer.print();
-            _returnCursor();
-        }
+			for (unsigned i = 0; i < messages.size(); i++) {
+				_tiles.insertText(3, 3 + i, _strToWStr(messages[i]), _red);
+				//_debug(messages[i]);
+			}
+
+			{
+				std::lock_guard<std::mutex> lock(_ioMtx);
+				_renderer.print();
+				_returnCursor();
+			}
+		}
     }
 }
 
