@@ -5,5 +5,4 @@ CMakeLists.txt
 blink-server
 blink
 ncurses-build
-librender-build
 libsodium-build

@@ -17,18 +17,12 @@ INCLUDE :=-I. -Iinclude
 LIBPATH :=-Linclude/librender
 LIBS :=-lncursesw -lhikrender -lsodium
 
-
-ifeq ($(shell ldconfig -p | grep tinfo > /dev/null; echo $$? ),0)
-STATICLIBS :=-lncursesw -ltinfo
-else
 STATICLIBS :=-lncursesw -ltinfow
-endif
 
 STATICFLAG :=
 FLAGS := -Wall -Wextra -Wpedantic -Werror -O2
 CXXFLAGS := $(FLAGS) -std=c++23 $(STATICFLAG)
 
-CC := gcc
 CXX := g++
 
 build: build_librender_dynamic make_obj
@@ -72,8 +66,9 @@ static: make_obj
 	@$(MAKE) clean_o
 	@$(MAKE) clean_e
 	@if [ ! -d "include/libsodium-build" ]; then $(MAKE) build_libsodium; fi
+	@git submodule update include/librender
 	@$(MAKE) -C include/librender static
-	@$(MAKE) all -j$(nproc) INCLUDE=" -Iinclude/libsodium-build/include -static -static-libgcc" \
+	@$(MAKE) all -j$(nproc) INCLUDE="-Iinclude/librender/ncurses-build/include -Iinclude/librender/ncurses-build/include/ncursesw -Iinclude/libsodium-build/include -static -static-libgcc" \
  		LIBPATH="-Linclude/librender -Linclude/librender/ncurses-build/lib -Linclude/libsodium-build/lib" \
  		LIBS="-lhikrender -lsodium $(STATICLIBS)"
 
