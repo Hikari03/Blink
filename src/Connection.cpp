@@ -88,7 +88,7 @@ std::string Connection::receive() {
 	if(_encrypted)
 		_secretOpen(message);
 
-	if(message.contains(_internal"publicKey:")){
+	if(message.contains(_internal"publicKey:")) {
 		std::string publicKey = message.substr(strlen(_internal"publicKey:"));
 
 		if(sodium_hex2bin(_remotePublicKey, crypto_box_PUBLICKEYBYTES, publicKey.c_str(), publicKey.size(), nullptr, nullptr, nullptr) < 0){
