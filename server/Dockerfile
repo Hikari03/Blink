@@ -3,7 +3,7 @@ LABEL authors="hikari03"
 
 COPY .. /messenger
 
-RUN apk add --no-cache g++ make git && \
+RUN apk add --no-cache g++ make git libsodium && \
     cd messenger/server && \
     make clean_o clean_e && \
     make -j$(nproc)
