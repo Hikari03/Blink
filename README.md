@@ -82,4 +82,4 @@ in Blink/server
 - [x] fix server having unexpected behavior when closing server with clients connected
 - [ ] implement code for graceful stop in docker 
 - [x] transfer ncurses static build to librender that will make static library
-- [ ] make communication encrypted
+- [x] make communication encrypted

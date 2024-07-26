@@ -25,7 +25,7 @@ STATICLIBS :=-lncursesw -ltinfow
 endif
 
 STATICFLAG :=
-FLAGS := -Wall -Wextra -Wpedantic -Werror -g
+FLAGS := -Wall -Wextra -Wpedantic -Werror -O2 -fsanitize=address
 CXXFLAGS := $(FLAGS) -std=c++23 $(STATICFLAG)
 
 CC := gcc
