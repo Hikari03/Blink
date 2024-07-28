@@ -3,7 +3,7 @@
 
 ## Dependencies
 ### Shared
-- `make`, `g++` with c++23 support
+- `make`,`libsodium`, `g++` with c++23 support
 ### Client
 - `ncursesw` for terminal UI
 ### Server
