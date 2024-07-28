@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.40.0 -->
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <object class="GtkApplicationWindow">
+    <property name="name">blink</property>
+    <property name="can-focus">False</property>
+    <property name="default-width">1000</property>
+    <property name="default-height">600</property>
+    <property name="gravity">center</property>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="margin-left">204</property>
+        <property name="margin-right">204</property>
+        <property name="margin-top">145</property>
+        <property name="margin-bottom">146</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">10</property>
+        <child>
+          <object class="GtkTextView">
+            <property name="name">enterName</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="editable">False</property>
+            <property name="justification">center</property>
+            <property name="top-margin">10</property>
+            <property name="bottom-margin">10</property>
+            <property name="indent">1</property>
+            <property name="cursor-visible">False</property>
+            <property name="accepts-tab">False</property>
+            <property name="input-purpose">alpha</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkEntry">
+            <property name="name">enterNameDialog</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="max-length">10</property>
+            <property name="input-purpose">digits</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkTextView">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="editable">False</property>
+            <property name="justification">center</property>
+            <property name="top-margin">10</property>
+            <property name="bottom-margin">10</property>
+            <property name="cursor-visible">False</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkEntry">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">3</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
+  </object>
+</interface>
