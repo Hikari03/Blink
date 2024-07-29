@@ -27,6 +27,12 @@ void GTKHandler::on_activate() {
 		text_buffer->set_text("Enter your name");
 		return text_buffer; }());
 
+	dynamic_cast<Gtk::TextView*>(_widgets["enterServer"])->set_buffer([]{
+		auto text_buffer = Gtk::TextBuffer::create();
+		text_buffer->set_text("Enter the server address");
+		return text_buffer; }());
+
+	_window->set_size_request();
 	_window->present();
 	_window->set_visible(true);
 	_window->show();

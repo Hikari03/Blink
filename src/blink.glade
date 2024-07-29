@@ -120,6 +120,7 @@
         <child>
           <object class="GtkTextView">
             <property name="name">enterName</property>
+            <property name="width-request">500</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="editable">False</property>
