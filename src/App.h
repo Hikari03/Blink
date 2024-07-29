@@ -8,6 +8,7 @@
 
 #include "include/librender/Renderer.h"
 #include "Connection.h"
+#include "GTKHandler.h"
 
 //foreground colors
 #define GREEN "\033[32m"
@@ -27,6 +28,7 @@ public:
     void run();
 
 private:
+	GTKHandler _gtkHandler;
     Tiles _tiles;
     Renderer _renderer;
     std::mutex _ioMtx;

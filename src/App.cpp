@@ -7,6 +7,7 @@ App::App() : _tiles({100,25}), _renderer(_tiles), _lightblue(_renderer.initColor
 void App::run() {
     try {
 		_init();
+		_gtkHandler.show();
 	}
 	catch (std::exception & e) {
 		_tiles.insertText(43, 8, _strToWStr(e.what()), _red);
@@ -253,7 +254,7 @@ void App::_receiveThread() {
     }
 }
 
-std::vector<std::string> App::_split(const string &text, char delimiter) const {
+std::vector<std::string> App::_split(const std::string &text, char delimiter) const {
     std::vector<std::string> tokens;
     std::string token;
     std::istringstream tokenStream(text);

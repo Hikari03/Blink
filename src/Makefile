@@ -13,9 +13,9 @@ TARGET := blink
 SOURCES := $(wildcard *.c *.cpp)
 OBJECTS := $(patsubst src%,obj%, $(patsubst %.c,%.o, $(patsubst %.cpp,%.o,$(SOURCES))))
 
-INCLUDE :=-I. -Iinclude
+INCLUDE :=-I. -Iinclude $(shell pkg-config -cflags gtkmm-4.0)
 LIBPATH :=-Linclude/librender
-LIBS :=-lncursesw -lhikrender -lsodium
+LIBS :=-lncursesw -lhikrender -lsodium $(shell pkg-config -libs gtkmm-4.0)
 
 STATICLIBS :=-lncursesw -ltinfow
 
