@@ -6,8 +6,8 @@ App::App() : _tiles({100,25}), _renderer(_tiles), _lightblue(_renderer.initColor
 
 void App::run() {
     try {
-		_init();
 		_gtkHandler.show();
+		_init();
 	}
 	catch (std::exception & e) {
 		_tiles.insertText(43, 8, _strToWStr(e.what()), _red);

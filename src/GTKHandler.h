@@ -23,5 +23,8 @@ private:
 			"enterServerDialog"
 	};
 
+	void on_startup();
+	void on_activate();
+
 
 };
