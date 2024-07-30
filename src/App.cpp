@@ -13,7 +13,8 @@ void App::run() {
 		_receiveThr.join();
 	}
 	catch (std::exception & e) {
-		g_message(e.what());
+		std::string message = e.what();
+		g_log("App", G_LOG_LEVEL_CRITICAL, message.c_str());
 	}
 }
 
@@ -64,8 +65,8 @@ void App::_connectToServer(std::string ip, int port) {
 
 void App::_debug(const std::string & text) {
     if constexpr(DEBUG) {
-
-		g_message(text.c_str());
+		std::string message = "App: " + text;
+		g_log("App", G_LOG_LEVEL_DEBUG, message.c_str());
     }
 
 }
