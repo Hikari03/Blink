@@ -203,7 +203,7 @@ void App::_sendThread() {
 		// we may have been kicked
 		if(_running) {
 			_connection.sendMessage(message);
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			//std::this_thread::sleep_for(std::chrono::milliseconds(20));
 			_connection.sendInternal("getMessages");
 		}
     }
