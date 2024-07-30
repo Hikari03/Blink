@@ -11,10 +11,10 @@
       <object class="GtkBox" id="IntroBox">
         <property name="visible">0</property>
         <property name="name">IntroBox</property>
-        <property name="margin-start">204</property>
-        <property name="margin-end">204</property>
-        <property name="margin-top">145</property>
-        <property name="margin-bottom">146</property>
+        <property name="margin-start">150</property>
+        <property name="margin-end">150</property>
+        <property name="margin-top">60</property>
+        <property name="margin-bottom">120</property>
         <property name="orientation">vertical</property>
         <property name="spacing">10</property>
         <child>
@@ -59,6 +59,14 @@
             <property name="visible">0</property>
             <property name="name">enterServerDialog</property>
             <property name="focusable">1</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="confirmButton">
+            <property name="label" translatable="1">Confirm</property>
+            <property name="focusable">1</property>
+            <property name="receives-default">1</property>
+            <property name="margin-top">25</property>
           </object>
         </child>
       </object>

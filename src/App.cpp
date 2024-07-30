@@ -6,6 +6,7 @@ App::App() : _tiles({100,25}), _renderer(_tiles), _lightblue(_renderer.initColor
 
 void App::run() {
     try {
+		_gtkHandler.initIntro();
 		_gtkHandler.show();
 		_init();
 	}

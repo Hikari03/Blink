@@ -3,11 +3,13 @@
 #undef OK
 #endif
 #include <gtkmm.h>
+#include <fstream>
 
 class GTKHandler {
 
 public:
 	GTKHandler();
+	void initIntro();
 
 	void show();
 private:
@@ -20,11 +22,16 @@ private:
 			"enterName",
 			"enterNameDialog",
 			"enterServer",
-			"enterServerDialog"
+			"enterServerDialog",
+			"confirmButton"
 	};
+	std::string name;
+	std::string serverAddr;
 
-	void on_startup();
-	void on_activate();
+	void _onStartup();
+	void _onActivate();
+	void _onIntroButtonClicked();
+	void _setWidgetText(const std::string & name, const std::string & text);
 
 
 };
