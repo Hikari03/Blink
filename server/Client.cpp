@@ -3,12 +3,9 @@
 Client::Client(ClientInfo clientInfo, MessageHolder & messages) :
         _clientInfo(std::move(clientInfo)), _messages(messages), _messagesMutex(_messages.getMessagesMutex()), _callBackOnMessagesChange(_messages.getCallback()) {}
 
-
-
 Client::~Client() {
     exit();
 }
-
 
 void Client::initConnection() {
 
@@ -183,6 +180,28 @@ void Client::processMessage() {
 		return;
 	}
 
+	// returns all messages without the first one (the last one)
+	if(_message == _internal"getHistory") {
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		auto messages = _messages.serializeMessages(3000);
+		// remove the last message
+		messages = messages.substr(messages.find_first_of('\n'));
+		//remove first and last char
+		messages = messages.substr(1, messages.size()-1);
+
+		std::cout << "sending history to " << _clientInfo.socket_ << "/" + _clientInfo.name << std::endl;
+		std::cout << "\"" << messages << "\"" << std::endl; //debug
+
+		sendMessage(_text + messages);
+		return;
+	}
+
+	if(_message == _internal"ban") {
+		std::cout << "user " << _clientInfo.name << " with socket " << _clientInfo.socket_ << " banned" << std::endl;
+		_active = false;
+		return;
+	}
+
     if(_message.contains(_text)){
         //std::cout << "submitting message: " << _message.substr(sizeof(_text)-1, _message.length()) << std::endl;
         submitMessage(_message.substr(sizeof(_text)-1, _message.length()));
@@ -195,7 +214,7 @@ void Client::sendThread() {
     while(_active) {
         _callBackOnMessagesChange.wait(lock);
 		if(_active) // if we have already kicked client, we cant send or else segfault (edge case)
-        	sendMessage(_text + _messages.serializeMessages(17));
+        	sendMessage(_text + _messages.serializeMessages(1));
     }
 
 

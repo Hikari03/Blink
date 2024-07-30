@@ -2,6 +2,7 @@
 
 #include <set>
 #include <condition_variable>
+#include <ranges>
 #include "Message.h"
 
 class MessageHolder {
@@ -14,6 +15,8 @@ public:
     void addMessage(const Message & message);
 
     void removeMessage(const Message & message);
+
+	unsigned long getMessagesCount() const;
 
     [[nodiscard]] std::set<Message> getMessages() const;
 
@@ -33,4 +36,5 @@ private:
 
     std::string _serializedMessagesCache;
     bool _changeSinceLastSerialization = false;
+	unsigned long _lastSerializedMessagesCount = 0;
 };
