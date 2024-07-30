@@ -6,8 +6,12 @@ App::App() : _tiles({100,25}), _renderer(_tiles), _lightblue(_renderer.initColor
 
 void App::run() {
     try {
-		_gtkHandler.initIntro();
+		_gtkHandler.init();
 		_gtkHandler.show();
+		auto [name, serverAddr] = _gtkHandler.getIntroData();
+		_userName = name;
+		_ip = serverAddr;
+		//_gtkHandler.show();
 		_init();
 	}
 	catch (std::exception & e) {

@@ -73,6 +73,7 @@
     </child>
   </object>
   <object class="GtkApplicationWindow" id="mainAppWin">
+    <property name="name">blink</property>
     <property name="default-width">1000</property>
     <property name="default-height">600</property>
     <property name="halign">center</property>
@@ -98,15 +99,24 @@
               </object>
             </child>
             <child>
-              <placeholder/>
+              <object class="GtkSeparator">
+              </object>
             </child>
             <child>
               <object class="GtkTextView" id="messagesInput">
                 <property name="visible">0</property>
                 <property name="height-request">81</property>
                 <property name="focusable">1</property>
+                <property name="margin-top">10</property>
+                <property name="margin-bottom">10</property>
+                <property name="margin-start">20</property>
+                <property name="margin-end">20</property>
               </object>
             </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkSeparator">
           </object>
         </child>
         <child>

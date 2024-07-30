@@ -20,7 +20,7 @@ LIBS :=-lncursesw -lhikrender -lsodium $(shell pkg-config -libs gtkmm-4.0)
 STATICLIBS :=-lncursesw -ltinfow
 
 STATICFLAG :=
-FLAGS := -Wall -Wextra -Wpedantic -Werror -O2
+FLAGS := -Wall -Wextra -Wpedantic -Werror -g
 CXXFLAGS := $(FLAGS) -std=c++23 $(STATICFLAG)
 
 CXX := g++
