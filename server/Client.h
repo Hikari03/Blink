@@ -67,7 +67,6 @@ private:
 
     /**
      * @brief gets name of the client
-     * @todo implement encryption
      */
     void initConnection();
 

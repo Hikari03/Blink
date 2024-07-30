@@ -3,12 +3,9 @@
 Client::Client(ClientInfo clientInfo, MessageHolder & messages) :
         _clientInfo(std::move(clientInfo)), _messages(messages), _messagesMutex(_messages.getMessagesMutex()), _callBackOnMessagesChange(_messages.getCallback()) {}
 
-
-
 Client::~Client() {
     exit();
 }
-
 
 void Client::initConnection() {
 
@@ -183,6 +180,28 @@ void Client::processMessage() {
 		return;
 	}
 
+	// returns all messages without the first one (the last one)
+	if(_message == _internal"getHistory") {
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		auto messages = _messages.serializeMessages(3000);
+		// remove the last message
+		messages = messages.substr(messages.find_first_of('\n'));
+		//remove first and last char
+		messages = messages.substr(1, messages.size()-1);
+
+		std::cout << "sending history to " << _clientInfo.socket_ << "/" + _clientInfo.name << std::endl;
+		std::cout << "\"" << messages << "\"" << std::endl; //debug
+
+		sendMessage(_text + messages);
+		return;
+	}
+
+	if(_message == _internal"ban") {
+		std::cout << "user " << _clientInfo.name << " with socket " << _clientInfo.socket_ << " banned" << std::endl;
+		_active = false;
+		return;
+	}
+
     if(_message.contains(_text)){
         //std::cout << "submitting message: " << _message.substr(sizeof(_text)-1, _message.length()) << std::endl;
         submitMessage(_message.substr(sizeof(_text)-1, _message.length()));
@@ -195,7 +214,7 @@ void Client::sendThread() {
     while(_active) {
         _callBackOnMessagesChange.wait(lock);
 		if(_active) // if we have already kicked client, we cant send or else segfault (edge case)
-        	sendMessage(_text + _messages.serializeMessages(17));
+        	sendMessage(_text + _messages.serializeMessages(1));
     }
 
 
@@ -241,16 +260,16 @@ void Client::secretSeal(std::string & message) {
 
 void Client::secretOpen(std::string & message) {
 
-	auto cypherText_bin = std::make_unique<unsigned char[]>(message.size()/2);
+	auto cypherTextBin = std::make_unique<unsigned char[]>(message.size() / 2);
 
-	if(sodium_hex2bin(cypherText_bin.get(), message.size() / 2,
-					  reinterpret_cast<const char *>(message.c_str()),message.size(),
+	if(sodium_hex2bin(cypherTextBin.get(), message.size() / 2,
+					  reinterpret_cast<const char *>(message.c_str()), message.size(),
 					  nullptr, nullptr, nullptr) < 0)
 		throw std::runtime_error("Could not decode message");
 
 	auto decrypted = std::make_unique<unsigned char[]>(message.size()/2 - crypto_box_SEALBYTES);
 
-	if(crypto_box_seal_open(decrypted.get(), cypherText_bin.get(), message.size() / 2, _keyPair.publicKey, _keyPair.secretKey) < 0)
+	if(crypto_box_seal_open(decrypted.get(), cypherTextBin.get(), message.size() / 2, _keyPair.publicKey, _keyPair.secretKey) < 0)
 		throw std::runtime_error("Could not decrypt message");
 
 	message = std::string(reinterpret_cast<char*>(decrypted.get()), message.size()/2 - crypto_box_SEALBYTES);

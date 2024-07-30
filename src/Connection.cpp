@@ -111,7 +111,7 @@ std::string Connection::receive() {
 }
 
 void Connection::close() {
-    send(_internal"exit");
+    //send(_internal"exit");
     shutdown(_socket, 0);
     _active = false;
 }
@@ -187,16 +187,16 @@ void Connection::_secretSeal(std::string & message) {
 
 void Connection::_secretOpen(std::string & message) {
 
-	auto cypherText_bin = std::make_unique<unsigned char[]>(message.size()/2);
+	auto cypherTextBin = std::make_unique<unsigned char[]>(message.size() / 2);
 
-	if(sodium_hex2bin(cypherText_bin.get(), message.size() / 2,
-					  reinterpret_cast<const char *>(message.c_str()),message.size(),
+	if(sodium_hex2bin(cypherTextBin.get(), message.size() / 2,
+					  reinterpret_cast<const char *>(message.c_str()), message.size(),
 					  nullptr, nullptr, nullptr) < 0)
 		throw std::runtime_error("Could not decode message");
 
 	auto decrypted = std::make_unique<unsigned char[]>(message.size()/2 - crypto_box_SEALBYTES);
 
-	if(crypto_box_seal_open(decrypted.get(), cypherText_bin.get(), message.size() / 2, _keyPair.publicKey, _keyPair.secretKey) < 0)
+	if(crypto_box_seal_open(decrypted.get(), cypherTextBin.get(), message.size() / 2, _keyPair.publicKey, _keyPair.secretKey) < 0)
 		throw std::runtime_error("Could not decrypt message");
 
 	message = std::string(reinterpret_cast<char*>(decrypted.get()), message.size()/2 - crypto_box_SEALBYTES);

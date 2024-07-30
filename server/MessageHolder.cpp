@@ -29,29 +29,32 @@ void MessageHolder::removeMessage(const Message & message) {
 }
 
 std::string MessageHolder::serializeMessages(unsigned long maxMessages) {
-    if(!_changeSinceLastSerialization) {
-        return _serializedMessagesCache;
-    }
 
 	if(_messages.size() < maxMessages)
 		maxMessages = _messages.size();
 
-	{
-		//std::lock_guard<std::mutex> lock(messagesMutex);
-		std::string serializedMessages;
-		auto messPtr = _messages.end();
-		for(unsigned long i = 0; i < maxMessages; i++) {
-			messPtr--;
-		}
+    if(!_changeSinceLastSerialization && _lastSerializedMessagesCount == maxMessages) {
+        return _serializedMessagesCache;
+    }
 
-		for(auto it = messPtr; it != _messages.end(); it++) {
-			serializedMessages += it->serialize() + "\n";
-		}
+	std::vector<Message> messages;
+	messages.reserve(maxMessages);
 
-		_serializedMessagesCache = serializedMessages;
-		_changeSinceLastSerialization = false;
-		return serializedMessages;
+	for(const auto & _message : std::ranges::reverse_view(_messages)) {
+		messages.push_back(_message);
+		if(messages.size() == maxMessages)
+			break;
 	}
+
+	std::string serializedMessages;
+	for(const auto & message : std::ranges::reverse_view(messages)) {
+		serializedMessages += message.serialize() + '\n';
+	}
+
+	_serializedMessagesCache = serializedMessages;
+	_changeSinceLastSerialization = false;
+	_lastSerializedMessagesCount = maxMessages;
+	return serializedMessages;
 }
 
 void MessageHolder::clearMessages() {
@@ -69,4 +72,8 @@ std::condition_variable & MessageHolder::getCallback() {
 
 std::mutex & MessageHolder::getMessagesMutex() {
     return messagesMutex;
+}
+
+unsigned long MessageHolder::getMessagesCount() const {
+	return _messages.size();
 }

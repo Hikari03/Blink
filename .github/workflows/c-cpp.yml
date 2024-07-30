@@ -7,14 +7,14 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
     - uses: actions/checkout@v3
     - name: download dependencies
       run: |
         sudo apt update
-        sudo apt install -y libncurses5-dev libncursesw5-dev libsodium-dev
+        sudo apt install -y libsodium-dev libgtkmm-4.0-dev
     - name: build server
       run: |
         cd server
@@ -23,14 +23,3 @@ jobs:
       run: |
         cd src
         make
-  try_static_app:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: get submodules
-      run: |
-        git submodule update --init --recursive
-    - name: compile_app
-      run: |
-        cd src
-        make static

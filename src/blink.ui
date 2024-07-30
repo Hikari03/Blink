@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <object class="GtkApplicationWindow" id="blink">
+    <property name="name">blink</property>
+    <property name="default-width">1000</property>
+    <property name="default-height">600</property>
+    <property name="halign">center</property>
+    <property name="valign">center</property>
+    <child>
+      <object class="GtkBox" id="IntroBox">
+        <property name="visible">0</property>
+        <property name="name">IntroBox</property>
+        <property name="margin-start">150</property>
+        <property name="margin-end">150</property>
+        <property name="margin-top">60</property>
+        <property name="margin-bottom">120</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">10</property>
+        <child>
+          <object class="GtkTextView" id="enterName">
+            <property name="visible">0</property>
+            <property name="name">enterName</property>
+            <property name="focusable">1</property>
+            <property name="editable">0</property>
+            <property name="justification">center</property>
+            <property name="top-margin">10</property>
+            <property name="bottom-margin">10</property>
+            <property name="indent">1</property>
+            <property name="cursor-visible">0</property>
+            <property name="accepts-tab">0</property>
+            <property name="input-purpose">alpha</property>
+            <property name="width-request">500</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkEntry" id="enterNameDialog">
+            <property name="visible">0</property>
+            <property name="name">enterNameDialog</property>
+            <property name="focusable">1</property>
+            <property name="max-length">10</property>
+            <property name="input-purpose">digits</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkTextView" id="enterServer">
+            <property name="visible">0</property>
+            <property name="name">enterServer</property>
+            <property name="focusable">1</property>
+            <property name="editable">0</property>
+            <property name="justification">center</property>
+            <property name="top-margin">10</property>
+            <property name="bottom-margin">10</property>
+            <property name="cursor-visible">0</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkEntry" id="enterServerDialog">
+            <property name="visible">0</property>
+            <property name="name">enterServerDialog</property>
+            <property name="focusable">1</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="homogeneous">1</property>
+            <child>
+              <object class="GtkButton" id="exitButton">
+                <property name="label" translatable="1">Exit</property>
+                <property name="focusable">1</property>
+                <property name="receives-default">1</property>
+                <property name="margin-top">25</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="confirmButton">
+                <property name="label" translatable="1">Confirm</property>
+                <property name="focusable">1</property>
+                <property name="receives-default">1</property>
+                <property name="margin-top">25</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkTextView" id="exceptionDisplay">
+            <property name="visible">0</property>
+            <property name="name">enterServer</property>
+            <property name="focusable">1</property>
+            <property name="editable">0</property>
+            <property name="justification">center</property>
+            <property name="top-margin">10</property>
+            <property name="bottom-margin">10</property>
+            <property name="cursor-visible">0</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkApplicationWindow" id="mainAppWin">
+    <property name="name">blink</property>
+    <property name="default-width">1000</property>
+    <property name="default-height">600</property>
+    <property name="halign">center</property>
+    <property name="valign">center</property>
+    <child>
+      <object class="GtkBox" id="mainApp">
+        <property name="visible">0</property>
+        <property name="name">MainApp</property>
+        <child>
+          <object class="GtkBox" id="messagesBox">
+            <property name="visible">0</property>
+            <property name="orientation">vertical</property>
+            <property name="baseline-position">bottom</property>
+            <child>
+              <object class="GtkScrolledWindow" id="messagesScroll">
+                <property name="visible">True</property>
+                <property name="margin-top">10</property>
+                <property name="margin-bottom">10</property>
+                <property name="margin-start">20</property>
+                <property name="margin-end">20</property>
+                <property name="width-request">700</property>
+                <property name="height-request">500</property>
+                <child>
+                  <object class="GtkTextView" id="messagesField">
+                    <property name="visible">0</property>
+                    <property name="name">messagesField</property>
+                    <property name="width-request">700</property>
+                    <property name="height-request">500</property>
+                    <property name="sensitive">0</property>
+                    <property name="cursor-visible">0</property>
+                    <property name="accepts-tab">0</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkSeparator">
+              </object>
+            </child>
+            <child>
+              <object class="GtkTextView" id="messagesInput">
+                <property name="visible">0</property>
+                <property name="height-request">81</property>
+                <property name="focusable">1</property>
+                <property name="margin-top">10</property>
+                <property name="margin-bottom">10</property>
+                <property name="margin-start">20</property>
+                <property name="margin-end">20</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkSeparator">
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="onlineListBox">
+            <property name="visible">0</property>
+            <property name="name">onlineListBox</property>
+            <property name="width-request">305</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkTextView" id="onlineListTitle">
+                <property name="visible">0</property>
+                <property name="name">onlineListTitle</property>
+                <property name="sensitive">0</property>
+                <property name="justification">center</property>
+                <property name="top-margin">5</property>
+                <property name="bottom-margin">5</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkListBox" id="onlineList">
+                <property name="visible">0</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
