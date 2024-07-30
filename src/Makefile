@@ -29,11 +29,11 @@ build: build_librender_dynamic make_obj
 	@$(MAKE) all -j$(nproc)
 
 install_dynamic:
-	cp $(TARGET) /usr/bin/
+	sudo install $(TARGET) /usr/bin/
 	$(MAKE) -C include/librender install
 
 install_static:
-	cp $(TARGET) /usr/bin/
+	sudo install $(TARGET) /usr/bin/
 
 build_w_custom_ncurses:
 	@if [ ! -d "include/librender/ncurses-build" ]; then $(MAKE) -C include/librender custom_ncurses; fi
