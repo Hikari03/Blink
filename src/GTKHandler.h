@@ -21,7 +21,7 @@ public:
 	struct GtkData {
 
 		void init() {
-			_app = Gtk::Application::create("org.hikari03.blink");
+			_app = Gtk::Application::create("cz.hikari03.blink");
 			_builder = Gtk::Builder::create_from_file("blink.ui");
 			_windowIntro = _builder->get_widget<Gtk::ApplicationWindow>("blink");
 			_windowChat = _builder->get_widget<Gtk::ApplicationWindow>("mainAppWin");
