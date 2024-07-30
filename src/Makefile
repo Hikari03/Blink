@@ -20,7 +20,7 @@ LIBS :=-lncursesw -lsodium $(shell pkg-config -libs gtkmm-4.0)
 STATICLIBS :=-lncursesw -ltinfow
 
 STATICFLAG :=
-FLAGS := -Wall -Wextra -Wpedantic -Werror -g
+FLAGS := -Wall -Wextra -Wpedantic -Werror -O2
 CXXFLAGS := $(FLAGS) -std=c++23 $(STATICFLAG)
 
 CXX := g++
@@ -30,6 +30,11 @@ build: make_obj
 
 install:
 	sudo install $(TARGET) /usr/bin/
+	sudo install -Dm644 $(TARGET).desktop /usr/share/applications/$(TARGET).desktop
+	sudo mkdir -p /usr/share/blink
+	sudo install $(TARGET).ui /usr/share/blink/$(TARGET).ui
+	sudo install -Dm755 exec.sh /usr/share/blink/exec.
+	sudo install -Dm644 blink.png /usr/share/pixmaps/blink.png
 
 all: $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $(INCLUDE) $(addprefix obj/,$(OBJECTS)) -o $(TARGET) $(LIBPATH) $(LIBS)
