@@ -1,84 +1,40 @@
 #include "App.h"
 
 
-App::App() : _tiles({100,25}), _renderer(_tiles), _lightblue(_renderer.initColor(69, 0)),
-                _red(_renderer.initColor(198, 0)) {}
+
 
 void App::run() {
     try {
 		_gtkHandler.init();
+		_gtkHandler.setPostIntroFunc(std::bind(&App::_postInitCall, this));
+		_gtkData = _gtkHandler.getGtkData();
+
+		_gtkData._key_controller->signal_key_pressed().connect(sigc::mem_fun(*this, &App::_onKeyPressed), false);
+
 		_gtkHandler.show();
-		auto [name, serverAddr] = _gtkHandler.getIntroData();
-		_userName = name;
-		_ip = serverAddr;
-		//_gtkHandler.show();
-		_init();
+		_connection.sendInternal("exit");
+		_receiveThr.join();
+		// now we are connected to server and can start chat
 	}
 	catch (std::exception & e) {
-		_tiles.insertText(43, 8, _strToWStr(e.what()), _red);
-		_renderer.print();
-		getch();
-		return;
+		g_message(e.what());
 	}
-
-    _debug("initialized app");
-
-    try {
-        _connectToServer(_ip, 6999);
-    }
-    catch(std::exception & e) {
-        _tiles.insertText(43, 15, L"Connection failed from exception!", _lightblue);
-		if(_strToWStr(e.what()).size() > 50){
-			_tiles.insertText(43, 16, _strToWStr(e.what()).substr(0, 50), _red);
-			_tiles.insertText(43, 17, _strToWStr(e.what()).substr(50, _strToWStr(e.what()).size()), _red);
-		}
-		else
-			_tiles.insertText(43, 16, _strToWStr(e.what()), _red);
-        _renderer.print();
-        getch();
-        return;
-    }
-    _debug("connected to server");
-
-    _prepareUI();
-
-    _chat();
-
-    _debug("exited connection");
-
-    getch();
 }
 
-/**
- * @brief Gets the name of the user and greets them
- */
-void App::_init() {
-    _tiles.insertBox(0, 0, 99, 24, false,_lightblue);
-    _tiles.insertText(43, 5, L"Insert Name:", _lightblue);
-    _renderer.print();
-    _userName = _getUserInput(43,6, App::CursorColor::Magenta);
+
+
+void App::_postInitCall() {
+	_userName = _gtkHandler.getIntroData().first;
+	_ip = _gtkHandler.getIntroData().second;
 
 	if(_userName.empty() || _userName.contains(" ")) {
 		throw std::runtime_error("Invalid name!");
 	}
-    _tiles.insertText(43, 8, L"Hello, " + std::wstring(_userName.begin(), _userName.end()) + L"!", _lightblue);
-    // get user to insert ip address of server
-    _tiles.insertText(43, 10, L"Insert IP Address:", _lightblue);
-    _renderer.print();
-    _debug("getting ip");
-    _ip = _getUserInput(43, 11, App::CursorColor::Red);
-    _debug("got ip");
-    _tiles.insertText(43, 13, L"Connecting to " + std::wstring(_ip.begin(), _ip.end()) + L" ...", _lightblue);
-    _renderer.print();
-}
+	_connectToServer(_ip, 6999);
 
-void App::_prepareUI() {
-    _tiles.clear();
-    _tiles.insertBox(0, 0, 99, 24, false,_lightblue);
-    _tiles.insertBox(1, 2, 50, 20, false, _lightblue);
-    _tiles.insertBox(1, 21, 50, 23, false, _lightblue);
-    _tiles.insertText(1,1, L"Connected as: " + _strToWStr(_userName), _red);
-    _renderer.print();
+	_connection.sendInternal("getHistory");
+	_debug("sent history request");
+	_receiveThr = std::thread(&App::_receiveThread, this);
 }
 
 /**
@@ -105,111 +61,17 @@ void App::_connectToServer(std::string ip, int port) {
     message = _connection.receive();
     _debug("server message: " + message);
     if(message == _internal"nameAck")
-        _tiles.insertText(43, 15, L"Connected!", _lightblue);
+		g_message("Connected!");
     else
-        _tiles.insertText(43, 15, L"Connection failed!", _lightblue);
-
-    _debug("server message: " + message);
-    _renderer.print();
-}
-
-std::string App::_getUserInput(int x, int y, App::CursorColor cursorColor) {
-
-    std::string input;
-
-    move(y, x);
-    _cursorPos = {y, x};
-
-    std::string s_cursorColor;
-
-    if(cursorColor == App::CursorColor::Green)
-        s_cursorColor = GREEN;
-    else if(cursorColor == App::CursorColor::Red)
-        s_cursorColor = RED;
-    else if(cursorColor == App::CursorColor::Blue)
-        s_cursorColor = BLUE;
-    else if(cursorColor == App::CursorColor::Yellow)
-        s_cursorColor = YELLOW;
-    else if(cursorColor == App::CursorColor::Cyan)
-        s_cursorColor = CYAN;
-    else if(cursorColor == App::CursorColor::Magenta)
-        s_cursorColor = MAGENTA;
-    else if(cursorColor == App::CursorColor::White)
-        s_cursorColor = WHITE;
-
-    std::cout << s_cursorColor << std::flush;
-    _currentCursorColor = s_cursorColor;
-    // let the terminal do the line editing
-    nocbreak();
-    echo();
-
-    // this reads from _buffer after <ENTER>, not "raw"
-    // so any backspacing etc. has already been taken care of
-    _returnCursor();
-    int ch = getch();
-
-    while ( ch != '\n' && input.size() < 40 ) {
-        input.push_back( ch );
-        _returnCursor();
-        ch = getch();
-    }
-
-    // restore your cbreak / echo settings here
-
-    std::cout << WHITE << std::flush;
-    move(0, 0);
-
-    return input;
-
-}
-
-std::wstring App::_strToWStr(const std::string & text) const {
-
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-    return converter.from_bytes(text);
+		g_message("Connection failed!");
 }
 
 void App::_debug(const std::string & text) {
     if constexpr(DEBUG) {
-        _tiles.insertBox(0, 0, 99, 24, false, _lightblue);
-        _tiles.insertText(1, 24, _strToWStr(text), _red);
-        _renderer.print();
+
+		g_message(text.c_str());
     }
 
-}
-
-void App::_chat() {
-
-    // initialize send and receive threads
-    std::thread sendThread(&App::_sendThread, this);
-    std::thread receiveThread(&App::_receiveThread, this);
-
-    sendThread.join();
-    receiveThread.join();
-
-    _tiles.insertText(43, 15, L"Chat ended!", _lightblue);
-}
-
-void App::_sendThread() {
-    std::string message;
-	_debug("send thread started");
-	_connection.sendInternal("getMessages");
-    while(_running) {
-        message = _getUserInput(2, 22, App::CursorColor::Green);
-		// clear the chat box
-		_tiles.insertBox(1, 21, 50, 23, true, _lightblue);
-		if (message.empty())
-			continue;
-        if(message == "/exit") {
-            _connection.sendInternal("exit");
-            _running = false;
-			return;
-        }
-
-		// we may have been kicked
-		if(_running)
-        	_connection.sendMessage(message);
-    }
 }
 
 void App::_receiveThread() {
@@ -219,10 +81,9 @@ void App::_receiveThread() {
         message = _connection.receive();
         if(message == _internal"exit") {
 			_running = false;
-            _tiles.insertText(43, 15, L"Server closed connection", _red);
-			_debug("Server closed connection");
+			g_message("Server closed connection");
+			_gtkHandler.exit();
 			_connection.close();
-            _renderer.print();
             return;
         }
         if(message == _internal"ping") {
@@ -241,37 +102,49 @@ void App::_receiveThread() {
 		if(message.contains(_text)) {
 			message = message.substr(sizeof(_text) - 1, message.length());
 
-			_tiles.insertBox(1, 2, 50, 20, true, _lightblue);
-
-			messages = _split(message, '\n');
-
-			for (unsigned i = 0; i < messages.size(); i++) {
-				_tiles.insertText(3, 3 + i, _strToWStr(messages[i]), _red);
-				//_debug(messages[i]);
-			}
-
-			{
-				std::lock_guard<std::mutex> lock(_ioMtx);
-				_renderer.print();
-				_returnCursor();
-			}
+			auto buffer = dynamic_cast<Gtk::TextView*>(_gtkData._widgetsChat.at("messagesField"))->get_buffer();
+			buffer->insert_at_cursor(message);
+			auto end = buffer->end();
+			dynamic_cast<Gtk::TextView*>(_gtkData._widgetsChat.at("messagesField"))->scroll_to(end);
 		}
     }
 }
 
-std::vector<std::string> App::_split(const std::string &text, char delimiter) const {
-    std::vector<std::string> tokens;
-    std::string token;
-    std::istringstream tokenStream(text);
-    while (std::getline(tokenStream, token, delimiter)) {
-        tokens.push_back(token);
-    }
-    return tokens;
-}
 
-void App::_returnCursor() {
-    move(_cursorPos.first, _cursorPos.second);
-    std::cout << _currentCursorColor << std::flush;
+bool App::_onKeyPressed(guint keyval, guint, Gdk::ModifierType) {
+	_debug("key pressed");
+	if (keyval == GDK_KEY_Return || keyval == GDK_KEY_KP_Enter) {
+		_debug("enter pressed");
+		std::string message = dynamic_cast<Gtk::TextView*>(_gtkData._widgetsChat.at("messagesInput"))->get_buffer()->get_text();
+		GTKHandler::setWidgetText(_gtkData._widgetsChat, "messagesInput", "");
+		if (message.empty())
+			return true;
+		if(message == "/e" || message == "/q") {
+			_running = false;
+			_gtkHandler.exit();
+			return true;
+		}
+
+		// debug commands
+		if constexpr (DEBUG) {
+			if(message == "/getmessages") {
+				_gtkHandler.wipeMessages();
+				_connection.sendInternal("getMessages");
+				return true;
+			}
+			if(message == "/gethistory") {
+				_gtkHandler.wipeMessages();
+				_connection.sendInternal("getHistory");
+				return true;
+			}
+		}
+
+		if(_running)
+			_connection.sendMessage(message);
+
+		return true;
+	}
+	return false;
 }
 
 

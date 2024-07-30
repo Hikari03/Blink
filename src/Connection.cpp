@@ -111,7 +111,7 @@ std::string Connection::receive() {
 }
 
 void Connection::close() {
-    send(_internal"exit");
+    //send(_internal"exit");
     shutdown(_socket, 0);
     _active = false;
 }

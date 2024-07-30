@@ -62,11 +62,36 @@
           </object>
         </child>
         <child>
-          <object class="GtkButton" id="confirmButton">
-            <property name="label" translatable="1">Confirm</property>
+          <object class="GtkBox">
+            <property name="homogeneous">1</property>
+            <child>
+              <object class="GtkButton" id="exitButton">
+                <property name="label" translatable="1">Exit</property>
+                <property name="focusable">1</property>
+                <property name="receives-default">1</property>
+                <property name="margin-top">25</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="confirmButton">
+                <property name="label" translatable="1">Confirm</property>
+                <property name="focusable">1</property>
+                <property name="receives-default">1</property>
+                <property name="margin-top">25</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkTextView" id="exceptionDisplay">
+            <property name="visible">0</property>
+            <property name="name">enterServer</property>
             <property name="focusable">1</property>
-            <property name="receives-default">1</property>
-            <property name="margin-top">25</property>
+            <property name="editable">0</property>
+            <property name="justification">center</property>
+            <property name="top-margin">10</property>
+            <property name="bottom-margin">10</property>
+            <property name="cursor-visible">0</property>
           </object>
         </child>
       </object>
@@ -88,14 +113,25 @@
             <property name="orientation">vertical</property>
             <property name="baseline-position">bottom</property>
             <child>
-              <object class="GtkTextView" id="messagesField">
-                <property name="visible">0</property>
-                <property name="name">messagesField</property>
+              <object class="GtkScrolledWindow" id="messagesScroll">
+                <property name="visible">True</property>
+                <property name="margin-top">10</property>
+                <property name="margin-bottom">10</property>
+                <property name="margin-start">20</property>
+                <property name="margin-end">20</property>
                 <property name="width-request">700</property>
                 <property name="height-request">500</property>
-                <property name="sensitive">0</property>
-                <property name="cursor-visible">0</property>
-                <property name="accepts-tab">0</property>
+                <child>
+                  <object class="GtkTextView" id="messagesField">
+                    <property name="visible">0</property>
+                    <property name="name">messagesField</property>
+                    <property name="width-request">700</property>
+                    <property name="height-request">500</property>
+                    <property name="sensitive">0</property>
+                    <property name="cursor-visible">0</property>
+                    <property name="accepts-tab">0</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
