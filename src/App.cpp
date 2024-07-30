@@ -14,7 +14,7 @@ void App::run() {
 	}
 	catch (std::exception & e) {
 		std::string message = e.what();
-		g_log("App", G_LOG_LEVEL_CRITICAL, message.c_str());
+		g_log("App", G_LOG_LEVEL_CRITICAL,"Exception %s", message.c_str());
 	}
 }
 
@@ -65,8 +65,8 @@ void App::_connectToServer(std::string ip, int port) {
 
 void App::_debug(const std::string & text) {
     if constexpr(DEBUG) {
-		std::string message = "App: " + text;
-		g_log("App", G_LOG_LEVEL_DEBUG, message.c_str());
+		std::string message = text;
+		g_log("App", G_LOG_LEVEL_DEBUG,"Debug: %s",  message.c_str());
     }
 
 }
