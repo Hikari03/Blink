@@ -10,7 +10,6 @@
 #include <resolv.h>
 #include <cerrno>
 #include <vector>
-#include <iostream>
 #include <mutex>
 #include <memory>
 #include <thread>

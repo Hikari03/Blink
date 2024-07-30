@@ -17,19 +17,16 @@
 git clone https://github.com/Hikari03/Blink.git && \
 cd Blink/src && \
 make
-```
-
-#### Static build
-If you want to build static binary, you can do so by running in src directory:
-``` bash
-make static
+make install
 ```
 
 ### Usage
 in Blink/src
 ``` bash
-./blink
+blink
 ```
+or launch from your desktop environment as an app
+
 - then follow instructions
 - to exit in connected chat, type `/q` and then enter
 
@@ -61,7 +58,6 @@ in Blink/server
 ./blink-server
 ```
 
-
 ### Controls
 - `help` help
 - `q` quit server
@@ -70,6 +66,9 @@ in Blink/server
 - `ipban <name>` ban client with name
 - `ipunban <name>` unban client with name
 - `ipbans` list all banned clients
+
+## Attributions
+- <a href="https://www.flaticon.com/free-icons/blink" title="blink icons">Blink icons created by kawalanicon - Flaticon</a>
 
 # TODO
 

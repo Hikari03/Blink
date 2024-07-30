@@ -14,7 +14,10 @@ void App::run() {
 	}
 	catch (std::exception & e) {
 		std::string message = e.what();
-		g_log("App", G_LOG_LEVEL_CRITICAL,"Exception %s", message.c_str());
+		if constexpr(DEBUG) {
+			g_log("App", G_LOG_LEVEL_CRITICAL,"Exception %s", message.c_str());
+		}
+
 	}
 }
 
@@ -57,10 +60,12 @@ void App::_connectToServer(std::string ip, int port) {
 
     message = _connection.receive();
     _debug("server message: " + message);
-    if(message == _internal"nameAck")
-		g_message("Connected!");
-    else
-		g_message("Connection failed!");
+	if constexpr(DEBUG) {
+		if (message == _internal"nameAck")
+			g_message("Connected!");
+		else
+			g_message("Connection failed!");
+	}
 }
 
 void App::_debug(const std::string & text) {
