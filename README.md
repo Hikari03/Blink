@@ -1,11 +1,13 @@
 # Blink
-- Chat application for terminal, written purely in C++.
+- Chat application in gtk4, written purely in C++.
+
+- Note: if you want to use terminal interface for client and/or want static build, you can use `ncurses` branch.
 
 ## Dependencies
 ### Shared
 - `make`,`libsodium`, `g++` with c++23 support
 ### Client
-- `ncursesw` for terminal UI
+- `gtkmm4` for GUI
 ### Server
 - `docker` and `docker-compose` optionally for server
 
@@ -29,7 +31,7 @@ in Blink/src
 ./blink
 ```
 - then follow instructions
-- to exit in connected chat, type `/exit` and then enter
+- to exit in connected chat, type `/q` and then enter
 
 ## Server
 ### Use Docker
@@ -83,3 +85,4 @@ in Blink/server
 - [ ] implement code for graceful stop in docker 
 - [x] transfer ncurses static build to librender that will make static library
 - [x] make communication encrypted
+- [x] remake client to use gtkmm4

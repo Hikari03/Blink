@@ -1,8 +1,5 @@
 #include "App.h"
 
-
-
-
 void App::run() {
     try {
 		_gtkHandler.init();
@@ -14,7 +11,6 @@ void App::run() {
 		_gtkHandler.show();
 		_connection.sendInternal("exit");
 		_receiveThr.join();
-		// now we are connected to server and can start chat
 	}
 	catch (std::exception & e) {
 		g_message(e.what());
