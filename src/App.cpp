@@ -79,7 +79,7 @@ void App::_debug(const std::string & text) {
 void App::_receiveThread() {
     std::string message;
     std::vector<std::string> messages;
-    while(_running) {
+	while(_running) {
         message = _connection.receive();
         if(message == _internal"exit") {
 			_running = false;
@@ -106,6 +106,7 @@ void App::_receiveThread() {
 
 			auto buffer = dynamic_cast<Gtk::TextView*>(_gtkData._widgetsChat.at("messagesField"))->get_buffer();
 			buffer->insert_at_cursor(message);
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 			auto end = buffer->end();
 			dynamic_cast<Gtk::TextView*>(_gtkData._widgetsChat.at("messagesField"))->scroll_to(end);
 		}

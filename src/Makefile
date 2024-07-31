@@ -33,8 +33,10 @@ install:
 	sudo install -Dm644 $(TARGET).desktop /usr/share/applications/$(TARGET).desktop
 	sudo mkdir -p /usr/share/blink
 	sudo install $(TARGET).ui /usr/share/blink/$(TARGET).ui
-	sudo install -Dm755 exec.sh /usr/share/blink/exec.
 	sudo install -Dm644 blink.png /usr/share/pixmaps/blink.png
+	sudo install -Dm644 blink_32x32.png /usr/share/icons/hicolor/32x32/apps/blink.png
+	sudo install -Dm644 blink_64x64.png /usr/share/icons/hicolor/64x64/apps/blink.png
+	sudo install -Dm644 blink.png /usr/share/icons/hicolor/512x512/apps/blink.png
 
 all: $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $(INCLUDE) $(addprefix obj/,$(OBJECTS)) -o $(TARGET) $(LIBPATH) $(LIBS)
