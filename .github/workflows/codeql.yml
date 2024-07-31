@@ -80,7 +80,7 @@ jobs:
     - if: matrix.build-mode == 'manual'
       shell: bash
       run: |
-        sudo apt ugdate
+        sudo apt update
         sudo apt install libsodium-dev libgtkmm-4.0-dev
         cd src
         make
