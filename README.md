@@ -23,7 +23,6 @@ make install
 ```
 
 ### Usage
-in Blink/src
 ``` bash
 blink
 ```

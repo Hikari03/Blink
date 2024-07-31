@@ -175,12 +175,13 @@ void Client::processMessage() {
 		return;
 	}
 
-	if(_message == _internal"getMessages") {
+	if(_message == _internal"getMessages") { // this is for ncurses client support, don't change the value in serializeMessages!
 		sendMessage(_text + _messages.serializeMessages(17));
 		return;
 	}
 
-	// returns all messages without the first one (the last one)
+	// returns all messages without the oldest one
+	// this is because client gets "xxx joined the server" before he calls this
 	if(_message == _internal"getHistory") {
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		auto messages = _messages.serializeMessages(3000);
