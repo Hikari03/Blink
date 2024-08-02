@@ -47,6 +47,7 @@ private:
 	};
 
     char _buffer[4096] = {0};
+	std::vector<std::string> _messagesBuffer;
 	KeyPair _keyPair;
 	unsigned char _remotePublicKey[crypto_box_PUBLICKEYBYTES];
 	std::mutex _sendMutex;
@@ -55,6 +56,7 @@ private:
     sockaddr_in _server;
     bool _active = true;
 	bool _encrypted = false;
+	bool _moreInBuffer = false;
 
     void clearBuffer();
 

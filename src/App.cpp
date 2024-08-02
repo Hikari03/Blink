@@ -101,6 +101,40 @@ void App::_receiveThread() {
             break;
         }
 
+		if(message.contains(_internal"onlineUsers:")) {
+			message = message.substr(sizeof(_internal"onlineUsers:") - 1);
+
+			auto onlineUsers = [&]() {
+				std::vector<std::string> users;
+				std::string user;
+				for(const auto & c : message) {
+					if(c == ',') {
+						users.push_back(user);
+						user.clear();
+					} else {
+						user += c;
+					}
+				}
+				return users;
+			}();
+
+			if constexpr(DEBUG) {
+				for(const auto & user : onlineUsers) {
+					g_message("User: %s", user.c_str());
+				}
+			}
+
+			auto listBox = dynamic_cast<Gtk::ListBox*>(_gtkData._widgetsChat.at("onlineList"));
+
+			listBox->remove_all();
+			for(const auto & user : onlineUsers) {
+				auto label = Gtk::make_managed<Gtk::Label>(user);
+				listBox->append(*label);
+				listBox->set_child_visible();
+			}
+			continue;
+		}
+
 		if(message.contains(_text)) {
 			message = message.substr(sizeof(_text) - 1, message.length());
 

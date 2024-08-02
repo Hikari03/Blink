@@ -67,6 +67,14 @@ void Connection::sendInternal(const std::string &message) {
 std::string Connection::receive() {
     std::string message;
 
+	if(_moreInBuffer) {
+		message = _messagesBuffer[0];
+		_messagesBuffer.erase(_messagesBuffer.begin());
+		if(_messagesBuffer.empty())
+			_moreInBuffer = false;
+		return message;
+	}
+
 
     while (!message.contains(_end)) {
 
@@ -79,7 +87,6 @@ std::string Connection::receive() {
         }
 
         message += _buffer;
-		//std::cout << "RECEIVE |  " << message << std::endl;
     }
 
 	// remove the _end string
@@ -87,6 +94,46 @@ std::string Connection::receive() {
 
 	if(_encrypted)
 		_secretOpen(message);
+
+	//std::cout << "RECEIVE BEFORE PARSE | " << message << std::endl;
+
+	//split the message into potential multiple messages and store them in _messagesBuffer
+	_messagesBuffer = [&]() {
+		std::vector<std::string> messages;
+		std::string tmpMessage;
+		size_t pos = 0;
+		bool first = true;
+
+		while ((pos = message.find(_end)) != std::string::npos) {
+			if(first){
+				tmpMessage = message.substr(0, pos);
+				first = false;
+			}
+			else
+				messages.push_back(message.substr(0, pos));
+			message.erase(0, pos + strlen(_end));
+		}
+		if(first)
+			tmpMessage = message;
+		else
+			messages.push_back(message);
+
+		message = tmpMessage;
+		return messages;
+	}();
+
+	if(_messagesBuffer.empty())
+		_moreInBuffer = false;
+	else
+		_moreInBuffer = true;
+
+	/*std::cout << "RECEIVE | " << message << std::endl;
+	std::cout << "RECEIVE BUFFER | "
+			  << std::accumulate(_messagesBuffer.begin(), _messagesBuffer.end(), std::string(),
+									[](const std::string & a, const std::string & b) {
+										return a + b + " | ";
+									})
+			  << std::endl;*/
 
 	if(message.contains(_internal"publicKey:")) {
 		std::string publicKey = message.substr(strlen(_internal"publicKey:"));
