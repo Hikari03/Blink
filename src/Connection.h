@@ -21,6 +21,8 @@
 
 #ifdef BLINK_DEBUG
 #define DEBUG 1
+#include <numeric>
+#include <iostream>
 #else
 #define DEBUG 0
 #endif

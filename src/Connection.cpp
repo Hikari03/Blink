@@ -131,13 +131,13 @@ std::string Connection::receive() {
 	else
 		_moreInBuffer = true;
 
-	/*std::cout << "RECEIVE | " << message << std::endl;
+	std::cout << "RECEIVE | " << message << std::endl;
 	std::cout << "RECEIVE BUFFER | "
 			  << std::accumulate(_messagesBuffer.begin(), _messagesBuffer.end(), std::string(),
 									[](const std::string & a, const std::string & b) {
 										return a + b + " | ";
 									})
-			  << std::endl;*/
+			  << std::endl;
 
 	if(message.contains(_internal"publicKey:")) {
 		std::string publicKey = message.substr(strlen(_internal"publicKey:"));
