@@ -5,12 +5,12 @@
 #include <ranges>
 #include "Message.h"
 
-class MessageHolder {
+class SharedResources {
 public:
 
-    explicit MessageHolder(std::mutex & messagesMutex);
+    explicit SharedResources(std::mutex & messagesMutex);
 
-	~MessageHolder();
+	~SharedResources();
 
     void addMessage(const Message & message);
 

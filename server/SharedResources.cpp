@@ -1,12 +1,12 @@
-#include "MessageHolder.h"
+#include "SharedResources.h"
 
-MessageHolder::MessageHolder(std::mutex &messagesMutex)  : messagesMutex(messagesMutex) {}
+SharedResources::SharedResources(std::mutex &messagesMutex)  : messagesMutex(messagesMutex) {}
 
-MessageHolder::~MessageHolder() {
+SharedResources::~SharedResources() {
 	callBackOnMessagesChange.notify_all();
 }
 
-void MessageHolder::addMessage(const Message & message) {
+void SharedResources::addMessage(const Message & message) {
     {
         std::lock_guard<std::mutex> lock(messagesMutex);
         _messages.insert(message);
@@ -15,7 +15,7 @@ void MessageHolder::addMessage(const Message & message) {
     callBackOnMessagesChange.notify_all();
 }
 
-void MessageHolder::removeMessage(const Message & message) {
+void SharedResources::removeMessage(const Message & message) {
     {
         std::lock_guard<std::mutex> lock(messagesMutex);
         _messages.erase(message);
@@ -24,11 +24,11 @@ void MessageHolder::removeMessage(const Message & message) {
     callBackOnMessagesChange.notify_all();
 }
 
-[[nodiscard]] std::set<Message> MessageHolder::getMessages() const {
+[[nodiscard]] std::set<Message> SharedResources::getMessages() const {
     return _messages;
 }
 
-std::string MessageHolder::serializeMessages(unsigned long maxMessages) {
+std::string SharedResources::serializeMessages(unsigned long maxMessages) {
 
 	if(_messages.size() < maxMessages)
 		maxMessages = _messages.size();
@@ -57,7 +57,7 @@ std::string MessageHolder::serializeMessages(unsigned long maxMessages) {
 	return serializedMessages;
 }
 
-void MessageHolder::clearMessages() {
+void SharedResources::clearMessages() {
     {
         std::lock_guard<std::mutex> lock(messagesMutex);
         _messages.clear();
@@ -66,14 +66,14 @@ void MessageHolder::clearMessages() {
     callBackOnMessagesChange.notify_all();
 }
 
-std::condition_variable & MessageHolder::getCallback() {
+std::condition_variable & SharedResources::getCallback() {
     return callBackOnMessagesChange;
 }
 
-std::mutex & MessageHolder::getMessagesMutex() {
+std::mutex & SharedResources::getMessagesMutex() {
     return messagesMutex;
 }
 
-unsigned long MessageHolder::getMessagesCount() const {
+unsigned long SharedResources::getMessagesCount() const {
 	return _messages.size();
 }

@@ -1,7 +1,7 @@
 #include "Client.h"
 
-Client::Client(ClientInfo clientInfo, MessageHolder & messages) :
-        _clientInfo(std::move(clientInfo)), _messages(messages), _messagesMutex(_messages.getMessagesMutex()), _callBackOnMessagesChange(_messages.getCallback()) {}
+Client::Client(ClientInfo clientInfo, SharedResources & sharedResources) :
+		_clientInfo(std::move(clientInfo)), _sharedResources(sharedResources), _messagesMutex(_sharedResources.getMessagesMutex()), _callBackOnMessagesChange(_sharedResources.getCallback()) {}
 
 Client::~Client() {
     exit();
@@ -48,6 +48,8 @@ void Client::initConnection() {
     _clientInfo.name = _message;
     ///std::cout << socket_ << ": name: " << name << std::endl;
     sendMessage(_internal"nameAck");
+
+	//sendMessage(_internal );
     //std::cout << socket_ << "/" + name << ": sent nameAck" << std::endl;
 	printf("client %d/%s connected\n", _clientInfo.socket_, _clientInfo.name.c_str());
     _active = true;
@@ -60,12 +62,13 @@ void Client::run() {
 
         std::thread sendThread(&Client::sendThread, this);
         std::thread receiveThread(&Client::receiveThread, this);
-		_messages.addMessage({_clientInfo.name, "joined the chat", std::chrono::system_clock::now()});
+		_sharedResources.addMessage({_clientInfo.name, "joined the chat", std::chrono::system_clock::now()});
+		_clientInfo.setUserAsOnline();
 
         sendThread.join();
         receiveThread.join();
 
-        _messages.addMessage({_clientInfo.name, "left the chat", std::chrono::system_clock::now()});
+        _sharedResources.addMessage({_clientInfo.name, "left the chat", std::chrono::system_clock::now()});
 
     }
     catch (std::runtime_error & e) {
@@ -153,7 +156,7 @@ void Client::sendMessage(const std::string & message) {
 
 void Client::submitMessage(const std::string & message) {
 	printf("client %d/%s: %s\n", _clientInfo.socket_, _clientInfo.name.c_str(), message.c_str());
-    _messages.addMessage({_clientInfo.name, message, std::chrono::system_clock::now()});
+    _sharedResources.addMessage({_clientInfo.name, message, std::chrono::system_clock::now()});
 }
 
 
@@ -176,7 +179,7 @@ void Client::processMessage() {
 	}
 
 	if(_message == _internal"getMessages") { // this is for ncurses client support, don't change the value in serializeMessages!
-		sendMessage(_text + _messages.serializeMessages(17));
+		sendMessage(_text + _sharedResources.serializeMessages(17));
 		return;
 	}
 
@@ -184,7 +187,7 @@ void Client::processMessage() {
 	// this is because client gets "xxx joined the server" before he calls this
 	if(_message == _internal"getHistory") {
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		auto messages = _messages.serializeMessages(3000);
+		auto messages = _sharedResources.serializeMessages(3000);
 		// remove the last message
 		messages = messages.substr(messages.find_first_of('\n'));
 		//remove first and last char
@@ -215,7 +218,7 @@ void Client::sendThread() {
     while(_active) {
         _callBackOnMessagesChange.wait(lock);
 		if(_active) // if we have already kicked client, we cant send or else segfault (edge case)
-        	sendMessage(_text + _messages.serializeMessages(1));
+        	sendMessage(_text + _sharedResources.serializeMessages(1));
     }
 
 

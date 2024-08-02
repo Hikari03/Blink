@@ -5,7 +5,7 @@
 #include "accepter.h"
 #include "cleaner.h"
 #include "terminal.h"
-#include "MessageHolder.h"
+#include "SharedResources.h"
 
 
 int main() {
@@ -26,8 +26,9 @@ int main() {
 
     std::vector<std::thread> clientRunners;
     // holds chat
-    MessageHolder messages(messagesMutex);
+    SharedResources messages(messagesMutex);
     std::list<Client> clients;
+	std::vector<std::string> onlineUsers;
     std::condition_variable callBack;
 	std::map<std::string,std::string> bannedIps;
 
@@ -75,6 +76,8 @@ int main() {
 			}
 			if(!newClientAccepted)
 				continue;
+
+			acceptedClient.initOnlineUsers(onlineUsers);
 
             // create client
             clients.emplace_back(std::move(acceptedClient), messages);

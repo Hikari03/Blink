@@ -10,7 +10,7 @@
 #include <thread>
 #include <sodium.h>
 #include "Message.h"
-#include "MessageHolder.h"
+#include "SharedResources.h"
 #include "ClientInfo.h"
 
 
@@ -22,7 +22,7 @@
 class Client {
 
 public:
-    Client(const ClientInfo clientInfo, MessageHolder & messages);
+    Client(const ClientInfo clientInfo, SharedResources & messages);
 
     ~Client();
 
@@ -58,7 +58,7 @@ private:
 	bool _encrypted = false;
 
     //outside references
-    MessageHolder & _messages;
+    SharedResources & _sharedResources;
     std::mutex & _messagesMutex;
     std::condition_variable & _callBackOnMessagesChange;
 
