@@ -63,12 +63,13 @@ void Client::run() {
         std::thread sendThread(&Client::sendThread, this);
         std::thread receiveThread(&Client::receiveThread, this);
 		_sharedResources.addMessage({_clientInfo.name, "joined the chat", std::chrono::system_clock::now()});
-		_clientInfo.setUserAsOnline();
+		_sharedResources.setUserAsOnline(_clientInfo.name);
 
         sendThread.join();
         receiveThread.join();
 
         _sharedResources.addMessage({_clientInfo.name, "left the chat", std::chrono::system_clock::now()});
+		_sharedResources.setUserAsOffline(_clientInfo.name);
 
     }
     catch (std::runtime_error & e) {
@@ -217,8 +218,19 @@ void Client::sendThread() {
     std::unique_lock<std::mutex> lock(_messagesMutex);
     while(_active) {
         _callBackOnMessagesChange.wait(lock);
-		if(_active) // if we have already kicked client, we cant send or else segfault (edge case)
-        	sendMessage(_text + _sharedResources.serializeMessages(1));
+		if(_active) { // if we have already kicked client, we cant send or else segfault (edge case)
+			sendMessage(_text + _sharedResources.serializeMessages(1));
+			std::cout << "onlineUsers: " << _sharedResources.getOnlineUsers().size() << std::endl;
+			auto onlineUsers = [&]() {
+				std::string users;
+				for(const auto & user : _sharedResources.getOnlineUsers()) {
+					users += user + ",";
+				}
+				return users;
+			}();
+			std::cout << "onlineUsers: " << onlineUsers << std::endl;
+			sendMessage(_internal"onlineUsers:" + onlineUsers);
+		}
     }
 
 

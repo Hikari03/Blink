@@ -28,12 +28,3 @@ std::string ClientInfo::convertAddrToString(const sockaddr_in &addr) {
 	inet_ntop(AF_INET, &addr.sin_addr, ip, INET_ADDRSTRLEN);
 	return {ip};
 }
-
-void ClientInfo::initOnlineUsers(const std::vector<std::string> & users) {
-	onlineUsers = users;
-}
-
-void ClientInfo::setUserAsOnline() {
-	if(std::find(onlineUsers.begin(), onlineUsers.end(), name) == onlineUsers.end())
-		onlineUsers.push_back(name);
-}

@@ -12,8 +12,6 @@ struct ClientInfo {
 	ClientInfo() = default;
 
 	bool init(const std::string & name, const std::string & ip, const int & socket);
-	void initOnlineUsers(const std::vector<std::string> & users);
-	void setUserAsOnline();
 
 	[[nodiscard]] std::string getName() const;
 	[[nodiscard]] std::string getIp() const;
