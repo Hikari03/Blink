@@ -19,6 +19,12 @@
 #define _internal "INTERNAL::"
 #define _text "MESSAGE::"
 
+#ifdef BLINK_DEBUG
+#define DEBUG 1
+#else
+#define DEBUG 0
+#endif
+
 
 /**
  * @brief Handles the connection to the server

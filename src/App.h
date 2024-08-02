@@ -5,7 +5,12 @@
 #include "Connection.h"
 #include "GTKHandler.h"
 
+#ifdef BLINK_DEBUG
+#define DEBUG 1
+#else 
 #define DEBUG 0
+#endif
+
 
 class App {
 public:

@@ -12,12 +12,16 @@ STATICLIBS :=
 
 STATICFLAG :=
 FLAGS := -Wall -Wextra -Wpedantic -Werror -O2
-CXXFLAGS := $(FLAGS) -std=c++23 $(STATICFLAG)
+DEBUGFLAGS :=
+CXXFLAGS := $(FLAGS) -std=c++23 $(STATICFLAG) $(DEBUGFLAGS)
 
 CXX := g++
 
 build: make_obj
 	@$(MAKE) all -j$(nproc)
+
+debug: make_obj
+	@$(MAKE) all -j$(nproc) DEBUGFLAGS="-g -DBLINK_DEBUG"
 
 install:
 	sudo install $(TARGET) /usr/bin/

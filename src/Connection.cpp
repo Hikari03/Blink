@@ -48,6 +48,8 @@ void Connection::_send(const char * message, size_t length) {
 void Connection::send(const std::string & message){
     auto messageToSend = message;
 
+	printf("SEND | %s\n", messageToSend.c_str());
+
 	if(_encrypted)
 		_secretSeal(messageToSend);
 
@@ -88,6 +90,8 @@ std::string Connection::receive() {
 
         message += _buffer;
     }
+
+	printf("RECEIVE | %s\n", message.c_str());
 
 	// remove the _end string
 	message = message.substr(0, message.find(_end));
