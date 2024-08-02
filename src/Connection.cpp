@@ -91,53 +91,48 @@ std::string Connection::receive() {
         message += _buffer;
     }
 
-	printf("RECEIVE | %s\n", message.c_str());
-
 	// remove the _end string
-	message = message.substr(0, message.find(_end));
 
-	if(_encrypted)
-		_secretOpen(message);
+	std::vector<std::string> messages;
+	std::string tmpMessage;
+	size_t pos = 0;
+	bool first = true;
 
-	//std::cout << "RECEIVE BEFORE PARSE | " << message << std::endl;
-
-	//split the message into potential multiple messages and store them in _messagesBuffer
-	_messagesBuffer = [&]() {
-		std::vector<std::string> messages;
-		std::string tmpMessage;
-		size_t pos = 0;
-		bool first = true;
-
-		while ((pos = message.find(_end)) != std::string::npos) {
-			if(first){
-				tmpMessage = message.substr(0, pos);
-				first = false;
-			}
-			else
-				messages.push_back(message.substr(0, pos));
-			message.erase(0, pos + strlen(_end));
+	while ((pos = message.find(_end)) != std::string::npos) {
+		if(first){
+			tmpMessage = message.substr(0, pos);
+			first = false;
 		}
-		if(first)
-			tmpMessage = message;
 		else
-			messages.push_back(message);
+			messages.push_back(message.substr(0, pos));
+		message.erase(0, pos + strlen(_end));
+	}
 
-		message = tmpMessage;
-		return messages;
-	}();
+	message = tmpMessage;
+	_messagesBuffer = messages;
+
+	if(_encrypted) {
+		_secretOpen(message);
+		for(auto & messageEnc : _messagesBuffer)
+			_secretOpen(messageEnc);
+	}
 
 	if(_messagesBuffer.empty())
 		_moreInBuffer = false;
 	else
 		_moreInBuffer = true;
 
+
+#ifdef BLINK_DEBUG
 	std::cout << "RECEIVE | " << message << std::endl;
 	std::cout << "RECEIVE BUFFER | "
 			  << std::accumulate(_messagesBuffer.begin(), _messagesBuffer.end(), std::string(),
-									[](const std::string & a, const std::string & b) {
-										return a + b + " | ";
-									})
+								 [](const std::string &a, const std::string &b) {
+									 return a + b + " | ";
+								 })
 			  << std::endl;
+#endif
+
 
 	if(message.contains(_internal"publicKey:")) {
 		std::string publicKey = message.substr(strlen(_internal"publicKey:"));

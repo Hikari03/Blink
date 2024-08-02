@@ -13,9 +13,6 @@ GTKHandler::GTKHandler() {
 		auto [it, widget] = _gtkData._widgetsChat.insert({widgetName, _gtkData._builder->get_widget<Gtk::Widget>(widgetName)});
 		it->second->set_visible();
 	}
-	//cssProvider->load_from_path("style.css");
-	//auto display = Gdk::Display::get_default();
-	//Gtk::StyleProvider::add_provider_for_display(display, cssProvider, GTK_STYLE_PROVIDER_PRIORITY_USER);
 }
 
 void GTKHandler::init() {
@@ -44,6 +41,7 @@ void GTKHandler::_onActivate() {
 	dynamic_cast<Gtk::TextView*>(_gtkData._widgetsIntro["exceptionDisplay"])->set_wrap_mode(Gtk::WrapMode::WORD);
 	dynamic_cast<Gtk::TextView*>(_gtkData._widgetsChat["messagesField"])->set_wrap_mode(Gtk::WrapMode::WORD_CHAR);
 	dynamic_cast<Gtk::TextView*>(_gtkData._widgetsChat.at("messagesInput"))->add_controller(_gtkData._key_controller);
+	dynamic_cast<Gtk::ListBox*>(_gtkData._widgetsChat.at("onlineList"))->set_sort_func(sigc::ptr_fun(&_listBoxSort));
 	setWidgetText(_gtkData._widgetsIntro, "enterName", "Enter name:");
 	setWidgetText(_gtkData._widgetsIntro, "enterServer", "Enter server address:");
 
@@ -97,4 +95,14 @@ void GTKHandler::exit() {
 
 void GTKHandler::wipeMessages() {
 	setWidgetText(_gtkData._widgetsChat, "messagesField", "");
+}
+
+int GTKHandler::_listBoxSort(Gtk::ListBoxRow *row1, Gtk::ListBoxRow *row2) {
+	auto label1 = dynamic_cast<Gtk::Label*>(row1->get_child());
+	auto label2 = dynamic_cast<Gtk::Label*>(row2->get_child());
+
+	if (label1 && label2) {
+		return label1->get_text().compare(label2->get_text());
+	}
+	return 0;
 }

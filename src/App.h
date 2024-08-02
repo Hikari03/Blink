@@ -19,6 +19,7 @@ public:
 
 private:
 	GTKHandler _gtkHandler;
+	std::vector<std::string> _onlineUsers;
 	std::thread _receiveThr;
 
     std::string _userName;

@@ -85,5 +85,6 @@ private:
 	void _onStartup();
 	void _onActivate();
 	void _onIntroButtonClicked();
+	static int _listBoxSort(Gtk::ListBoxRow* row1, Gtk::ListBoxRow* row2);
 
 };

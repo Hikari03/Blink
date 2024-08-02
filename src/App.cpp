@@ -32,8 +32,8 @@ void App::_postInitCall() {
 	}
 	_connectToServer(_ip, 6999);
 
-	_connection.sendInternal("getHistory");
-	_debug("sent history request");
+	//_connection.sendInternal("getHistory");
+	//_debug("sent history request");
 	_receiveThr = std::thread(&App::_receiveThread, this);
 }
 
@@ -126,12 +126,27 @@ void App::_receiveThread() {
 
 			auto listBox = dynamic_cast<Gtk::ListBox*>(_gtkData._widgetsChat.at("onlineList"));
 
-			listBox->remove_all();
+			// find online users that are not in the _onlineUsers list
 			for(const auto & user : onlineUsers) {
-				auto label = Gtk::make_managed<Gtk::Label>(user);
-				listBox->append(*label);
-				listBox->set_child_visible();
+				if(std::find(_onlineUsers.begin(), _onlineUsers.end(), user) == _onlineUsers.end()) {
+					_onlineUsers.push_back(user);
+					auto label = Gtk::make_managed<Gtk::Label>(user);
+					label->set_visible();
+					listBox->append(*label);
+				}
 			}
+
+			// find users that are not online anymore
+			for(auto it = _onlineUsers.begin(); it != _onlineUsers.end(); ) {
+				if(std::find(onlineUsers.begin(), onlineUsers.end(), *it) == onlineUsers.end()) {
+					auto row = listBox->get_row_at_index(static_cast<int>(std::distance(_onlineUsers.begin(), it)));
+					listBox->remove(*row);
+					it = _onlineUsers.erase(it);
+				} else {
+					++it;
+				}
+			}
+
 			continue;
 		}
 
@@ -164,9 +179,9 @@ bool App::_onKeyPressed(guint keyval, guint, Gdk::ModifierType) {
 
 		// debug commands
 		if constexpr (DEBUG) {
-			if(message == "/getmessages") {
+			if(message == "/getallmessages") {
 				_gtkHandler.wipeMessages();
-				_connection.sendInternal("getMessages");
+				_connection.sendInternal("getAllMessages");
 				return true;
 			}
 			if(message == "/gethistory") {
