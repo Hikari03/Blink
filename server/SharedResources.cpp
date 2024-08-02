@@ -3,7 +3,7 @@
 SharedResources::SharedResources(std::mutex &messagesMutex)  : messagesMutex(messagesMutex) {}
 
 SharedResources::~SharedResources() {
-	callBackOnMessagesChange.notify_all();
+	callBackOnResourceChange.notify_all();
 }
 
 void SharedResources::addMessage(const Message & message) {
@@ -12,7 +12,7 @@ void SharedResources::addMessage(const Message & message) {
         _messages.insert(message);
         _changeSinceLastSerialization = true;
     }
-    callBackOnMessagesChange.notify_all();
+    callBackOnResourceChange.notify_all();
 }
 
 void SharedResources::removeMessage(const Message & message) {
@@ -21,7 +21,7 @@ void SharedResources::removeMessage(const Message & message) {
         _messages.erase(message);
         _changeSinceLastSerialization = true;
     }
-    callBackOnMessagesChange.notify_all();
+    callBackOnResourceChange.notify_all();
 }
 
 [[nodiscard]] std::set<Message> SharedResources::getMessages() const {
@@ -63,11 +63,11 @@ void SharedResources::clearMessages() {
         _messages.clear();
         _changeSinceLastSerialization = true;
     }
-    callBackOnMessagesChange.notify_all();
+    callBackOnResourceChange.notify_all();
 }
 
 std::condition_variable & SharedResources::getCallback() {
-    return callBackOnMessagesChange;
+    return callBackOnResourceChange;
 }
 
 std::mutex & SharedResources::getMessagesMutex() {
@@ -77,3 +77,20 @@ std::mutex & SharedResources::getMessagesMutex() {
 unsigned long SharedResources::getMessagesCount() const {
 	return _messages.size();
 }
+
+void SharedResources::setUserAsOnline(const std::string & name) {
+	std::lock_guard<std::mutex> lock(_onlineUsersMutex);
+	if(std::find(_onlineUsers.begin(), _onlineUsers.end(), name) == _onlineUsers.end())
+		_onlineUsers.push_back(name);
+}
+
+void SharedResources::setUserAsOffline(const std::string & name) {
+	std::lock_guard<std::mutex> lock(_onlineUsersMutex);
+	_onlineUsers.erase(std::find(_onlineUsers.begin(), _onlineUsers.end(), name));
+}
+
+const std::vector<std::string> & SharedResources::getOnlineUsers() const {
+	return _onlineUsers;
+}
+
+

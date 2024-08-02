@@ -26,9 +26,8 @@ int main() {
 
     std::vector<std::thread> clientRunners;
     // holds chat
-    SharedResources messages(messagesMutex);
+    SharedResources sharedResources(messagesMutex);
     std::list<Client> clients;
-	std::vector<std::string> onlineUsers;
     std::condition_variable callBack;
 	std::map<std::string,std::string> bannedIps;
 
@@ -77,10 +76,8 @@ int main() {
 			if(!newClientAccepted)
 				continue;
 
-			acceptedClient.initOnlineUsers(onlineUsers);
-
             // create client
-            clients.emplace_back(std::move(acceptedClient), messages);
+            clients.emplace_back(std::move(acceptedClient), sharedResources);
 
             // run client
             clientRunners.emplace_back(&Client::run, &clients.back());

@@ -16,7 +16,7 @@ public:
 
     void removeMessage(const Message & message);
 
-	unsigned long getMessagesCount() const;
+	[[nodiscard]] unsigned long getMessagesCount() const;
 
     [[nodiscard]] std::set<Message> getMessages() const;
 
@@ -28,11 +28,17 @@ public:
 
     [[nodiscard]] std::mutex & getMessagesMutex();
 
+	void setUserAsOnline(const std::string & name);
+	void setUserAsOffline(const std::string & name);
+	[[nodiscard]] const std::vector<std::string> & getOnlineUsers() const;
+
 
 private:
     std::set<Message> _messages;
-    std::condition_variable callBackOnMessagesChange;
+	std::vector<std::string> _onlineUsers;
+    std::condition_variable callBackOnResourceChange;
     std::mutex & messagesMutex;
+	std::mutex _onlineUsersMutex;
 
     std::string _serializedMessagesCache;
     bool _changeSinceLastSerialization = false;
