@@ -60,17 +60,17 @@ void Client::run() {
     try {
         initConnection();
 
-        std::thread sendThread(&Client::sendThread, this);
-        std::thread receiveThread(&Client::receiveThread, this);
-		_sharedResources.addMessage({_clientInfo.name, "joined the chat", std::chrono::system_clock::now()});
 		_sharedResources.setUserAsOnline(_clientInfo.name);
+		_sharedResources.addMessage({_clientInfo.name, "joined the chat", std::chrono::system_clock::now()});
+
+		std::thread sendThread(&Client::sendThread, this);
+        std::thread receiveThread(&Client::receiveThread, this);
 
         sendThread.join();
         receiveThread.join();
 
-        _sharedResources.addMessage({_clientInfo.name, "left the chat", std::chrono::system_clock::now()});
 		_sharedResources.setUserAsOffline(_clientInfo.name);
-
+        _sharedResources.addMessage({_clientInfo.name, "left the chat", std::chrono::system_clock::now()});
     }
     catch (std::runtime_error & e) {
         std::cout << _clientInfo.socket_ << "/" + _clientInfo.name << " EXCEPTION |  " << e.what() << std::endl;
@@ -149,9 +149,16 @@ void Client::sendMessage(const std::string & message) {
 	messageToSend += _end;
 
     //std::cout << "SEND2 |  " << _clientInfo.socket_ << (_clientInfo.name.empty() ? "" : "/" + _clientInfo.name ) << ": " << messageToSend << std::endl;
-    if(::send(_clientInfo.socket_, messageToSend.c_str(), messageToSend.length(), 0) < 0) {
-        throw std::runtime_error("Could not send message to client");
-    }
+	if(!_active)
+		return;
+	try {
+		if (::send(_clientInfo.socket_, messageToSend.c_str(), messageToSend.length(), 0) < 0) {
+			throw std::runtime_error("Could not send message to client");
+		}
+	}
+	catch (std::exception & e) {
+		throw std::runtime_error("Could not send message to client");
+	}
 }
 
 
@@ -188,16 +195,21 @@ void Client::processMessage() {
 	// this is because client gets "xxx joined the server" before he calls this
 	if(_message == _internal"getHistory") {
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		auto messages = _sharedResources.serializeMessages(3000);
+		auto messages = _sharedResources.serializeMessages(_sharedResources.getMessagesCount());
 		// remove the last message
 		messages = messages.substr(messages.find_first_of('\n'));
 		//remove first and last char
 		messages = messages.substr(1, messages.size()-1);
 
-		std::cout << "sending history to " << _clientInfo.socket_ << "/" + _clientInfo.name << std::endl;
-		std::cout << "\"" << messages << "\"" << std::endl; //debug
+		//std::cout << "sending history to " << _clientInfo.socket_ << "/" + _clientInfo.name << std::endl;
+		//std::cout << "\"" << messages << "\"" << std::endl; //debug
 
 		sendMessage(_text + messages);
+		return;
+	}
+
+	if(_message == _internal"getAllMessages") {
+		sendMessage(_text + _sharedResources.serializeMessages(_sharedResources.getMessagesCount()));
 		return;
 	}
 
@@ -216,21 +228,36 @@ void Client::processMessage() {
 
 void Client::sendThread() {
     std::unique_lock<std::mutex> lock(_messagesMutex);
+
+	if(_active) {
+		sendMessage(_text + _sharedResources.serializeMessages(_sharedResources.getMessagesCount()));
+		auto onlineUsers = [&]() {
+			std::string users;
+			for(const auto & user : _sharedResources.getOnlineUsers()) {
+				users += user + ",";
+			}
+			return users;
+		}();
+		sendMessage(_internal"onlineUsers:" + onlineUsers);
+	}
+
     while(_active) {
         _callBackOnMessagesChange.wait(lock);
 		if(_active) { // if we have already kicked client, we cant send or else segfault (edge case)
 			sendMessage(_text + _sharedResources.serializeMessages(1));
-			std::cout << "onlineUsers: " << _sharedResources.getOnlineUsers().size() << std::endl;
-			auto onlineUsers = [&]() {
-				std::string users;
-				for(const auto & user : _sharedResources.getOnlineUsers()) {
-					users += user + ",";
-				}
-				return users;
-			}();
-			std::cout << "onlineUsers: " << onlineUsers << std::endl;
-			sendMessage(_internal"onlineUsers:" + onlineUsers);
 		}
+			//std::cout << "onlineUsers: " << _sharedResources.getOnlineUsers().size() << std::endl;
+		auto onlineUsers = [&]() {
+			std::string users;
+			for(const auto & user : _sharedResources.getOnlineUsers()) {
+				users += user + ",";
+			}
+			return users;
+		}();
+		//std::cout << "onlineUsers: " << onlineUsers << std::endl;
+		if (_active)
+			sendMessage(_internal"onlineUsers:" + onlineUsers);
+
     }
 
 

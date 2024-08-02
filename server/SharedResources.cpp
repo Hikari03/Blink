@@ -82,6 +82,8 @@ void SharedResources::setUserAsOnline(const std::string & name) {
 	std::lock_guard<std::mutex> lock(_onlineUsersMutex);
 	if(std::find(_onlineUsers.begin(), _onlineUsers.end(), name) == _onlineUsers.end())
 		_onlineUsers.push_back(name);
+
+	std::sort(_onlineUsers.begin(), _onlineUsers.end());
 }
 
 void SharedResources::setUserAsOffline(const std::string & name) {

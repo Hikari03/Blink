@@ -18,14 +18,18 @@ LIBPATH :=
 LIBS :=-lsodium
 
 FLAGS := -Wall -Wextra -Wpedantic -Werror -O2
+DEBUGFLAGS :=
 CCFLAGS := $(FLAGS) -std=c99
-CXXFLAGS := $(FLAGS) -std=c++23
+CXXFLAGS := $(FLAGS) -std=c++23 $(DEBUGFLAGS)
 
 CC := gcc
 CXX := g++
 
 build:
 	@$(MAKE) all -j$(nproc)
+
+debug:
+	@$(MAKE) all -j$(nproc) DEBUGFLAGS="-g"
 
 all: $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $(INCLUDE) $(OBJECTS) -o $(TARGET) $(LIBPATH) $(LIBS)
@@ -43,3 +47,5 @@ clean_o:
 
 clean_e:
 	rm -f $(TARGET)
+
+clean: clean_o clean_e
