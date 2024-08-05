@@ -4,6 +4,8 @@
 #include <netinet/in.h>
 #include <bits/socket.h>
 #include <arpa/inet.h>
+#include <vector>
+#include <algorithm>
 
 struct ClientInfo {
 
@@ -21,6 +23,9 @@ struct ClientInfo {
 	std::string ip;
 	int socket_ = 0;
 
-	bool initalized = false;
+	bool initialized = false;
+
+private:
+	std::vector<std::string> onlineUsers;
 
 };

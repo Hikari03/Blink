@@ -19,6 +19,14 @@
 #define _internal "INTERNAL::"
 #define _text "MESSAGE::"
 
+#ifdef BLINK_DEBUG
+#define DEBUG 1
+#include <numeric>
+#include <iostream>
+#else
+#define DEBUG 0
+#endif
+
 
 /**
  * @brief Handles the connection to the server
@@ -47,6 +55,7 @@ private:
 	};
 
     char _buffer[4096] = {0};
+	std::vector<std::string> _messagesBuffer;
 	KeyPair _keyPair;
 	unsigned char _remotePublicKey[crypto_box_PUBLICKEYBYTES];
 	std::mutex _sendMutex;
@@ -55,6 +64,7 @@ private:
     sockaddr_in _server;
     bool _active = true;
 	bool _encrypted = false;
+	bool _moreInBuffer = false;
 
     void clearBuffer();
 

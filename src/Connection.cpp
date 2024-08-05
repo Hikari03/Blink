@@ -48,6 +48,8 @@ void Connection::_send(const char * message, size_t length) {
 void Connection::send(const std::string & message){
     auto messageToSend = message;
 
+	printf("SEND | %s\n", messageToSend.c_str());
+
 	if(_encrypted)
 		_secretSeal(messageToSend);
 
@@ -67,6 +69,14 @@ void Connection::sendInternal(const std::string &message) {
 std::string Connection::receive() {
     std::string message;
 
+	if(_moreInBuffer) {
+		message = _messagesBuffer[0];
+		_messagesBuffer.erase(_messagesBuffer.begin());
+		if(_messagesBuffer.empty())
+			_moreInBuffer = false;
+		return message;
+	}
+
 
     while (!message.contains(_end)) {
 
@@ -79,14 +89,50 @@ std::string Connection::receive() {
         }
 
         message += _buffer;
-		//std::cout << "RECEIVE |  " << message << std::endl;
     }
 
 	// remove the _end string
-	message = message.substr(0, message.find(_end));
 
-	if(_encrypted)
+	std::vector<std::string> messages;
+	std::string tmpMessage;
+	size_t pos = 0;
+	bool first = true;
+
+	while ((pos = message.find(_end)) != std::string::npos) {
+		if(first){
+			tmpMessage = message.substr(0, pos);
+			first = false;
+		}
+		else
+			messages.push_back(message.substr(0, pos));
+		message.erase(0, pos + strlen(_end));
+	}
+
+	message = tmpMessage;
+	_messagesBuffer = messages;
+
+	if(_encrypted) {
 		_secretOpen(message);
+		for(auto & messageEnc : _messagesBuffer)
+			_secretOpen(messageEnc);
+	}
+
+	if(_messagesBuffer.empty())
+		_moreInBuffer = false;
+	else
+		_moreInBuffer = true;
+
+
+#ifdef BLINK_DEBUG
+	std::cout << "RECEIVE | " << message << std::endl;
+	std::cout << "RECEIVE BUFFER | "
+			  << std::accumulate(_messagesBuffer.begin(), _messagesBuffer.end(), std::string(),
+								 [](const std::string &a, const std::string &b) {
+									 return a + b + " | ";
+								 })
+			  << std::endl;
+#endif
+
 
 	if(message.contains(_internal"publicKey:")) {
 		std::string publicKey = message.substr(strlen(_internal"publicKey:"));

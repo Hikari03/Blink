@@ -1,13 +1,13 @@
 #include "ClientInfo.h"
 
 bool ClientInfo::init(const std::string & name, const std::string & ip, const int & socket) {
-	if(initalized)
+	if(initialized)
 		return false;
 
 	this->name = name;
 	this->ip = ip;
 	this->socket_ = socket;
-	this->initalized = true;
+	this->initialized = true;
 	return true;
 }
 
