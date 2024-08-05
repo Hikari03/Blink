@@ -48,7 +48,9 @@ void Connection::_send(const char * message, size_t length) {
 void Connection::send(const std::string & message){
     auto messageToSend = message;
 
+	#ifdef BLINK_DEBUG
 	printf("SEND | %s\n", messageToSend.c_str());
+	#endif
 
 	if(_encrypted)
 		_secretSeal(messageToSend);

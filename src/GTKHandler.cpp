@@ -72,6 +72,10 @@ void GTKHandler::_onIntroButtonClicked() {
 		return;
 	}
 
+	auto onlineListTitle = "Connected to\n" + serverAddr + "\nas " + userName + "\nOnline users:";
+
+	setWidgetText(_gtkData._widgetsChat, "onlineListTitle", onlineListTitle);
+
 	_gtkData._windowIntro->set_visible(false);
 	_gtkData._windowChat->set_visible(true);
 	_gtkData._windowChat->present();
@@ -122,11 +126,9 @@ void GTKHandler::addOnlineUserToList(const std::string &name) {
 void GTKHandler::addMessage(const std::vector<std::string> & messages) {
 
 	auto buffer = dynamic_cast<Gtk::TextView*>(_gtkData._widgetsChat.at("messagesField"))->get_buffer();
-	//buffer->insert_at_cursor(message);
 	for(const auto & msg : messages) {
 		buffer->insert_at_cursor(msg + "\n");
 	}
-	//std::this_thread::sleep_for(std::chrono::milliseconds(150));
 	auto end = buffer->end();
 	dynamic_cast<Gtk::TextView*>(_gtkData._widgetsChat.at("messagesField"))->scroll_to(end);
 }

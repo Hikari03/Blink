@@ -31,6 +31,11 @@ or launch from your desktop environment as an app
 - then follow instructions
 - to exit in connected chat, type `/q` and then enter
 
+### Screenshots
+
+![intro.png](src/assets/intro_screenshot.png)
+![chat.png](src/assets/chat_screenshot.png)
+
 ## Server
 ### Use Docker
 #### With scripts
@@ -77,7 +82,7 @@ in Blink/server
 - [x] better server terminal
 - [x] fix kicking out users
 - [x] sending only last *n* messages so everything is stable
-- [ ] ability to see online users
+- [x] ability to see online users
 - [x] better syncing of chat when someone connects or leaves
   - this is when new user connects and doesn't see the chat history
     or when someone leaves and the chat history is not updated
@@ -86,3 +91,5 @@ in Blink/server
 - [x] transfer ncurses static build to librender that will make static library
 - [x] make communication encrypted
 - [x] remake client to use gtkmm4
+- [ ] enable users send images
+- [ ] fix duplicate messages that show only sometimes

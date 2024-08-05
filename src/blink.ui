@@ -99,8 +99,6 @@
   </object>
   <object class="GtkApplicationWindow" id="mainAppWin">
     <property name="name">blink</property>
-    <property name="default-width">1000</property>
-    <property name="default-height">600</property>
     <property name="halign">center</property>
     <property name="valign">center</property>
     <child>
@@ -172,8 +170,17 @@
               </object>
             </child>
             <child>
-              <object class="GtkListBox" id="onlineList">
-                <property name="visible">0</property>
+              <object class="GtkSeparator">
+              </object>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow" id="onlineListScroll">
+                <property name="height-request">500</property>
+                <child>
+                  <object class="GtkListBox" id="onlineList">
+                    <property name="visible">0</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
