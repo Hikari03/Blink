@@ -9,7 +9,15 @@ void App::run() {
 		_gtkData._key_controller->signal_key_pressed().connect(sigc::mem_fun(*this, &App::_onKeyPressed), false);
 
 		_gtkHandler.show();
-		_connection.sendInternal("exit");
+		try {
+			_connection.sendInternal("exit");
+		}
+		catch (std::exception & e) {
+			std::string message = e.what();
+			if constexpr(DEBUG) {
+				g_log("App", G_LOG_LEVEL_CRITICAL,"Exception %s", message.c_str());
+			}
+		}
 		_receiveThr.join();
 	}
 	catch (std::exception & e) {
@@ -32,8 +40,6 @@ void App::_postInitCall() {
 	}
 	_connectToServer(_ip, 6999);
 
-	//_connection.sendInternal("getHistory");
-	//_debug("sent history request");
 	_receiveThr = std::thread(&App::_receiveThread, this);
 }
 
@@ -78,7 +84,6 @@ void App::_debug(const std::string & text) {
 
 void App::_receiveThread() {
     std::string message;
-    std::vector<std::string> messages;
 	while(_running) {
         message = _connection.receive();
         if(message == _internal"exit") {
@@ -130,9 +135,7 @@ void App::_receiveThread() {
 			for(const auto & user : onlineUsers) {
 				if(std::find(_onlineUsers.begin(), _onlineUsers.end(), user) == _onlineUsers.end()) {
 					_onlineUsers.push_back(user);
-					auto label = Gtk::make_managed<Gtk::Label>(user);
-					label->set_visible();
-					listBox->append(*label);
+					Glib::signal_idle().connect_once(sigc::bind(sigc::mem_fun(_gtkHandler, &GTKHandler::addOnlineUserToList), user));
 				}
 			}
 
@@ -140,7 +143,7 @@ void App::_receiveThread() {
 			for(auto it = _onlineUsers.begin(); it != _onlineUsers.end(); ) {
 				if(std::find(onlineUsers.begin(), onlineUsers.end(), *it) == onlineUsers.end()) {
 					auto row = listBox->get_row_at_index(static_cast<int>(std::distance(_onlineUsers.begin(), it)));
-					listBox->remove(*row);
+					Glib::signal_idle().connect_once(sigc::bind(sigc::mem_fun(_gtkHandler, &GTKHandler::removeOnlineUserFromList), row));
 					it = _onlineUsers.erase(it);
 				} else {
 					++it;
@@ -153,11 +156,17 @@ void App::_receiveThread() {
 		if(message.contains(_text)) {
 			message = message.substr(sizeof(_text) - 1, message.length());
 
-			auto buffer = dynamic_cast<Gtk::TextView*>(_gtkData._widgetsChat.at("messagesField"))->get_buffer();
-			buffer->insert_at_cursor(message);
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
-			auto end = buffer->end();
-			dynamic_cast<Gtk::TextView*>(_gtkData._widgetsChat.at("messagesField"))->scroll_to(end);
+			std::vector<std::string> messages;
+			std::string delimiter = "\n";
+			size_t pos = 0;
+			std::string token;
+			while ((pos = message.find(delimiter)) != std::string::npos) {
+				token = message.substr(0, pos);
+				messages.push_back(token);
+				message.erase(0, pos + delimiter.length());
+			}
+
+			Glib::signal_idle().connect_once(sigc::bind(sigc::mem_fun(_gtkHandler, &GTKHandler::addMessage), messages));
 		}
     }
 }

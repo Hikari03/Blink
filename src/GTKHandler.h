@@ -1,8 +1,7 @@
 #pragma once
-#ifdef OK
-#undef OK
-#endif
+
 #include <gtkmm.h>
+#include <thread>
 
 class GTKHandler {
 
@@ -15,6 +14,9 @@ public:
 
 	[[nodiscard]] std::pair<std::string, std::string> getIntroData() const;
 	void wipeMessages();
+	void removeOnlineUserFromList(Gtk::ListBoxRow * row);
+	void addOnlineUserToList(const std::string & name);
+	void addMessage(const std::vector<std::string> & messages);
 
 	void show();
 	void exit();
@@ -26,6 +28,7 @@ public:
 			_windowIntro = _builder->get_widget<Gtk::ApplicationWindow>("blink");
 			_windowChat = _builder->get_widget<Gtk::ApplicationWindow>("mainAppWin");
 			_key_controller = Gtk::EventControllerKey::create();
+
 		}
 
 		GtkData & operator = (const GtkData & other){

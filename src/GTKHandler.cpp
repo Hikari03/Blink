@@ -106,3 +106,27 @@ int GTKHandler::_listBoxSort(Gtk::ListBoxRow *row1, Gtk::ListBoxRow *row2) {
 	}
 	return 0;
 }
+
+void GTKHandler::removeOnlineUserFromList(Gtk::ListBoxRow *row) {
+	auto listBox = dynamic_cast<Gtk::ListBox*>(_gtkData._widgetsChat.at("onlineList"));
+	listBox->remove(*row);
+}
+
+void GTKHandler::addOnlineUserToList(const std::string &name) {
+	auto listBox = dynamic_cast<Gtk::ListBox*>(_gtkData._widgetsChat.at("onlineList"));
+	auto label = Gtk::make_managed<Gtk::Label>(name);
+	label->set_visible();
+	listBox->append(*label);
+}
+
+void GTKHandler::addMessage(const std::vector<std::string> & messages) {
+
+	auto buffer = dynamic_cast<Gtk::TextView*>(_gtkData._widgetsChat.at("messagesField"))->get_buffer();
+	//buffer->insert_at_cursor(message);
+	for(const auto & msg : messages) {
+		buffer->insert_at_cursor(msg + "\n");
+	}
+	//std::this_thread::sleep_for(std::chrono::milliseconds(150));
+	auto end = buffer->end();
+	dynamic_cast<Gtk::TextView*>(_gtkData._widgetsChat.at("messagesField"))->scroll_to(end);
+}
