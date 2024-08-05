@@ -166,7 +166,7 @@ void App::_receiveThread() {
 				message.erase(0, pos + delimiter.length());
 			}
 
-			Glib::signal_idle().connect_once(sigc::bind(sigc::mem_fun(_gtkHandler, &GTKHandler::addMessage), messages));
+			Glib::signal_idle().connect_once(sigc::bind(sigc::mem_fun(_gtkHandler, &GTKHandler::addMessage), messages), G_THREAD_PRIORITY_URGENT);
 		}
     }
 }
@@ -189,12 +189,12 @@ bool App::_onKeyPressed(guint keyval, guint, Gdk::ModifierType) {
 		// debug commands
 		if constexpr (DEBUG) {
 			if(message == "/getallmessages") {
-				_gtkHandler.wipeMessages();
+				Glib::signal_idle().connect_once(sigc::mem_fun(_gtkHandler, &GTKHandler::wipeMessages));
 				_connection.sendInternal("getAllMessages");
 				return true;
 			}
 			if(message == "/gethistory") {
-				_gtkHandler.wipeMessages();
+				Glib::signal_idle().connect_once(sigc::mem_fun(_gtkHandler, &GTKHandler::wipeMessages));
 				_connection.sendInternal("getHistory");
 				return true;
 			}

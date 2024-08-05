@@ -77,7 +77,7 @@ in Blink/server
 - [x] better server terminal
 - [x] fix kicking out users
 - [x] sending only last *n* messages so everything is stable
-- [ ] ability to see online users
+- [x] ability to see online users
 - [x] better syncing of chat when someone connects or leaves
   - this is when new user connects and doesn't see the chat history
     or when someone leaves and the chat history is not updated

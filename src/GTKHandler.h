@@ -72,7 +72,8 @@ public:
 				"messagesInput",
 				"onlineListBox",
 				"onlineListTitle",
-				"onlineList"
+				"onlineList",
+				"onlineListScroll"
 		};
 	};
 
