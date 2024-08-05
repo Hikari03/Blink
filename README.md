@@ -31,6 +31,11 @@ or launch from your desktop environment as an app
 - then follow instructions
 - to exit in connected chat, type `/q` and then enter
 
+### Screenshots
+
+![intro.png](src/assets/intro_screenshot.png)
+![chat.png](src/assets/chat_screenshot.png)
+
 ## Server
 ### Use Docker
 #### With scripts
@@ -86,3 +91,5 @@ in Blink/server
 - [x] transfer ncurses static build to librender that will make static library
 - [x] make communication encrypted
 - [x] remake client to use gtkmm4
+- [ ] enable users send images
+- [ ] fix duplicate messages that show only sometimes
