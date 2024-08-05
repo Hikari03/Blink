@@ -60,13 +60,13 @@ void Client::run() {
     try {
         initConnection();
 
-		_sharedResources.setUserAsOnline(_clientInfo.name);
-		_sharedResources.addMessage({_clientInfo.name, "joined the chat", std::chrono::system_clock::now()});
-
 		std::thread sendThread(&Client::sendThread, this);
         std::thread receiveThread(&Client::receiveThread, this);
 
-        sendThread.join();
+		_sharedResources.setUserAsOnline(_clientInfo.name);
+		_sharedResources.addMessage({_clientInfo.name, "joined the chat", std::chrono::system_clock::now()});
+
+		sendThread.join();
         receiveThread.join();
 
 		_sharedResources.setUserAsOffline(_clientInfo.name);
@@ -229,6 +229,7 @@ void Client::processMessage() {
 void Client::sendThread() {
     std::unique_lock<std::mutex> lock(_messagesMutex);
 
+	// send all messages on start
 	if(_active) {
 		sendMessage(_text + _sharedResources.serializeMessages(_sharedResources.getMessagesCount()));
 		auto onlineUsers = [&]() {
