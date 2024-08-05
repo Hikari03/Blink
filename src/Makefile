@@ -39,7 +39,7 @@ all: $(OBJECTS)
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDE) -c $< -o obj/$@
 
-.PHONY: clean_o clean_e static all build clean
+.PHONY: clean_o clean_e static all build clean install
 
 clean_o:
 	if [ -e "obj/*.o" ]; then rm obj/*.o; fi
@@ -51,5 +51,3 @@ make_obj:
 	mkdir -p obj
 
 clean: clean_o clean_e
-	@$(MAKE) -C include/libsodium clean
-	@rm -rf include/libsodium-build
