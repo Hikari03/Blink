@@ -1,5 +1,13 @@
 #pragma once
 
+#ifdef WIN32
+#undef ERROR
+#undef WINDING
+#undef IN
+#undef OUT
+#undef IGNORE
+#undef near
+#endif
 #include <gtkmm.h>
 #include <thread>
 
@@ -23,8 +31,26 @@ public:
 	struct GtkData {
 
 		void init() {
-			_app = Gtk::Application::create("blink");
+			_app = Gtk::Application::create("cz.hikari03.blink");
+#ifdef __linux__
 			_builder = Gtk::Builder::create_from_file("/usr/share/blink/blink.ui");
+#elif _WIN32
+
+            char* appdata = getenv("APPDATA");
+
+            #ifdef BLINK_DEBUG
+            g_log("App", G_LOG_LEVEL_DEBUG,"Appdata path : %s",  appdata);
+            #endif
+
+            std::string path = std::string(appdata) + "\\Blink\\blink.ui";
+
+            #ifdef BLINK_WIN_RELEASE
+            path = "blink.ui";
+            #endif
+
+
+            _builder = Gtk::Builder::create_from_file(path);
+#endif
 			_windowIntro = _builder->get_widget<Gtk::ApplicationWindow>("blink");
 			_windowChat = _builder->get_widget<Gtk::ApplicationWindow>("mainAppWin");
 			_key_controller = Gtk::EventControllerKey::create();

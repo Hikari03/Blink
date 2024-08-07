@@ -1,5 +1,7 @@
 # stolen from https://gist.github.com/freelsn/fe5f160cf564e209dc9c5673296ee813
 
+# For Windows build i assume using MSYS2 ucrt64
+
 TARGET := blink
 SOURCES := $(wildcard *.c *.cpp)
 OBJECTS := $(patsubst src%,obj%, $(patsubst %.c,%.o, $(patsubst %.cpp,%.o,$(SOURCES))))
@@ -17,21 +19,49 @@ CXXFLAGS := $(FLAGS) -std=c++23 $(STATICFLAG) $(DEBUGFLAGS)
 
 CXX := g++
 
+## Windows specific
+TARGET_PATH := "C:\Program Files\Blink\$(TARGET).exe"
+SHORTCUT_PATH := "C:\Users\$(USER)\Desktop\$(TARGET).lnk"
+DESCRIPTION := "Blink"
+
 build: make_obj
 	@$(MAKE) all -j$(nproc)
+
+win: make_obj
+	@$(MAKE) all -j$(nproc) LIBS="-lsodium -lws2_32 $(shell pkg-config -libs gtkmm-4.0)"
+
+win_release: make_obj
+	@$(MAKE) all -j$(nproc) DEBUGFLAGS="-DBLINK_WIN_RELEASE" LIBS="-lsodium -lws2_32 $(shell pkg-config -libs gtkmm-4.0)"
+	mkdir -p "blink_win"
+	cp $(TARGET).exe "blink_win/$(TARGET).exe"
+	cp -r assets/dlls/* "blink_win/"
+	cp $(TARGET).ui "blink_win/$(TARGET).ui"
+	zip -r "blink_win.zip" "blink_win"
+	rm -rf "blink_win"
+
+win_debug: make_obj
+	@$(MAKE) all -j$(nproc) DEBUGFLAGS="-g -DBLINK_DEBUG" LIBS="-lsodium -lws2_32 $(shell pkg-config -libs gtkmm-4.0)"
 
 debug: make_obj
 	@$(MAKE) all -j$(nproc) DEBUGFLAGS="-g -DBLINK_DEBUG"
 
 install:
-	sudo install $(TARGET) /usr/bin/
-	sudo install -Dm644 $(TARGET).desktop /usr/share/applications/$(TARGET).desktop
+	sudo install $(TARGET) /usr/bin/blink
+	sudo install -Dm644 $(TARGET).desktop /usr/share/applications/cz.hikari03.blink.desktop
 	sudo mkdir -p /usr/share/blink
 	sudo install $(TARGET).ui /usr/share/blink/$(TARGET).ui
-	sudo install -Dm644 assets/blink.png /usr/share/pixmaps/blink.png
-	sudo install -Dm644 assets/blink_32x32.png /usr/share/icons/hicolor/32x32/apps/blink.png
-	sudo install -Dm644 assets/blink_64x64.png /usr/share/icons/hicolor/64x64/apps/blink.png
-	sudo install -Dm644 assets/blink.png /usr/share/icons/hicolor/512x512/apps/blink.png
+	sudo install -Dm644 assets/blink.png /usr/share/pixmaps/cz.hikari03.blink.png
+	sudo install -Dm644 assets/blink_32x32.png /usr/share/icons/hicolor/32x32/apps/cz.hikari03.blink.png
+	sudo install -Dm644 assets/blink_64x64.png /usr/share/icons/hicolor/64x64/apps/cz.hikari03.blink.png
+	sudo install -Dm644 assets/blink.png /usr/share/icons/hicolor/512x512/apps/cz.hikari03.blink.png
+
+install_win:
+	mkdir -p /c/Program\ Files/blink
+	cp $(TARGET).exe /c/Program\ Files/Blink/$(TARGET).exe
+	cp -r assets/dlls/* /c/Program\ Files/Blink/
+	cp $(TARGET).ui $(APPDATA)/Blink/$(TARGET).ui
+	cp assets/blink.png /c/Program\ Files/Blink/blink.png
+	cmd //c assets\\create_shortcut.bat $(TARGET_PATH) $(SHORTCUT_PATH) $(DESCRIPTION)
 
 all: $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $(INCLUDE) $(addprefix obj/,$(OBJECTS)) -o $(TARGET) $(LIBPATH) $(LIBS)
