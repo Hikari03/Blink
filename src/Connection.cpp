@@ -57,6 +57,7 @@ void Connection::connectToServer(std::string ip, int port) {
 		throw std::runtime_error("Could not get address info");
 	}
 
+    _ptr = _result;
 
 	_socket = socket(_ptr->ai_family, _ptr->ai_socktype, _ptr->ai_protocol);
 	if (_socket == INVALID_SOCKET) {
