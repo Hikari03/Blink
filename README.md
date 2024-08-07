@@ -6,7 +6,7 @@
 - Note: if you want to use terminal interface for client and/or want static build, you can use `ncurses` branch.
 
 ## Windows
-- See releases for windows build
+- See [releases](https://github.com/Hikari03/Blink/releases/latest) for windows build
 
 ### Building on Windows
 - Windows build is possible using MSYS2 UCRT64
