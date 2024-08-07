@@ -5,6 +5,17 @@
 
 - Note: if you want to use terminal interface for client and/or want static build, you can use `ncurses` branch.
 
+## Windows
+- See releases for windows build
+
+### Building on Windows
+- Windows build is possible using MSYS2 UCRT64
+- Run MSYS2 UCRT64 as administrator
+- You will need to install following packages:
+- `pacman -S mingw-w64-ucrt-x86_64-gtk4 mingw-w64-ucrt-x86_64-libsodium mingw-w64-ucrt-x86_64-toolchain`
+- hopefully, you will be able to build it with `make win` command in src and consequently `make install_win` to install it
+
+# Linux
 ## Dependencies
 ### Shared
 - `make`,`libsodium`, `g++` with c++23 support
@@ -93,3 +104,5 @@ in Blink/server
 - [x] remake client to use gtkmm4
 - [ ] enable users send images
 - [ ] fix duplicate messages that show only sometimes
+- [x] port to windows
+- [ ] make default theme (probably catpuccin)
