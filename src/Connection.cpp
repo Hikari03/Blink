@@ -1,10 +1,22 @@
 #include "Connection.h"
 
 Connection::Connection() {
+#ifdef __linux__
     _socket = socket(AF_INET, SOCK_STREAM, 0);
     if(_socket == -1) {
         throw std::runtime_error("Could not create socket");
     }
+#elif _WIN32
+	WSADATA _wsaData;
+	if (WSAStartup(MAKEWORD(2, 2), &_wsaData) != 0) {
+		throw std::runtime_error("Could not initialize Winsock");
+	}
+
+	ZeroMemory( &_hints, sizeof(_hints) );
+	_hints.ai_family   = AF_INET;
+	_hints.ai_socktype = SOCK_STREAM;
+	_hints.ai_protocol = IPPROTO_TCP;
+#endif
 
 	if (sodium_init() < 0) {
 		throw std::runtime_error("Could not initialize sodium");
@@ -14,11 +26,13 @@ Connection::Connection() {
 }
 
 void Connection::connectToServer(std::string ip, int port) {
+
+	if(ip == "localhost" || ip.empty())
+		ip = "127.0.0.1";
+
+#ifdef __linux__
     _server.sin_family = AF_INET;
     _server.sin_port = htons(port);
-
-    if(ip == "localhost" || ip.empty())
-        ip = "127.0.0.1";
 
 
     if(inet_pton(AF_INET, ip.c_str(), &_server.sin_addr) <= 0) {
@@ -32,17 +46,47 @@ void Connection::connectToServer(std::string ip, int port) {
         }
     }
 
-    connect(_socket, (struct sockaddr*)&_server, sizeof(_server));
+    if (connect(_socket, (struct sockaddr*)&_server, sizeof(_server)) < 0) {
+		throw std::runtime_error("Could not connect to server");
+	}
 
 
+#elif _WIN32
+	if(getaddrinfo(ip.c_str(), std::to_string(port).c_str(), &_hints, &_result) != 0) {
+		WSACleanup();
+		throw std::runtime_error("Could not get address info");
+	}
+
+
+	_socket = socket(_ptr->ai_family, _ptr->ai_socktype, _ptr->ai_protocol);
+	if (_socket == INVALID_SOCKET) {
+		WSACleanup();
+		throw std::runtime_error("Could not create socket");
+	}
+
+	if (connect(_socket, _ptr->ai_addr, (int)_ptr->ai_addrlen) == SOCKET_ERROR) {
+		closesocket(_socket);
+		_socket = INVALID_SOCKET;
+		freeaddrinfo(_result);
+		throw std::runtime_error("Could not connect to server");
+	}
+	freeaddrinfo(_result);
+
+#endif
 
 }
 
 void Connection::_send(const char * message, size_t length) {
 	std::lock_guard<std::mutex> lock(_sendMutex);
+#ifdef __linux__
 	if(::send(_socket, message, length, 0) < 0) {
 		throw std::runtime_error("Could not send message");
 	}
+#elif _WIN32
+	if(::send(_socket, message, length, 0) == SOCKET_ERROR) {
+		throw std::runtime_error("Could not send message: " + WSAGetLastError());
+	}
+#endif
 }
 
 void Connection::send(const std::string & message){
@@ -159,8 +203,14 @@ std::string Connection::receive() {
 }
 
 void Connection::close() {
-    //send(_internal"exit");
+#ifdef __linux__
     shutdown(_socket, 0);
+#elif _WIN32
+	WSACleanup();
+	shutdown(_socket, SD_SEND);
+	closesocket(_socket);
+#endif
+
     _active = false;
 }
 

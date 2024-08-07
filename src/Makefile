@@ -15,10 +15,15 @@ FLAGS := -Wall -Wextra -Wpedantic -Werror -O2
 DEBUGFLAGS :=
 CXXFLAGS := $(FLAGS) -std=c++23 $(STATICFLAG) $(DEBUGFLAGS)
 
+WIN-CLANG++_PREFIX := "$(HOME)/installs/quasi-msys2"
+
 CXX := g++
 
 build: make_obj
 	@$(MAKE) all -j$(nproc)
+
+win: make_obj
+	@$(MAKE) all -j$(nproc)LIBS="-lsodium -lws2_32 $(shell pkg-config -libs gtkmm-4.0)"
 
 debug: make_obj
 	@$(MAKE) all -j$(nproc) DEBUGFLAGS="-g -DBLINK_DEBUG"

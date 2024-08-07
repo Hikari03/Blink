@@ -2,18 +2,27 @@
 
 #include <cstring>
 #include <string>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <unistd.h>
 #include <stdexcept>
-#include <resolv.h>
 #include <cerrno>
 #include <vector>
 #include <mutex>
 #include <memory>
 #include <thread>
 #include <sodium.h>
+
+#ifdef __linux__
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <resolv.h>
+#elif _WIN32
+#define WIN32_LEAN_AND_MEAN
+
+#include <windows.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#endif
 
 #define _end "::--///-$$$"
 #define _internal "INTERNAL::"
@@ -59,9 +68,17 @@ private:
 	KeyPair _keyPair;
 	unsigned char _remotePublicKey[crypto_box_PUBLICKEYBYTES];
 	std::mutex _sendMutex;
+#ifdef __linux__
     int _socket;
+	sockaddr_in _server;
+#elif _WIN32
+	WSADATA _wsaData;
+	SOCKET _socket = INVALID_SOCKET;
+	struct addrinfo *_result = NULL,
+                *_ptr = NULL,
+                _hints;
+#endif
     ssize_t _sizeOfPreviousMessage = 0;
-    sockaddr_in _server;
     bool _active = true;
 	bool _encrypted = false;
 	bool _moreInBuffer = false;
