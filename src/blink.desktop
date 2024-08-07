@@ -2,9 +2,10 @@
 Name=blink
 Comment=chat app in gtk4
 Exec=blink
-Icon=blink
+Icon=cz.hikari03.blink
 Terminal=false
 Type=Application
 Encoding=UTF-8
 Categories=messaging;chat;
+StartupNotify=true
 Keywords=chat;messenger

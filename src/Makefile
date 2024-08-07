@@ -24,14 +24,14 @@ debug: make_obj
 	@$(MAKE) all -j$(nproc) DEBUGFLAGS="-g -DBLINK_DEBUG"
 
 install:
-	sudo install $(TARGET) /usr/bin/
-	sudo install -Dm644 $(TARGET).desktop /usr/share/applications/$(TARGET).desktop
+	sudo install $(TARGET) /usr/bin/blink
+	sudo install -Dm644 $(TARGET).desktop /usr/share/applications/cz.hikari03.blink.desktop
 	sudo mkdir -p /usr/share/blink
 	sudo install $(TARGET).ui /usr/share/blink/$(TARGET).ui
-	sudo install -Dm644 assets/blink.png /usr/share/pixmaps/blink.png
-	sudo install -Dm644 assets/blink_32x32.png /usr/share/icons/hicolor/32x32/apps/blink.png
-	sudo install -Dm644 assets/blink_64x64.png /usr/share/icons/hicolor/64x64/apps/blink.png
-	sudo install -Dm644 assets/blink.png /usr/share/icons/hicolor/512x512/apps/blink.png
+	sudo install -Dm644 assets/blink.png /usr/share/pixmaps/cz.hikari03.blink.png
+	sudo install -Dm644 assets/blink_32x32.png /usr/share/icons/hicolor/32x32/apps/cz.hikari03.blink.png
+	sudo install -Dm644 assets/blink_64x64.png /usr/share/icons/hicolor/64x64/apps/cz.hikari03.blink.png
+	sudo install -Dm644 assets/blink.png /usr/share/icons/hicolor/512x512/apps/cz.hikari03.blink.png
 
 all: $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $(INCLUDE) $(addprefix obj/,$(OBJECTS)) -o $(TARGET) $(LIBPATH) $(LIBS)
