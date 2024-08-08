@@ -32,11 +32,13 @@ win: make_obj
 
 win_release: make_obj
 	@$(MAKE) all -j$(nproc) DEBUGFLAGS="-DBLINK_WIN_RELEASE" LIBS="-lsodium -lws2_32 $(shell pkg-config -libs gtkmm-4.0)"
-	mkdir -p "blink_win"
+	mkdir -p "blink_win/assets"
 	cp $(TARGET).exe "blink_win/$(TARGET).exe"
 	cp -r assets/dlls/* "blink_win/"
 	cp $(TARGET).ui "blink_win/$(TARGET).ui"
 	cp style.css "blink_win/style.css"
+	cp -r assets/gktcss "blink_win/assets"
+
 	zip -r "blink_win.zip" "blink_win"
 	rm -rf "blink_win"
 
@@ -49,9 +51,10 @@ debug: make_obj
 install:
 	sudo install $(TARGET) /usr/bin/blink
 	sudo install -Dm644 $(TARGET).desktop /usr/share/applications/cz.hikari03.blink.desktop
-	sudo mkdir -p /usr/share/blink
+	sudo mkdir -p /usr/share/blink/assets/gtkcss
 	sudo install $(TARGET).ui /usr/share/blink/$(TARGET).ui
 	sudo install style.css /usr/share/blink/style.css
+	sudo cp -r assets/gtkcss/* /usr/share/blink/assets/gtkcss
 	sudo install -Dm644 assets/blink.png /usr/share/pixmaps/cz.hikari03.blink.png
 	sudo install -Dm644 assets/blink_32x32.png /usr/share/icons/hicolor/32x32/apps/cz.hikari03.blink.png
 	sudo install -Dm644 assets/blink_64x64.png /usr/share/icons/hicolor/64x64/apps/cz.hikari03.blink.png
@@ -63,6 +66,7 @@ install_win:
 	cp -r assets/dlls/* /c/Program\ Files/Blink/
 	cp $(TARGET).ui $(APPDATA)/Blink/$(TARGET).ui
 	cp style.css $(APPDATA)/Blink/style.css
+	cp -r assets/gtkcss $(APPDATA)/Blink/assets
 	cp assets/blink.png /c/Program\ Files/Blink/blink.png
 	cmd //c assets\\create_shortcut.bat $(TARGET_PATH) $(SHORTCUT_PATH) $(DESCRIPTION)
 

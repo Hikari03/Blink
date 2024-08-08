@@ -21,7 +21,7 @@ GTKHandler::GTKHandler() {
 
 #elif _WIN32
 	#ifdef BLINK_WIN_RELEASE
-	path = "blink.ui";
+	path = "style.css";
 	#else
 	char* appdata = getenv("APPDATA");
 	cssPath = std::string(appdata) + "\\Blink\\style.css";
@@ -29,10 +29,10 @@ GTKHandler::GTKHandler() {
 
 #endif
 
-	_cssProvider->load_from_path("/usr/share/blink/style.css");
+	_cssProvider->load_from_path(cssPath);
 
 	auto display = Gdk::Display::get_default();
-	Gtk::StyleProvider::add_provider_for_display(display, _cssProvider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	Gtk::StyleProvider::add_provider_for_display(display, _cssProvider, GTK_STYLE_PROVIDER_PRIORITY_FALLBACK);
 }
 
 void GTKHandler::init() {
