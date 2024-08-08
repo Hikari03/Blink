@@ -39,8 +39,6 @@ win_release: make_obj
 	cp style.css "blink_win/style.css"
 	cp -r assets/gtkcss "blink_win/assets"
 
-	rm -rf "blink_win"
-
 win_debug: make_obj
 	@$(MAKE) all -j$(nproc) DEBUGFLAGS="-g -DBLINK_DEBUG" LIBS="-lsodium -lws2_32 $(shell pkg-config -libs gtkmm-4.0)"
 
