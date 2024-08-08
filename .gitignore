@@ -8,3 +8,5 @@ ncurses-build
 libsodium-build
 blink.glade~
 blink_win.zip
+src/assets/gtkcss/*
+src/style.css
