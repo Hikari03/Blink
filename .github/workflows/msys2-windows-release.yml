@@ -1,0 +1,28 @@
+name: windows-release
+on: workflow_dispatch
+
+jobs:
+  windows_build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: git make mingw-w64-ucrt-x86_64-gtkmm-4.0 mingw-w64-ucrt-x86_64-libsodium mingw-w64-ucrt-x86_64-toolchain
+      - name: CI-Build
+        run: |
+          cd src
+          make win_release
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: blink_windows
+          path: src/blink_win
+          if-no-files-found: error
+          overwrite: true

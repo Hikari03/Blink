@@ -4,6 +4,16 @@ GTKHandler::GTKHandler() {
 
 	_gtkData.init();
 
+#ifdef _WIN32
+	auto settings = Gtk::Settings::get_default();
+
+	if (settings) {
+		// Enable dark mode
+		settings->property_gtk_application_prefer_dark_theme() = true;
+	}
+#endif
+
+
 	for (const auto & widgetName : _gtkData._widgetNamesInit) {
 		auto [it, widget] = _gtkData._widgetsIntro.insert({widgetName, _gtkData._builder->get_widget<Gtk::Widget>(widgetName)});
 		it->second->set_visible();
@@ -13,6 +23,30 @@ GTKHandler::GTKHandler() {
 		auto [it, widget] = _gtkData._widgetsChat.insert({widgetName, _gtkData._builder->get_widget<Gtk::Widget>(widgetName)});
 		it->second->set_visible();
 	}
+
+	std::string cssPath;
+
+#ifdef __linux__
+	cssPath = "/usr/share/blink/style.css";
+
+#elif _WIN32
+	#ifdef BLINK_WIN_RELEASE
+	cssPath = "style.css";
+	#else
+	char* appdata = getenv("APPDATA");
+	cssPath = std::string(appdata) + "\\Blink\\style.css";
+	#endif
+
+#endif
+
+	_cssProvider->load_from_path(cssPath);
+
+	auto display = Gdk::Display::get_default();
+#ifdef __linux__
+	Gtk::StyleProvider::add_provider_for_display(display, _cssProvider, GTK_STYLE_PROVIDER_PRIORITY_THEME);
+#elif _WIN32
+	Gtk::StyleProvider::add_provider_for_display(display, _cssProvider, GTK_STYLE_PROVIDER_PRIORITY_SETTINGS);
+#endif
 }
 
 void GTKHandler::init() {
