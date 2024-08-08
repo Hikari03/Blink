@@ -86,7 +86,7 @@ in Blink/server
 
 ## Attributions
 - <a href="https://www.flaticon.com/free-icons/blink" title="blink icons">Blink icons created by kawalanicon - Flaticon</a>
-- <a href="https://github.com/catppuccin/gtk" title="catppuccino theme">catppuccino theme</a>
+- <a href="https://github.com/catppuccin/gtk" title="catppuccin theme">Catppuccin mocha mauve theme</a>
 - <a href="https://www.msys2.org/" title="MSYS2 dlls">MSYS2 dlls</a>
 
 # TODO
@@ -108,4 +108,4 @@ in Blink/server
 - [ ] fix duplicate messages that show only sometimes
 - [x] port to windows
 - [x] make default theme (probably catppuccin)
-- [ ] [build catppuccin theme](https://github.com/catppuccin/gtk/blob/main/docs/USAGE.md) in makefile and not store it in repo
+- [x] [build catppuccin theme](https://github.com/catppuccin/gtk/blob/main/docs/USAGE.md) in makefile and not store it in repo
