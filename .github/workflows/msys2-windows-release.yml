@@ -13,7 +13,7 @@ jobs:
         with:
           msystem: UCRT64
           update: true
-          install: git make mingw-w64-ucrt-x86_64-gtkmm-4.0 mingw-w64-ucrt-x86_64-libsodium mingw-w64-ucrt-x86_64-toolchain
+          install: git make unzip mingw-w64-ucrt-x86_64-gtkmm-4.0 mingw-w64-ucrt-x86_64-libsodium mingw-w64-ucrt-x86_64-toolchain
       - name: CI-Build
         run: |
           cd src
