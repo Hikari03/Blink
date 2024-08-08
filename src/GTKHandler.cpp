@@ -31,7 +31,7 @@ GTKHandler::GTKHandler() {
 
 #elif _WIN32
 	#ifdef BLINK_WIN_RELEASE
-	cssPpath = "style.css";
+	cssPath = "style.css";
 	#else
 	char* appdata = getenv("APPDATA");
 	cssPath = std::string(appdata) + "\\Blink\\style.css";
