@@ -25,12 +25,15 @@ SHORTCUT_PATH := "C:\Users\$(USER)\Desktop\$(TARGET).lnk"
 DESCRIPTION := "Blink"
 
 build: make_obj
+	if [ ! -e "style.css" ] || [ ! -d "assets/gtkcss" ]; then $(MAKE) get_catppuccin; fi
 	@$(MAKE) all -j$(nproc)
 
 win: make_obj
+	if [ ! -e "style.css" ] || [ ! -d "assets/gtkcss" ]; then $(MAKE) get_catppuccin; fi
 	@$(MAKE) all -j$(nproc) LIBS="-lsodium -lws2_32 $(shell pkg-config -libs gtkmm-4.0)"
 
 win_release: make_obj
+	if [ ! -e "style.css" ] || [ ! -d "assets/gtkcss" ]; then $(MAKE) get_catppuccin; fi
 	@$(MAKE) all -j$(nproc) DEBUGFLAGS="-DBLINK_WIN_RELEASE" LIBS="-lsodium -lws2_32 $(shell pkg-config -libs gtkmm-4.0)"
 	mkdir -p "blink_win/assets"
 	cp $(TARGET).exe "blink_win/$(TARGET).exe"
@@ -40,9 +43,11 @@ win_release: make_obj
 	cp -r assets/gtkcss "blink_win/assets"
 
 win_debug: make_obj
+	if [ ! -e "style.css" ] || [ ! -d "assets/gtkcss" ]; then $(MAKE) get_catppuccin; fi
 	@$(MAKE) all -j$(nproc) DEBUGFLAGS="-g -DBLINK_DEBUG" LIBS="-lsodium -lws2_32 $(shell pkg-config -libs gtkmm-4.0)"
 
 debug: make_obj
+	if [ ! -e "style.css" ] || [ ! -d "assets/gtkcss" ]; then $(MAKE) get_catppuccin; fi
 	@$(MAKE) all -j$(nproc) DEBUGFLAGS="-g -DBLINK_DEBUG"
 
 install:
@@ -85,4 +90,27 @@ clean_e:
 make_obj:
 	mkdir -p obj
 
+get_catppuccin:
+	if [ -e style.css ] && [ -d assets/gtkcss ]; then \
+  		echo "catppuccin already downloaded"; \
+  		exit 1; \
+  	fi
+
+	wget https://github.com/catppuccin/gtk/releases/download/v1.0.3/catppuccin-mocha-mauve-standard+default.zip
+	unzip catppuccin-mocha-mauve-standard+default.zip
+	rm catppuccin-mocha-mauve-standard+default.zip
+	rm -rf catppuccin-mocha-mauve-standard+default-hdpi
+	rm -rf catppuccin-mocha-mauve-standard+default-xhdpi
+	cp catppuccin-mocha-mauve-standard+default/gtk-4.0/gtk-dark.css style.css
+	mkdir -p assets/gtkcss
+	cp -r catppuccin-mocha-mauve-standard+default/gtk-4.0/assets/* assets/gtkcss
+	rm -rf catppuccin-mocha-mauve-standard+default
+	# remove all lines with @define-color
+	sed -i '/@define-color/d' style.css
+	# substitute all "assets" with "assets/gtkcss"
+	sed -i 's/assets/assets\/gtkcss/g' style.css
+
+
 clean: clean_o clean_e
+	rm style.css
+	rm -rf assets/gtkcss

@@ -12,7 +12,7 @@
 - Windows build is possible using [MSYS2](https://www.msys2.org/) UCRT64
 - Run MSYS2 UCRT64 as administrator
 - You will need to install following packages:
-- `pacman -S git make mingw-w64-ucrt-x86_64-gtkmm-4.0 mingw-w64-ucrt-x86_64-libsodium mingw-w64-ucrt-x86_64-toolchain`
+- `pacman -S git make unzip mingw-w64-ucrt-x86_64-gtkmm-4.0 mingw-w64-ucrt-x86_64-libsodium mingw-w64-ucrt-x86_64-toolchain`
 - Hopefully, you will be able to build it with `make win` command in src and consequently `make install_win` to install it
 
 # Linux
@@ -86,7 +86,7 @@ in Blink/server
 
 ## Attributions
 - <a href="https://www.flaticon.com/free-icons/blink" title="blink icons">Blink icons created by kawalanicon - Flaticon</a>
-- <a href="https://github.com/catppuccin/gtk" title="catppuccino theme">catppuccino theme</a>
+- <a href="https://github.com/catppuccin/gtk" title="catppuccin theme">Catppuccin mocha mauve theme</a>
 - <a href="https://www.msys2.org/" title="MSYS2 dlls">MSYS2 dlls</a>
 
 # TODO
@@ -108,4 +108,4 @@ in Blink/server
 - [ ] fix duplicate messages that show only sometimes
 - [x] port to windows
 - [x] make default theme (probably catppuccin)
-- [ ] [build catppuccin theme](https://github.com/catppuccin/gtk/blob/main/docs/USAGE.md) in makefile and not store it in repo
+- [x] [build catppuccin theme](https://github.com/catppuccin/gtk/blob/main/docs/USAGE.md) in makefile and not store it in repo
