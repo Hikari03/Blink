@@ -3,8 +3,8 @@
 
 - Chat application in gtk4, written purely in C++.
 
-- Note: if you want to use terminal interface for client and/or want static build, you can use `ncurses` branch.
-
+> [!Note]
+> If you want to use terminal interface for client and/or want static build, you can use the `ncurses` branch.
 ## Windows
 - See [releases](https://github.com/Hikari03/Blink/releases/latest) for windows build
 
