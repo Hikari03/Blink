@@ -1,4 +1,4 @@
-name: MSYS2
+name: windows-build
 on: [push, pull_request]
 
 jobs:
@@ -18,18 +18,3 @@ jobs:
         run: |
           cd src
           make win
-          make win_release
-
-  make_artifact:
-    runs-on: ubuntu-latest
-    needs: windows_build
-    environment: windows-release-manual
-    steps:
-      - uses: actions/checkout@v3
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: win_release
-          path: src/blink_win
-          if-no-files-found: error
-          overwrite: true
