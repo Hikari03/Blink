@@ -39,7 +39,6 @@ win_release: make_obj
 	cp style.css "blink_win/style.css"
 	cp -r assets/gtkcss "blink_win/assets"
 
-	zip -r "blink_win.zip" "blink_win"
 	rm -rf "blink_win"
 
 win_debug: make_obj

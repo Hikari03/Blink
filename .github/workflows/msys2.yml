@@ -13,7 +13,7 @@ jobs:
         with:
           msystem: UCRT64
           update: true
-          install: git make zip mingw-w64-ucrt-x86_64-gtkmm-4.0 mingw-w64-ucrt-x86_64-libsodium mingw-w64-ucrt-x86_64-toolchain
+          install: git make mingw-w64-ucrt-x86_64-gtkmm-4.0 mingw-w64-ucrt-x86_64-libsodium mingw-w64-ucrt-x86_64-toolchain
       - name: CI-Build
         run: |
           cd src
@@ -30,6 +30,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: win_release
-          path: src/blink_win.zip
+          path: src/blink_win
           if-no-files-found: error
           overwrite: true
