@@ -25,15 +25,15 @@ SHORTCUT_PATH := "C:\Users\$(USER)\Desktop\$(TARGET).lnk"
 DESCRIPTION := "Blink"
 
 build: make_obj
-	if [ -e "style.css" ] && [ -d "assets/gtkcss" ]; then $(MAKE) getcatppuccin; fi
+	if [ ! -e "style.css" ] || [ ! -d "assets/gtkcss" ]; then $(MAKE) get_catppuccin; fi
 	@$(MAKE) all -j$(nproc)
 
 win: make_obj
-	if [ -e "style.css" ] && [ -d "assets/gtkcss" ]; then $(MAKE) get_catppuccin; fi
+	if [ ! -e "style.css" ] || [ ! -d "assets/gtkcss" ]; then $(MAKE) get_catppuccin; fi
 	@$(MAKE) all -j$(nproc) LIBS="-lsodium -lws2_32 $(shell pkg-config -libs gtkmm-4.0)"
 
 win_release: make_obj
-	if [ -e "style.css" ] && [ -d "assets/gtkcss" ]; then $(MAKE) getcatppuccin; fi
+	if [ ! -e "style.css" ] || [ ! -d "assets/gtkcss" ]; then $(MAKE) get_catppuccin; fi
 	@$(MAKE) all -j$(nproc) DEBUGFLAGS="-DBLINK_WIN_RELEASE" LIBS="-lsodium -lws2_32 $(shell pkg-config -libs gtkmm-4.0)"
 	mkdir -p "blink_win/assets"
 	cp $(TARGET).exe "blink_win/$(TARGET).exe"
@@ -43,11 +43,11 @@ win_release: make_obj
 	cp -r assets/gtkcss "blink_win/assets"
 
 win_debug: make_obj
-	if [ -e "style.css" ] && [ -d "assets/gtkcss" ]; then $(MAKE) getcatppuccin; fi
+	if [ ! -e "style.css" ] || [ ! -d "assets/gtkcss" ]; then $(MAKE) get_catppuccin; fi
 	@$(MAKE) all -j$(nproc) DEBUGFLAGS="-g -DBLINK_DEBUG" LIBS="-lsodium -lws2_32 $(shell pkg-config -libs gtkmm-4.0)"
 
 debug: make_obj
-	if [ -e "style.css" ] && [ -d "assets/gtkcss" ]; then $(MAKE) getcatppuccin; fi
+	if [ ! -e "style.css" ] || [ ! -d "assets/gtkcss" ]; then $(MAKE) get_catppuccin; fi
 	@$(MAKE) all -j$(nproc) DEBUGFLAGS="-g -DBLINK_DEBUG"
 
 install:
