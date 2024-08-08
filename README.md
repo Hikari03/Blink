@@ -107,4 +107,5 @@ in Blink/server
 - [ ] enable users send images
 - [ ] fix duplicate messages that show only sometimes
 - [x] port to windows
-- [ ] make default theme (probably catpuccin)
+- [x] make default theme (probably catppuccin)
+- [ ] [build catppuccin theme](https://github.com/catppuccin/gtk/blob/main/docs/USAGE.md) in makefile and not store it in repo
