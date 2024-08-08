@@ -62,6 +62,7 @@ install:
 
 install_win:
 	mkdir -p /c/Program\ Files/blink
+	mkdir -p $(APPDATA)/Blink/assets
 	cp $(TARGET).exe /c/Program\ Files/Blink/$(TARGET).exe
 	cp -r assets/dlls/* /c/Program\ Files/Blink/
 	cp $(TARGET).ui $(APPDATA)/Blink/$(TARGET).ui

@@ -4,6 +4,16 @@ GTKHandler::GTKHandler() {
 
 	_gtkData.init();
 
+#ifdef _WIN32
+	auto settings = Gtk::Settings::get_default();
+
+	if (settings) {
+		// Enable dark mode
+		settings->property_gtk_application_prefer_dark_theme() = true;
+	}
+#endif
+
+
 	for (const auto & widgetName : _gtkData._widgetNamesInit) {
 		auto [it, widget] = _gtkData._widgetsIntro.insert({widgetName, _gtkData._builder->get_widget<Gtk::Widget>(widgetName)});
 		it->second->set_visible();
@@ -32,7 +42,11 @@ GTKHandler::GTKHandler() {
 	_cssProvider->load_from_path(cssPath);
 
 	auto display = Gdk::Display::get_default();
-	Gtk::StyleProvider::add_provider_for_display(display, _cssProvider, GTK_STYLE_PROVIDER_PRIORITY_FALLBACK);
+#ifdef __linux__
+	Gtk::StyleProvider::add_provider_for_display(display, _cssProvider, GTK_STYLE_PROVIDER_PRIORITY_THEME);
+#elif _WIN32
+	Gtk::StyleProvider::add_provider_for_display(display, _cssProvider, GTK_STYLE_PROVIDER_PRIORITY_SETTINGS);
+#endif
 }
 
 void GTKHandler::init() {
