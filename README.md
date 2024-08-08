@@ -12,7 +12,7 @@
 - Windows build is possible using [MSYS2](https://www.msys2.org/) UCRT64
 - Run MSYS2 UCRT64 as administrator
 - You will need to install following packages:
-- `pacman -S git make mingw-w64-ucrt-x86_64-gtkmm-4.0 mingw-w64-ucrt-x86_64-libsodium mingw-w64-ucrt-x86_64-toolchain`
+- `pacman -S git make unzip mingw-w64-ucrt-x86_64-gtkmm-4.0 mingw-w64-ucrt-x86_64-libsodium mingw-w64-ucrt-x86_64-toolchain`
 - Hopefully, you will be able to build it with `make win` command in src and consequently `make install_win` to install it
 
 # Linux
