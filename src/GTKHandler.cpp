@@ -13,6 +13,26 @@ GTKHandler::GTKHandler() {
 		auto [it, widget] = _gtkData._widgetsChat.insert({widgetName, _gtkData._builder->get_widget<Gtk::Widget>(widgetName)});
 		it->second->set_visible();
 	}
+
+	std::string cssPath;
+
+#ifdef __linux__
+	cssPath = "/usr/share/blink/style.css";
+
+#elif _WIN32
+	#ifdef BLINK_WIN_RELEASE
+	path = "blink.ui";
+	#else
+	char* appdata = getenv("APPDATA");
+	cssPath = std::string(appdata) + "\\Blink\\style.css";
+	#endif
+
+#endif
+
+	_cssProvider->load_from_path("/usr/share/blink/style.css");
+
+	auto display = Gdk::Display::get_default();
+	Gtk::StyleProvider::add_provider_for_display(display, _cssProvider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
 
 void GTKHandler::init() {

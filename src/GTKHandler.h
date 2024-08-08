@@ -107,6 +107,7 @@ public:
 private:
 
 	GtkData _gtkData;
+	std::shared_ptr<Gtk::CssProvider> _cssProvider = Gtk::CssProvider::create();
 	std::function<void()> _postIntroFunc;
 	std::string userName;
 	std::string serverAddr;
