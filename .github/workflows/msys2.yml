@@ -1,5 +1,8 @@
 name: windows-build
-on: [push, pull_request]
+
+on:
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   windows_build:
