@@ -3,6 +3,7 @@
 #include <set>
 #include <condition_variable>
 #include <ranges>
+#include <fstream>
 #include "Message.h"
 
 class SharedResources {
@@ -39,8 +40,12 @@ private:
     std::condition_variable callBackOnResourceChange;
     std::mutex & messagesMutex;
 	std::mutex _onlineUsersMutex;
+	std::fstream messagesFile;
 
     std::string _serializedMessagesCache;
     bool _changeSinceLastSerialization = false;
+	bool inited = false;
 	unsigned long _lastSerializedMessagesCount = 0;
+
+	void parseMessagesFile();
 };

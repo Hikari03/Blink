@@ -1,21 +1,34 @@
+#include <iostream>
 #include "SharedResources.h"
 
-SharedResources::SharedResources(std::mutex &messagesMutex)  : messagesMutex(messagesMutex) {}
+SharedResources::SharedResources(std::mutex & messagesMutex)  : messagesMutex(messagesMutex) {
+	messagesFile.open("messagesFile");
+	if(messagesFile.bad() || !messagesFile.is_open())
+		throw std::runtime_error("unable to open file");
+	parseMessagesFile();
+	inited = true;
+}
 
 SharedResources::~SharedResources() {
 	callBackOnResourceChange.notify_all();
+	messagesFile.close();
 }
 
-void SharedResources::addMessage(const Message & message) {
+void SharedResources::addMessage(const Message & message) { //todo: fix not writing to file
     {
         std::lock_guard<std::mutex> lock(messagesMutex);
         _messages.insert(message);
+		if(inited) {
+			std::string messageSerial = message.serialize();
+			std::cout << messageSerial << std::endl;
+			messagesFile.write(messageSerial.c_str(), static_cast<unsigned>(messageSerial.size()));
+		}
         _changeSinceLastSerialization = true;
     }
     callBackOnResourceChange.notify_all();
 }
 
-void SharedResources::removeMessage(const Message & message) {
+void SharedResources::removeMessage(const Message & message) { // doesnt remove message in persistent storage
     {
         std::lock_guard<std::mutex> lock(messagesMutex);
         _messages.erase(message);
@@ -93,6 +106,17 @@ void SharedResources::setUserAsOffline(const std::string & name) {
 
 const std::vector<std::string> & SharedResources::getOnlineUsers() const {
 	return _onlineUsers;
+}
+
+void SharedResources::parseMessagesFile() { //TODO safe and retrieve time data
+	std::string line, user, message;
+
+	while(getline(messagesFile,line)) {
+		user = line.substr(0,line.find(':'));
+		message = line.substr(line.find(':')+2);
+
+		addMessage({user, message, std::chrono::system_clock::now()});
+	}
 }
 
 
