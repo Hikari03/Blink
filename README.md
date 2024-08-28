@@ -29,7 +29,7 @@
 ``` bash
 git clone https://github.com/Hikari03/Blink.git && \
 cd Blink/src && \
-make
+make && \
 make install
 ```
 
