@@ -104,7 +104,6 @@ in Blink/server
 - [x] transfer ncurses static build to librender that will make static library
 - [x] make communication encrypted
 - [x] remake client to use gtkmm4
-- [ ] enable users send images
 - [ ] fix duplicate messages that show only sometimes
 - [x] port to windows
 - [x] make default theme (probably catppuccin)
