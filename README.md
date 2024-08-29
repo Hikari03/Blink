@@ -19,8 +19,10 @@
 ## Dependencies
 ### Shared
 - `make`,`libsodium`, `g++` with c++23 support
+
 ### Client
-- `gtkmm4` for GUI
+- `unzip` and `gtkmm4` for GUI
+
 ### Server
 - `docker` and `docker-compose` optionally for server
 
