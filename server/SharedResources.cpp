@@ -1,10 +1,11 @@
 #include <iostream>
+#include <filesystem>
 #include "SharedResources.h"
 
 SharedResources::SharedResources(std::mutex & messagesMutex)  : messagesMutex(messagesMutex) {
 	_messagesFile.open(_messagesFileName, std::ios::in);
 	//debug!
-	std::string pwd = getenv("PWD");
+	std::string pwd = std::filesystem::current_path();
 	std::cout << "debug: opening file: " << _messagesFileName << " with pwd: " << pwd << std::endl;
 
 	if(_messagesFile.bad() || !_messagesFile.is_open()) {
