@@ -2,7 +2,7 @@ services:
   blink-server:
     image: hikari03/messenger:stable
     volumes:
-      - blink-server:/app/persistent
+      - blink-server:/messenger/server/persistent
     container_name: blink-server
     ports:
       - "6999:6999"
