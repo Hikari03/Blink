@@ -1,9 +1,14 @@
 services:
   blink-server:
     image: hikari03/messenger:stable
+    volumes:
+      - blink-server:/app/persistent
     container_name: blink-server
     ports:
       - "6999:6999"
     tty: true
     stdin_open: true
     restart: always
+
+volumes:
+    blink-server:
