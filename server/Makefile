@@ -27,7 +27,6 @@ CXX := g++
 
 build:
 	@$(MAKE) all -j$(nproc)
-	if [ ! -e messagesFile ]; then touch messagesFile; fi
 
 debug:
 	@$(MAKE) all -j$(nproc) DEBUGFLAGS="-g"

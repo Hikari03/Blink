@@ -2,16 +2,30 @@
 #include "SharedResources.h"
 
 SharedResources::SharedResources(std::mutex & messagesMutex)  : messagesMutex(messagesMutex) {
-	messagesFile.open("messagesFile");
-	if(messagesFile.bad() || !messagesFile.is_open())
-		throw std::runtime_error("unable to open file");
+	_messagesFile.open(_messagesFileName, std::ios::in);
+	if(_messagesFile.bad() || !_messagesFile.is_open()) {
+
+		_messagesFile.clear();  // Clear any error flags
+		_messagesFile.open(_messagesFileName, std::ios::out);
+		_messagesFile.close();  // Close immediately after creating
+
+		// Reopen for reading and writing
+		_messagesFile.open(_messagesFileName, std::ios::in);
+
+		if(_messagesFile.bad() || !_messagesFile.is_open())
+			throw std::runtime_error("unable to open file");
+	}
 	parseMessagesFile();
+
+	_messagesFile.close();
+	_messagesFile.open(_messagesFileName, std::ios::out | std::ios::app);
+
 	inited = true;
 }
 
 SharedResources::~SharedResources() {
 	callBackOnResourceChange.notify_all();
-	messagesFile.close();
+	_messagesFile.close();
 }
 
 void SharedResources::addMessage(const Message & message) { //todo: fix not writing to file
@@ -19,9 +33,12 @@ void SharedResources::addMessage(const Message & message) { //todo: fix not writ
         std::lock_guard<std::mutex> lock(messagesMutex);
         _messages.insert(message);
 		if(inited) {
-			std::string messageSerial = message.serialize();
-			std::cout << messageSerial << std::endl;
-			messagesFile.write(messageSerial.c_str(), static_cast<unsigned>(messageSerial.size()));
+			std::string messageSerial = message.serialize() + '\n';
+			std::cout << "debug: writing to file: " << messageSerial << " with size: " << messageSerial.size() << std::endl;
+			_messagesFile.write(messageSerial.c_str(), static_cast<std::streamsize>(messageSerial.size()));
+			if(_messagesFile.fail())
+				std::cout << "error writing to file" << std::endl;
+			_messagesFile.flush();
 		}
         _changeSinceLastSerialization = true;
     }
@@ -111,7 +128,7 @@ const std::vector<std::string> & SharedResources::getOnlineUsers() const {
 void SharedResources::parseMessagesFile() { //TODO safe and retrieve time data
 	std::string line, user, message;
 
-	while(getline(messagesFile,line)) {
+	while(getline(_messagesFile, line)) {
 		user = line.substr(0,line.find(':'));
 		message = line.substr(line.find(':')+2);
 

@@ -40,7 +40,8 @@ private:
     std::condition_variable callBackOnResourceChange;
     std::mutex & messagesMutex;
 	std::mutex _onlineUsersMutex;
-	std::fstream messagesFile;
+	std::fstream _messagesFile;
+	std::string _messagesFileName = "persistent/messagesFile";
 
     std::string _serializedMessagesCache;
     bool _changeSinceLastSerialization = false;
