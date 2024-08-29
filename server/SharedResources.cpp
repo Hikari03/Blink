@@ -3,6 +3,10 @@
 
 SharedResources::SharedResources(std::mutex & messagesMutex)  : messagesMutex(messagesMutex) {
 	_messagesFile.open(_messagesFileName, std::ios::in);
+	//debug!
+	std::string pwd = getenv("PWD");
+	std::cout << "debug: opening file: " << _messagesFileName << " with pwd: " << pwd << std::endl;
+
 	if(_messagesFile.bad() || !_messagesFile.is_open()) {
 
 		_messagesFile.clear();  // Clear any error flags
