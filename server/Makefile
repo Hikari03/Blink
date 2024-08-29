@@ -27,7 +27,6 @@ CXX := g++
 
 build:
 	@$(MAKE) all -j$(nproc)
-	mkdir persistent
 
 debug:
 	@$(MAKE) all -j$(nproc) DEBUGFLAGS="-g"
