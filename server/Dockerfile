@@ -10,4 +10,4 @@ RUN apk add --no-cache g++ make git libsodium-dev && \
 
 EXPOSE 6999
 
-ENTRYPOINT ["/messenger/server/blink-server"]
+ENTRYPOINT ["/messenger/server/docker-entrypoint.sh"]
