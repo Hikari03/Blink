@@ -3,8 +3,8 @@
 
 - Chat application in gtk4, written purely in C++.
 
-- Note: if you want to use terminal interface for client and/or want static build, you can use `ncurses` branch.
-
+> [!Note]
+> If you want to use terminal interface for client and/or want static build, you can use the `ncurses` branch.
 ## Windows
 - See [releases](https://github.com/Hikari03/Blink/releases/latest) for windows build
 
@@ -19,8 +19,10 @@
 ## Dependencies
 ### Shared
 - `make`,`libsodium`, `g++` with c++23 support
+
 ### Client
-- `gtkmm4` for GUI
+- `unzip` and `gtkmm4` for GUI
+
 ### Server
 - `docker` and `docker-compose` optionally for server
 
@@ -29,7 +31,7 @@
 ``` bash
 git clone https://github.com/Hikari03/Blink.git && \
 cd Blink/src && \
-make
+make && \
 make install
 ```
 
@@ -104,8 +106,9 @@ in Blink/server
 - [x] transfer ncurses static build to librender that will make static library
 - [x] make communication encrypted
 - [x] remake client to use gtkmm4
-- [ ] enable users send images
 - [ ] fix duplicate messages that show only sometimes
 - [x] port to windows
 - [x] make default theme (probably catppuccin)
 - [x] [build catppuccin theme](https://github.com/catppuccin/gtk/blob/main/docs/USAGE.md) in makefile and not store it in repo
+- [x] make persistent storage for server
+- [ ] make persistent storage for client

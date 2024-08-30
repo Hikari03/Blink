@@ -1,5 +1,6 @@
 #include <iostream>
 #include <netinet/in.h>
+#include <csignal>
 
 #include "Client.h"
 #include "accepter.h"
@@ -7,8 +8,25 @@
 #include "terminal.h"
 #include "SharedResources.h"
 
+sig_atomic_t stopRequested = 0;
+std::condition_variable callBack;
+
+// used for graceful shutdown in docker
+void signalHandler(int signal) {
+	std::cout << "Interrupt signal (" << signal << ") received." << std::endl;
+	if (signal == SIGINT || signal == SIGTERM) {
+		stopRequested = 1;
+	}
+
+	callBack.notify_one();
+
+}
+
 
 int main() {
+
+	std::signal(SIGINT, signalHandler);
+	std::signal(SIGTERM, signalHandler);
 
     std::mutex clientsMutex;
     std::mutex messagesMutex;
@@ -28,7 +46,6 @@ int main() {
     // holds chat
     SharedResources sharedResources(messagesMutex);
     std::list<Client> clients;
-    std::condition_variable callBack;
 	std::map<std::string,std::string> bannedIps;
 
     bool turnOff = false;
@@ -85,13 +102,21 @@ int main() {
             newClientAccepted = false;
         }
 
+		if(stopRequested)
+			turnOff = true;
 
 
         if(turnOff) {
 			// cleanup
 			lock.unlock();
 			std::cout << "main: cleaning up threads" << std::endl;
-			terminalThread.join();
+			if(stopRequested) {
+				std::cout << "main: stop requested" << std::endl;
+				pthread_cancel(terminalThread.native_handle());
+			}
+			else
+				terminalThread.join();
+
 			std::cout << "main: terminal closed" << std::endl;
 			shutdown(serverSocket, SHUT_RDWR);
 			close(serverSocket);
