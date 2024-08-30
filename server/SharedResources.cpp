@@ -5,8 +5,8 @@
 SharedResources::SharedResources(std::mutex & messagesMutex)  : messagesMutex(messagesMutex) {
 	_messagesFile.open(_messagesFileName, std::ios::in);
 	//debug!
-	std::string pwd = std::filesystem::current_path();
-	std::cout << "debug: opening file: " << _messagesFileName << " with pwd: " << pwd << std::endl;
+	//std::string pwd = std::filesystem::current_path();
+	//std::cout << "debug: opening file: " << _messagesFileName << " with pwd: " << pwd << std::endl;
 
 	if(_messagesFile.bad() || !_messagesFile.is_open()) {
 
@@ -33,13 +33,13 @@ SharedResources::~SharedResources() {
 	_messagesFile.close();
 }
 
-void SharedResources::addMessage(const Message & message) { //todo: fix not writing to file
+void SharedResources::addMessage(const Message & message) {
     {
         std::lock_guard<std::mutex> lock(messagesMutex);
         _messages.insert(message);
 		if(inited) {
 			std::string messageSerial = message.serialize() + '\n';
-			std::cout << "debug: writing to file: " << messageSerial << " with size: " << messageSerial.size() << std::endl;
+			//std::cout << "debug: writing to file: " << messageSerial << " with size: " << messageSerial.size() << std::endl;
 			_messagesFile.write(messageSerial.c_str(), static_cast<std::streamsize>(messageSerial.size()));
 			if(_messagesFile.fail())
 				std::cout << "error writing to file" << std::endl;
@@ -130,7 +130,7 @@ const std::vector<std::string> & SharedResources::getOnlineUsers() const {
 	return _onlineUsers;
 }
 
-void SharedResources::parseMessagesFile() { //TODO safe and retrieve time data
+void SharedResources::parseMessagesFile() { //TODO save and retrieve time data
 	std::string line, user, message;
 
 	while(getline(_messagesFile, line)) {
