@@ -102,7 +102,7 @@ in Blink/server
   - this is when new user connects and doesn't see the chat history
     or when someone leaves and the chat history is not updated
 - [x] fix server having unexpected behavior when closing server with clients connected
-- [ ] implement code for graceful stop in docker 
+- [x] implement code for graceful stop in docker 
 - [x] transfer ncurses static build to librender that will make static library
 - [x] make communication encrypted
 - [x] remake client to use gtkmm4
@@ -112,3 +112,4 @@ in Blink/server
 - [x] [build catppuccin theme](https://github.com/catppuccin/gtk/blob/main/docs/USAGE.md) in makefile and not store it in repo
 - [x] make persistent storage for server
 - [ ] make persistent storage for client
+- [ ] fix ncurses branch client
