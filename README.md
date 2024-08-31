@@ -112,4 +112,5 @@ in Blink/server
 - [x] [build catppuccin theme](https://github.com/catppuccin/gtk/blob/main/docs/USAGE.md) in makefile and not store it in repo
 - [x] make persistent storage for server
 - [ ] make persistent storage for client
-- [ ] fix ncurses branch client
+- [x] fix ncurses branch client
+- [ ] implement notice when client gets kicked out
