@@ -1,7 +1,7 @@
 # Blink
-![blink](https://github.com/user-attachments/assets/73e27751-fdb7-43b8-8220-f0679d4ca289)
+### Chat application in gtk4, written purely in C++.
 
-- Chat application in gtk4, written purely in C++.
+![blink](https://github.com/user-attachments/assets/73e27751-fdb7-43b8-8220-f0679d4ca289)
 
 > [!Note]
 > If you want to use terminal interface for client and/or want static build, you can use the `ncurses` branch.
