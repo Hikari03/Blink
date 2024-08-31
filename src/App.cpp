@@ -212,8 +212,13 @@ void App::_sendThread() {
 void App::_receiveThread() {
     std::string message;
     std::vector<std::string> messages;
+	bool first = true;
     while(_running) {
         message = _connection.receive();
+		if(first) {
+			first = false;
+			continue;
+		}
         if(message == _internal"exit") {
 			_running = false;
             _tiles.insertText(43, 15, L"Server closed connection", _red);

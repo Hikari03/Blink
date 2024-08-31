@@ -6,3 +6,6 @@ blink-server
 blink
 ncurses-build
 libsodium-build
+server/persistent/
+src/assets/
+src/style.css
