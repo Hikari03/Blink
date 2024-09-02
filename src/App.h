@@ -1,7 +1,5 @@
 #pragma once
 
-#include <condition_variable>
-
 #include "Connection.h"
 #include "GTKHandler.h"
 
@@ -38,3 +36,4 @@ private:
 
     void _debug(const std::string & text);
 };
+

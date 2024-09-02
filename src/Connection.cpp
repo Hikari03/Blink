@@ -90,7 +90,7 @@ void Connection::_send(const char * message, size_t length) {
 #endif
 }
 
-void Connection::send(const std::string & message){
+void Connection::send(const std::string & message) {
     auto messageToSend = message;
 
 	#ifdef BLINK_DEBUG
