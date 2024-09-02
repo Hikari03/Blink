@@ -25,6 +25,8 @@ private:
     std::string _userName;
     std::string _ip;
 
+    std::string _fileName = "filler";
+
     Connection _connection = Connection();
 
     bool _running = true;

@@ -38,6 +38,11 @@ void App::_postInitCall() {
 	if(_userName.empty() || _userName.contains(" ")) {
 		throw std::runtime_error("Invalid name!");
 	}
+
+	std::ofstream file(_fileName, std::ios::out);
+	file << "name: " << _userName << '\n' << "address: " << _ip; 
+	file.close();
+
 	_connectToServer(_ip, 6999);
 
 	_receiveThr = std::thread(&App::_receiveThread, this);
