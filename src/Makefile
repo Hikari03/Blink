@@ -40,6 +40,8 @@ win_release: make_obj
 	cp -r assets/dlls/* "blink_win/"
 	cp $(TARGET).ui "blink_win/$(TARGET).ui"
 	cp style.css "blink_win/style.css"
+	touch userData
+	chmod a+rw userData
 	cp -r assets/gtkcss "blink_win/assets"
 
 win_debug: make_obj
