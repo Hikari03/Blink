@@ -3,6 +3,7 @@
 GTKHandler::GTKHandler() {
 
 	_gtkData.init();
+	_cssProvider = Gtk::CssProvider::create();
 
 #ifdef _WIN32
 	auto settings = Gtk::Settings::get_default();
@@ -49,7 +50,9 @@ GTKHandler::GTKHandler() {
 #endif
 }
 
-void GTKHandler::init() {
+void GTKHandler::init(const std::string & name, const std::string & serverAddr) {
+	userName = name;
+	this->serverAddr = serverAddr;
 	_gtkData._app->signal_startup().connect(sigc::mem_fun(*this, &GTKHandler::_onStartup));
 	_gtkData._app->signal_activate().connect(sigc::mem_fun(*this, &GTKHandler::_onActivate));
 	_gtkData._windowIntro->signal_close_request().connect(sigc::bind_return(sigc::mem_fun(*this, &GTKHandler::exit), false), false);
@@ -78,6 +81,10 @@ void GTKHandler::_onActivate() {
 	dynamic_cast<Gtk::ListBox*>(_gtkData._widgetsChat.at("onlineList"))->set_sort_func(sigc::ptr_fun(&_listBoxSort));
 	setWidgetText(_gtkData._widgetsIntro, "enterName", "Enter name:");
 	setWidgetText(_gtkData._widgetsIntro, "enterServer", "Enter server address:");
+	auto buffer = dynamic_cast<Gtk::Entry*>(_gtkData._widgetsIntro["enterNameDialog"])->get_buffer();
+	buffer->insert_text(buffer->get_length(),userName);
+	buffer = dynamic_cast<Gtk::Entry*>(_gtkData._widgetsIntro["enterServerDialog"])->get_buffer();
+	buffer->insert_text(buffer->get_length(), serverAddr); //todo
 
 	_gtkData._windowIntro->set_visible(true);
 	_gtkData._windowIntro->present();
