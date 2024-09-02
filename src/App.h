@@ -1,5 +1,7 @@
 #pragma once
 
+#include <fstream>
+
 #include "Connection.h"
 #include "GTKHandler.h"
 
@@ -23,7 +25,15 @@ private:
     std::string _userName;
     std::string _ip;
 
-    std::string _fileName = "filler";
+#ifdef __linux__
+    std::string _fileName = "/usr/share/blink/userData";
+#elif _WIN32
+	#ifdef BLINK_WIN_RELEASE
+	std::string _fileName = "userData";
+	#else
+	std::string _fileName = std::string(getenv("APPDATA")) + "\\Blink\\userData";
+	#endif
+#endif
 
     Connection _connection = Connection();
 
