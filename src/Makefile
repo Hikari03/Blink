@@ -48,12 +48,14 @@ win_debug: make_obj
 
 debug: make_obj
 	if [ ! -e "style.css" ] || [ ! -d "assets/gtkcss" ]; then $(MAKE) get_catppuccin; fi
-	@$(MAKE) all -j$(nproc) DEBUGFLAGS="-g -DBLINK_DEBUG"
+	@$(MAKE) all -j$(nproc) DEBUGFLAGS="-g -O1 -DBLINK_DEBUG"
 
 install:
 	sudo install $(TARGET) /usr/bin/blink
 	sudo install -Dm644 $(TARGET).desktop /usr/share/applications/cz.hikari03.blink.desktop
 	sudo mkdir -p /usr/share/blink/assets/gtkcss
+	sudo touch /usr/share/blink/userData
+	sudo chmod a+wr /usr/share/blink/userData
 	sudo install $(TARGET).ui /usr/share/blink/$(TARGET).ui
 	sudo install style.css /usr/share/blink/style.css
 	sudo cp -r assets/gtkcss/* /usr/share/blink/assets/gtkcss
@@ -65,6 +67,8 @@ install:
 install_win:
 	mkdir -p /c/Program\ Files/blink
 	mkdir -p $(APPDATA)/Blink/assets
+	touch $(APPDATA)/Blink/userData
+	chmod a+wr $(APPDATA)/Blink/userData
 	cp $(TARGET).exe /c/Program\ Files/Blink/$(TARGET).exe
 	cp -r assets/dlls/* /c/Program\ Files/Blink/
 	cp $(TARGET).ui $(APPDATA)/Blink/$(TARGET).ui

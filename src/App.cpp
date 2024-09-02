@@ -2,7 +2,8 @@
 
 void App::run() {
     try {
-		_gtkHandler.init();
+		_getAndParseUserData();
+		_gtkHandler.init(_userName, _ip);
 		_gtkHandler.setPostIntroFunc(std::bind(&App::_postInitCall, this));
 		_gtkData = _gtkHandler.getGtkData();
 
@@ -29,8 +30,6 @@ void App::run() {
 	}
 }
 
-
-
 void App::_postInitCall() {
 	_userName = _gtkHandler.getIntroData().first;
 	_ip = _gtkHandler.getIntroData().second;
@@ -40,6 +39,11 @@ void App::_postInitCall() {
 	}
 
 	std::ofstream file(_fileName, std::ios::out);
+
+	if(!file.is_open() || file.bad()) {
+		throw std::runtime_error("User data file not found: " + _fileName);
+	}
+
 	file << "name: " << _userName << '\n' << "address: " << _ip; 
 	file.close();
 
@@ -176,7 +180,6 @@ void App::_receiveThread() {
     }
 }
 
-
 bool App::_onKeyPressed(guint keyval, guint, Gdk::ModifierType) {
 	_debug("key pressed");
 	if (keyval == GDK_KEY_Return || keyval == GDK_KEY_KP_Enter) {
@@ -211,6 +214,24 @@ bool App::_onKeyPressed(guint keyval, guint, Gdk::ModifierType) {
 		return true;
 	}
 	return false;
+}
+
+void App::_getAndParseUserData() {
+	std::ifstream file(_fileName, std::ios::in);
+	if(!file.is_open() || file.bad()) {
+		throw std::runtime_error("User data file not open: " + _fileName);
+	}
+
+	std::string line;
+
+	while(std::getline(file, line)) {
+		if(line.find("name: ") != std::string::npos) {
+			_userName = line.substr(sizeof("name: ") - 1);
+		}
+		if(line.find("address: ") != std::string::npos) {
+			_ip = line.substr(sizeof("address: ") - 1);
+		}
+	}
 }
 
 

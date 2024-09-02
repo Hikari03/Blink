@@ -39,6 +39,7 @@ private:
 
     bool _running = true;
 
+	void _getAndParseUserData();
     void _connectToServer(std::string ip, int port);
     void _receiveThread();
 	void _postInitCall();

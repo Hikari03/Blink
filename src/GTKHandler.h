@@ -16,7 +16,7 @@ class GTKHandler {
 public:
 
 	GTKHandler();
-	void init();
+	void init(const std::string & name, const std::string & serverAddr);
 	void setPostIntroFunc(std::function<void()> func);
 	static void setWidgetText(std::map<std::string, Gtk::Widget *> & widgets, const std::string & name, const std::string & text);
 
@@ -107,7 +107,7 @@ public:
 private:
 
 	GtkData _gtkData;
-	std::shared_ptr<Gtk::CssProvider> _cssProvider = Gtk::CssProvider::create();
+	std::shared_ptr<Gtk::CssProvider> _cssProvider;
 	std::function<void()> _postIntroFunc;
 	std::string userName;
 	std::string serverAddr;
