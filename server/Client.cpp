@@ -62,6 +62,13 @@ void Client::initConnection() {
     //std::cout << socket_ << "/" + name << ": sent nameAck" << std::endl;
 	printf("client %d/%s connected\n", _clientInfo.socket_, _clientInfo.name.c_str());
     _active = true;
+
+	// unset timeout since we are done with initialization => valid connection
+	timeout.tv_sec = 0;
+
+	if (setsockopt(_clientInfo.socket_, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0) {
+		throw std::runtime_error("setsockopt failed");
+	}
 }
 
 
