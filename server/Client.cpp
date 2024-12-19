@@ -9,6 +9,15 @@ Client::~Client() {
 
 void Client::initConnection() {
 
+	// Set timeout for recv
+	struct timeval timeout;
+	timeout.tv_sec = 5;  // Timeout in seconds
+	timeout.tv_usec = 0; // Timeout in microseconds
+
+	if (setsockopt(_clientInfo.socket_, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0) {
+		throw std::runtime_error("setsockopt failed");
+	}
+
 	std::cout << "initializing encryption with client " << _clientInfo.socket_ << std::endl;
 	if(sodium_init() < 0)
 		throw std::runtime_error("Could not initialize sodium");
@@ -116,8 +125,12 @@ void Client::receiveMessage() {
         _sizeOfPreviousMessage = recv(_clientInfo.socket_, _buffer, 4096, 0);
 
 
-        if(_sizeOfPreviousMessage < 0 && errno != EAGAIN && errno != EWOULDBLOCK) {
-            throw std::runtime_error("client disconnected or could not receive message");
+        if(_sizeOfPreviousMessage < 0) {
+        	if (errno != EAGAIN && errno != EWOULDBLOCK)
+				throw std::runtime_error("client disconnected or could not receive message");
+
+        	if(errno == EAGAIN || errno == EWOULDBLOCK)
+        		throw std::runtime_error("timeout");
         }
 
         _message += _buffer;
