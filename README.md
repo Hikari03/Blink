@@ -111,6 +111,6 @@ in Blink/server
 - [x] make default theme (probably catppuccin)
 - [x] [build catppuccin theme](https://github.com/catppuccin/gtk/blob/main/docs/USAGE.md) in makefile and not store it in repo
 - [x] make persistent storage for server
-- [ ] make persistent storage for client
+- [x] make persistent storage for client
 - [x] fix ncurses branch client
 - [ ] implement notice when client gets kicked out
