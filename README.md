@@ -1,4 +1,7 @@
 # Blink
+
+[![](https://tokei.rs/b1/github/Hikari03/Blink?category=lines)](https://github.com/Hikari03/Blink)
+
 ### Chat application in gtk4, written purely in C++.
 
 ![blink](https://github.com/user-attachments/assets/73e27751-fdb7-43b8-8220-f0679d4ca289)
