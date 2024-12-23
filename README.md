@@ -53,6 +53,10 @@ or launch from your desktop environment as an app
 ![chat.png](src/assets/chat_screenshot.png)
 
 ## Server
+
+- **Uses Port** : 6999
+- If you want to change it you can do so in server/main.cpp and src/App.cpp
+
 ### Use Docker
 #### With scripts
 You can get the `docker-update-start.sh`, `docker-attach.sh` and `docker-shutdown.sh`.
