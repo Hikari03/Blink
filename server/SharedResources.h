@@ -1,9 +1,11 @@
 #pragma once
 
-#include <set>
+#include <algorithm>
 #include <condition_variable>
-#include <ranges>
 #include <fstream>
+#include <ranges>
+#include <vector>
+#include <set>
 #include "Message.h"
 
 class SharedResources {
