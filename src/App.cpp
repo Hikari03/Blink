@@ -1,10 +1,12 @@
 #include "App.h"
 
+#include <functional>
+
 void App::run() {
     try {
 		_getAndParseUserData();
 		_gtkHandler.init(_userName, _ip);
-		_gtkHandler.setPostIntroFunc(std::bind(&App::_postInitCall, this));
+		_gtkHandler.setPostIntroFunc([this] { _postInitCall(); });
 		_gtkData = _gtkHandler.getGtkData();
 
 		_gtkData._key_controller->signal_key_pressed().connect(sigc::mem_fun(*this, &App::_onKeyPressed), false);

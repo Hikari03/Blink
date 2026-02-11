@@ -125,15 +125,19 @@ std::string Connection::receive() {
 	}
 
 
-    while (!message.contains(_end)) {
+    while (!message.ends_with(_end)) {
 
         clearBuffer();
 
         _sizeOfPreviousMessage = recv(_socket, _buffer, 4096, 0);
 
-        if(_sizeOfPreviousMessage < 0 && errno != EAGAIN && errno != EWOULDBLOCK && errno != MSG_WAITALL) {
-            throw std::runtime_error("Could not receive message from server: " + std::string(strerror(errno)));
-        }
+    	if ( _sizeOfPreviousMessage < 0 && errno != EAGAIN && errno != EWOULDBLOCK && errno != MSG_WAITALL ) {
+    		throw std::runtime_error("Could not receive message from server: " + std::string(strerror(errno)));
+    	}
+
+    	if ( _sizeOfPreviousMessage == 0 ) {
+    		throw std::runtime_error("server disconnected");
+    	}
 
         message += _buffer;
     }

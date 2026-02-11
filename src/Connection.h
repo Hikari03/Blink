@@ -43,17 +43,17 @@
 class Connection {
 
 public:
-    Connection();
-    ~Connection();
+	Connection();
+	~Connection();
 
-    void connectToServer(std::string ip, int port);
+	void connectToServer(std::string ip, int port);
 
-    void send(const std::string & message);
-    void sendMessage(const std::string & message);
+	void send(const std::string & message);
+	void sendMessage(const std::string & message);
 	void sendInternal(const std::string & message);
 
 
-    std::string receive();
+	std::string receive();
 	void close();
 
 private:
@@ -63,29 +63,29 @@ private:
 		unsigned char secretKey[crypto_box_SECRETKEYBYTES];
 	};
 
-    char _buffer[4096] = {0};
+	char _buffer[4096] = {0};
 	std::vector<std::string> _messagesBuffer;
 	KeyPair _keyPair;
 	unsigned char _remotePublicKey[crypto_box_PUBLICKEYBYTES];
 	std::mutex _sendMutex;
 #ifdef __linux__
-    int _socket;
+	int _socket;
 	sockaddr_in _server;
 #elif _WIN32
 	WSADATA _wsaData;
 	SOCKET _socket = INVALID_SOCKET;
 	struct addrinfo *_result = NULL,
-                *_ptr = NULL,
-                _hints;
+				*_ptr = NULL,
+				_hints;
 #endif
-    ssize_t _sizeOfPreviousMessage = 0;
-    bool _active = true;
+	ssize_t _sizeOfPreviousMessage = 0;
+	bool _active = true;
 	bool _encrypted = false;
 	bool _moreInBuffer = false;
 
-    void clearBuffer();
+	void clearBuffer();
 
-    [[nodiscard]] static std::vector<std::string> dnsLookup(const std::string & domain, int ipv = 4);
+	[[nodiscard]] static std::vector<std::string> dnsLookup(const std::string & domain, int ipv = 4);
 
 	void _send(const char * message, size_t length);
 

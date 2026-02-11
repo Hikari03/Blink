@@ -1,4 +1,6 @@
 #pragma once
+#include <functional>
+#include <map>
 
 #ifdef WIN32
 #undef ERROR
