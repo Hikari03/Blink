@@ -9,6 +9,7 @@
 #undef OUT
 #undef IGNORE
 #undef near
+#undef DOUBLE_CLICK
 #endif
 #include <gtkmm.h>
 #include <thread>
