@@ -8,6 +8,7 @@
 #include <set>
 #include <mutex>
 #include <thread>
+#include <vector>
 #include <sodium.h>
 #include "Message.h"
 #include "SharedResources.h"

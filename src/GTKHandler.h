@@ -1,4 +1,6 @@
 #pragma once
+#include <functional>
+#include <map>
 
 #ifdef WIN32
 #undef ERROR
@@ -7,6 +9,7 @@
 #undef OUT
 #undef IGNORE
 #undef near
+#undef DOUBLE_CLICK
 #endif
 #include <gtkmm.h>
 #include <thread>

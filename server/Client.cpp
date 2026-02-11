@@ -125,20 +125,20 @@ void Client::clearBuffer() {
 void Client::receiveMessage() {
     _message.clear();
 
-    while(!_message.contains(_end)) {
+    while(!_message.ends_with(_end)) {
 
         clearBuffer();
 
         _sizeOfPreviousMessage = recv(_clientInfo.socket_, _buffer, 4096, 0);
 
-
-        if(_sizeOfPreviousMessage < 0) {
-        	if (errno != EAGAIN && errno != EWOULDBLOCK)
-				throw std::runtime_error("client disconnected or could not receive message");
-
-        	if(errno == EAGAIN || errno == EWOULDBLOCK)
-        		throw std::runtime_error("timeout");
+        if ( _sizeOfPreviousMessage < 0 || errno == EAGAIN || errno == EWOULDBLOCK ) {
+        	throw std::runtime_error("Could not receive message from server: " + std::string(strerror(errno)));
         }
+
+    	if ( _sizeOfPreviousMessage < 0 || errno == EAGAIN || errno == EWOULDBLOCK ) {
+    		throw std::runtime_error("Could not receive message from server: " + std::string(strerror(errno)));
+    	}
+
 
         _message += _buffer;
 
